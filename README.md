@@ -1,19 +1,20 @@
-# 易析
+# App 发布仓库
 
-易析 Android 应用发布仓库。
+本仓库用于发布以下 Android 应用：
 
-## 最新版本
-
-**v1.2.7**（2026-08-30）
-
-- 安装包：[下载 易析_1.2.7.apk](./release/易析_1.2.7.apk)（约 18MB）
-- 更新日志：[CHANGELOG.md](./CHANGELOG.md)
+| 应用 | 最新版本 | 安装包 | 更新日志 |
+|---|---|---|---|
+| AllToolbox | v1.0.0 | [下载 AllToolbox_1.0.0.apk](./release/AllToolbox_1.0.0.apk)（约 7.5MB） | [CHANGELOG.md](./CHANGELOG.md) |
+| 易析 | v1.2.7 | [下载 易析_1.2.7.apk](./release/易析_1.2.7.apk)（约 18MB） | [CHANGELOG.md](./CHANGELOG.md) |
 
 ## 如何下载
 
-方式一：直接在浏览器点击上方链接下载 APK 文件。
+方式一：直接在浏览器点击上表链接下载 APK 文件。
 
-方式二：通过 GitHub Releases 页面获取。
+方式二：通过 GitHub Releases 页面获取（推荐，链接更稳定）：
+
+- [AllToolbox v1.0.0 Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.0.0)
+- [易析 v1.2.7 Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.2.7)
 
 ## 安装说明
 
