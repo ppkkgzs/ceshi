@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:titleTextColor="@color/white"
+        app:title="@string/title_dual_pane" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- 左栏 -->
+        <LinearLayout
+            android:id="@+id/left_pane"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="#1AFFFFFF">
+
+            <TextView
+                android:id="@+id/left_path"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:singleLine="true"
+                android:ellipsize="middle"
+                android:textColor="#1565C0"
+                android:textSize="13sp"
+                android:fontFamily="monospace" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/left_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/left_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/empty_folder"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- 中缝操作条 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="2dp"
+            android:background="#0D000000">
+
+            <Button
+                android:id="@+id/copy_right_to_left"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:text="◀"
+                android:contentDescription="@string/copy_to_left" />
+
+            <Button
+                android:id="@+id/copy_left_to_right"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:text="▶"
+                android:contentDescription="@string/copy_to_right" />
+        </LinearLayout>
+
+        <!-- 右栏 -->
+        <LinearLayout
+            android:id="@+id/right_pane"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="#05FFFFFF">
+
+            <TextView
+                android:id="@+id/right_path"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:singleLine="true"
+                android:ellipsize="middle"
+                android:textColor="#1565C0"
+                android:textSize="13sp"
+                android:fontFamily="monospace" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/right_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/right_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/empty_folder"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 底栏：选择当前操作的栏（左/右），返回键只在选中栏内回退 -->
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#F2F2F2"
+        android:elevation="4dp">
+
+        <Button
+            android:id="@+id/tab_left"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/tab_left" />
+
+        <Button
+            android:id="@+id/tab_right"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/tab_right" />
+    </LinearLayout>
+</LinearLayout>

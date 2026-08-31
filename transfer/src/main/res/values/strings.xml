@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="transfer_title">传输与外设</string>
+
+    <string name="http_server">HTTP 文件服务器</string>
+    <string name="http_server_desc">将本机目录分享成可下载链接，局域网内浏览器直接访问</string>
+    <string name="http_start">启动</string>
+    <string name="http_stop">停止</string>
+    <string name="http_url">访问地址</string>
+    <string name="http_pick_dir">选择分享目录</string>
+    <string name="http_dir">分享目录：</string>
+    <string name="http_log">运行日志</string>
+    <string name="http_copy">复制地址</string>
+    <string name="http_empty">请先选择要分享的目录</string>
+    <string name="http_copied">地址已复制</string>
+    <string name="http_start_fail">启动失败：%1$s</string>
+
+    <string name="bluetooth_send">蓝牙发送</string>
+    <string name="bluetooth_send_desc">通过系统分享把文件/链接发送到蓝牙设备</string>
+    <string name="bluetooth_pick">选择要发送的文件</string>
+
+    <string name="lan_hint">提示：请确保手机与访问设备在同一局域网（同一 WiFi）。</string>
+</resources>

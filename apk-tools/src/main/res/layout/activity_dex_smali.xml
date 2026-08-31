@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <Button
+        android:id="@+id/dex_pick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选择 DEX 或 APK 文件" />
+
+    <TextView
+        android:id="@+id/dex_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dp"
+        android:text="尚未选择文件"
+        android:textColor="#666666"
+        android:textSize="13sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="8dp">
+
+        <TextView
+            android:id="@+id/dex_out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="点击上方按钮选择 DEX 文件，或直接传入 APK（自动定位 classes.dex）。"
+            android:textSize="12sp" />
+    </ScrollView>
+</LinearLayout>

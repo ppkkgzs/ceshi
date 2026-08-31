@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="输入文本（UTF-8 来源）"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/enc_input"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:gravity="top|start"
+            android:hint="粘贴要转换的内容"
+            android:fontFamily="monospace"
+            android:scrollbars="vertical"
+            android:textColorHint="#999999" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="8dp">
+
+            <Button
+                android:id="@+id/btn_encode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="编码 →" />
+
+            <Button
+                android:id="@+id/btn_decode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="← 解码" />
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/enc_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="8dp">
+
+            <RadioButton
+                android:id="@+id/mode_unicode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Unicode" />
+
+            <RadioButton
+                android:id="@+id/mode_base64"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Base64" />
+
+            <RadioButton
+                android:id="@+id/mode_hex_utf8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hex(UTF-8)" />
+
+            <RadioButton
+                android:id="@+id/mode_hex_gbk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hex(GBK)" />
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="输出结果"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/enc_output"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:gravity="top|start"
+            android:fontFamily="monospace"
+            android:scrollbars="vertical"
+            android:textColorHint="#999999" />
+
+        <Button
+            android:id="@+id/btn_copy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="复制结果" />
+    </LinearLayout>
+</ScrollView>

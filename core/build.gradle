@@ -1,0 +1,27 @@
+// core 模块 —— 基础库：权限、主题、任务线程池、工具类
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.alltoolbox.core'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
+    implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
+
+    // Room 数据库（配置/书签/签名/回收站）
+    implementation "androidx.room:room-runtime:${rootProject.ext.roomVersion}"
+    annotationProcessor "androidx.room:room-compiler:${rootProject.ext.roomVersion}"
+}

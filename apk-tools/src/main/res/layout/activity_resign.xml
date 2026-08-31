@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <Button
+        android:id="@+id/sign_pick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选择 APK 文件" />
+
+    <TextView
+        android:id="@+id/sign_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dp"
+        android:text="尚未选择 APK"
+        android:textColor="#666666"
+        android:textSize="13sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="8dp">
+
+        <TextView
+            android:id="@+id/sign_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="选择 APK 后点击重新签名，完成后可用下方按钮保存签名结果。"
+            android:textSize="13sp" />
+    </ScrollView>
+
+    <Button
+        android:id="@+id/sign_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="保存签名结果 APK" />
+</LinearLayout>

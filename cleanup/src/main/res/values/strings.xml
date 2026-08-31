@@ -1,0 +1,23 @@
+<resources>
+    <string name="cleanup_title">空间清理</string>
+    <string name="cleanup_scan">扫描大文件</string>
+    <string name="cleanup_scanning">扫描中…</string>
+    <string name="cleanup_empty">暂无结果，点击右上角扫描</string>
+    <string name="cleanup_delete">删除</string>
+    <string name="cleanup_confirm">确认删除所选文件？</string>
+    <string name="cleanup_deleted">已删除 %1$d 项</string>
+    <string name="cleanup_fail">部分删除失败，请检查权限</string>
+    <string name="cleanup_select_hint">长按选择，可多选后删除</string>
+
+    <string name="file_search_title">文件搜索</string>
+    <string name="file_search_hint">输入文件名关键词</string>
+    <string name="file_search_btn">搜索</string>
+    <string name="file_search_choose">选择目录</string>
+    <string name="file_search_count">共找到 %1$d 个</string>
+    <string name="file_search_empty">搜索结果将显示在这里</string>
+    <string name="file_search_need_dir">请先选择目录</string>
+    <string name="file_search_need_kw">请输入关键词</string>
+    <string name="file_search_chosen">已选择目录：%1$s</string>
+    <string name="file_search_open_fail">无法打开该文件</string>
+    <string name="file_search_scanning">搜索中…</string>
+</resources>

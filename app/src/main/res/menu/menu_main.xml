@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- 右上角三点菜单：设置首页 / 添加书签 / 排序方式 / 全选 / 刷新 / 退出 -->
+    <item
+        android:id="@+id/action_settings_home"
+        android:title="@string/menu_settings_home"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_add_bookmark"
+        android:title="@string/menu_add_bookmark"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_sort"
+        android:title="@string/menu_sort"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_select_all"
+        android:title="@string/menu_select_all"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_refresh"
+        android:title="@string/menu_refresh"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_exit"
+        android:title="@string/menu_exit"
+        app:showAsAction="never" />
+
+    <!-- 单栏 ↔ 双栏 快捷切换图标 -->
+    <item
+        android:id="@+id/action_switch_dual"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="@string/switch_to_dual"
+        app:showAsAction="always" />
+
+</menu>

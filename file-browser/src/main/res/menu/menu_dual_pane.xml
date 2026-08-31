@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_single_pane"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="@string/switch_to_single"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_settings_home"
+        android:title="设置首页"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_add_bookmark"
+        android:title="添加书签"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_sort"
+        android:title="排序方式"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_select_all"
+        android:title="全选"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_refresh"
+        android:icon="@android:drawable/ic_menu_rotate"
+        android:title="刷新"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_exit"
+        android:title="退出"
+        app:showAsAction="never" />
+</menu>
