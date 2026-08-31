@@ -16,10 +16,24 @@ android {
         multiDexEnabled true
     }
 
+    signingConfigs {
+        release {
+            if (rootProject.ext.hasReleaseSigning) {
+                storeFile rootProject.file(rootProject.ext.releaseStoreFile)
+                storePassword rootProject.ext.releaseStorePassword
+                keyAlias rootProject.ext.releaseKeyAlias
+                keyPassword rootProject.ext.releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (rootProject.ext.hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
