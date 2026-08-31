@@ -35,7 +35,7 @@
                 android:padding="6dp"
                 android:singleLine="true"
                 android:ellipsize="middle"
-                android:textColor="#1565C0"
+                android:textColor="@color/path_text"
                 android:textSize="13sp"
                 android:fontFamily="monospace" />
 
@@ -102,7 +102,7 @@
                 android:padding="6dp"
                 android:singleLine="true"
                 android:ellipsize="middle"
-                android:textColor="#1565C0"
+                android:textColor="@color/path_text"
                 android:textSize="13sp"
                 android:fontFamily="monospace" />
 
@@ -128,13 +128,13 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- 底栏：选择当前操作的栏（左/右），返回键只在选中栏内回退 -->
+    <!-- 底栏：选择当前操作的栏（左/右）+ 上一页 / 下一页 / 添加 / 回到首页 -->
     <LinearLayout
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#F2F2F2"
+        android:background="@color/bottom_bar_bg"
         android:elevation="4dp">
 
         <Button
@@ -152,5 +152,41 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/tab_right" />
+
+        <Button
+            android:id="@+id/dual_prev"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="◀"
+            android:contentDescription="上一页" />
+
+        <Button
+            android:id="@+id/dual_next"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="▶"
+            android:contentDescription="下一页" />
+
+        <Button
+            android:id="@+id/dual_add"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="＋"
+            android:contentDescription="添加" />
+
+        <Button
+            android:id="@+id/dual_home"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="↑"
+            android:contentDescription="回到首页" />
     </LinearLayout>
 </LinearLayout>

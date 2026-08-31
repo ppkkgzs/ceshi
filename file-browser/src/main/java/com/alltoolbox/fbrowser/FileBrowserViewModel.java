@@ -30,6 +30,10 @@ public class FileBrowserViewModel extends AndroidViewModel {
     private String filter = "";
     private boolean gridMode = false;
 
+    /** 上一页 / 下一页 历史栈。 */
+    private final java.util.Deque<String> backStack = new java.util.ArrayDeque<>();
+    private final java.util.Deque<String> forwardStack = new java.util.ArrayDeque<>();
+
     /** 排序方式：0=名称 1=大小 2=修改时间 3=类型。 */
     private int sortMode = 0;
 
@@ -59,8 +63,46 @@ public class FileBrowserViewModel extends AndroidViewModel {
     }
 
     public void navigateTo(File target) {
+        String cur = currentPath.getValue();
+        if (cur != null && !cur.equals(target.getAbsolutePath())) {
+            backStack.push(cur);
+            forwardStack.clear();
+        }
         currentPath.setValue(target.getAbsolutePath());
         loadDirectory(target);
+    }
+
+    public boolean canGoBack() {
+        return !backStack.isEmpty();
+    }
+
+    public boolean canGoForward() {
+        return !forwardStack.isEmpty();
+    }
+
+    /** 上一页：回到历史中的前一目录。 */
+    public boolean goBack() {
+        if (backStack.isEmpty()) return false;
+        String cur = currentPath.getValue();
+        if (cur != null) forwardStack.push(cur);
+        String prev = backStack.pop();
+        changeTo(prev);
+        return true;
+    }
+
+    /** 下一页：前进到历史中的后一目录。 */
+    public boolean goForward() {
+        if (forwardStack.isEmpty()) return false;
+        String cur = currentPath.getValue();
+        if (cur != null) backStack.push(cur);
+        String next = forwardStack.pop();
+        changeTo(next);
+        return true;
+    }
+
+    private void changeTo(String path) {
+        currentPath.setValue(path);
+        loadDirectory(new File(path));
     }
 
     public void loadDirectory(File dir) {

@@ -156,20 +156,19 @@ public class ExtractApkActivity extends AppCompatActivity {
             ContentValues cv = new ContentValues();
             cv.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
             cv.put(MediaStore.Downloads.MIME_TYPE, "application/vnd.android.package-archive");
-            cv.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+            cv.put(MediaStore.Downloads.RELATIVE_PATH, "PK2");
             Uri uri = getContentResolver().insert(MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), cv);
-            if (uri == null) throw new Exception("无法写入下载目录");
+            if (uri == null) throw new Exception("无法写入主目录");
             try (FileInputStream in = new FileInputStream(src);
                  OutputStream out = getContentResolver().openOutputStream(uri)) {
                 if (out == null) throw new Exception("无法打开输出流");
                 copy(in, out);
             }
-            return "已提取到「下载」：" + fileName;
+            return "已提取到「主页面/PK2」：" + fileName;
         }
 
-        // 低版本：直接写公共 Download 目录
-        File dir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), "AppBackup");
+        // 低版本：直接写主目录 PK2 文件夹
+        File dir = new File(Environment.getExternalStorageDirectory(), "PK2");
         if (!dir.exists()) dir.mkdirs();
         File dst = new File(dir, fileName);
         try (FileInputStream in = new FileInputStream(src);

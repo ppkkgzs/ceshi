@@ -80,9 +80,71 @@ public class MainActivity extends AppCompatActivity {
         // 启动公告弹窗
         showAnnouncement();
 
+        setupBottomBar();
+
         // 启动时检查更新
         if (Settings.getBoolean(this, Settings.KEY_UPDATE_CHECK, true)) {
             checkUpdateQuietly();
+        }
+    }
+
+    /** 单栏底栏：上一页 / 下一页 / 添加 / 回到首页。 */
+    private void setupBottomBar() {
+        View btnPrev = findViewById(R.id.btn_prev);
+        if (btnPrev == null) return; // 布局未含底栏（双栏等）
+        TextView indicator = findViewById(R.id.nav_indicator);
+        btnPrev.setOnClickListener(v -> {
+            FileBrowserFragment f = findFileFragment();
+            if (f != null) {
+                boolean ok = f.goBackDir();
+                animateIndicator(indicator, ok ? "◀ 上一页" : "已是第一页", ok);
+            }
+        });
+        findViewById(R.id.btn_next).setOnClickListener(v -> {
+            FileBrowserFragment f = findFileFragment();
+            if (f != null) {
+                boolean ok = f.goForwardDir();
+                animateIndicator(indicator, ok ? "▶ 下一页" : "已到最后一页", ok);
+            }
+        });
+        findViewById(R.id.btn_add).setOnClickListener(v -> {
+            FileBrowserFragment f = findFileFragment();
+            if (f != null) f.showAddDialog();
+        });
+        findViewById(R.id.btn_home).setOnClickListener(v -> {
+            FileBrowserFragment f = findFileFragment();
+            if (f != null) {
+                f.goHome();
+                animateIndicator(indicator, "↑ 首页", true);
+            }
+        });
+
+        // 目录变化时自动切换底栏指示图标（点击/进入目录都会触发）
+        FileBrowserFragment frag = findFileFragment();
+        if (frag != null) {
+            frag.setPathChangeListener(() -> {
+                String p = frag.getCurrentPathString();
+                String name = p.equals("/") ? "/" : new java.io.File(p).getName();
+                if (indicator != null) {
+                    indicator.setText("▸ " + name);
+                    indicator.setAlpha(0.35f);
+                    indicator.animate().alpha(1f).setDuration(260).start();
+                }
+            });
+        }
+    }
+
+    /** 底栏切换图标的淡入切换动画。 */
+    private void animateIndicator(TextView view, String text, boolean succeeded) {
+        if (view == null) return;
+        view.setText(text);
+        view.setAlpha(0.3f);
+        view.animate().alpha(1f).setDuration(320)
+                .setStartDelay(40).start();
+        if (succeeded) {
+            // 内容过渡动画
+            FileBrowserFragment f = findFileFragment();
+            if (f != null) f.animateContent();
         }
     }
 
@@ -147,6 +209,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, ToolboxActivity.class));
         } else if (id == R.id.nav_cleanup) {
             startActivity(new Intent(this, CleanupActivity.class));
+        } else if (id == R.id.nav_extract_apk) {
+            startActivity(new Intent(this, ExtractApkActivity.class));
         } else if (id == R.id.nav_archive) {
             startActivity(new Intent(this, ArchiveActivity.class));
         } else if (id == R.id.nav_transfer) {
@@ -169,7 +233,16 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, com.alltoolbox.fbrowser.DualPaneActivity.class));
             return true;
         }
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
         if (id == R.id.action_settings_home) {
+            FileBrowserFragment homeFrag = findFileFragment();
+            if (homeFrag != null) {
+                homeFrag.setCurrentAsHome();
+                return true;
+            }
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
@@ -192,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
             if (id == R.id.action_refresh) {
-                f.refreshCurrent();
+                f.refreshWithAnimation();
                 return true;
             }
         }

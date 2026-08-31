@@ -27,6 +27,11 @@
         android:title="@string/nav_cleanup" />
 
     <item
+        android:id="@+id/nav_extract_apk"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/nav_extract_apk" />
+
+    <item
         android:id="@+id/nav_archive"
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="@string/nav_archive" />

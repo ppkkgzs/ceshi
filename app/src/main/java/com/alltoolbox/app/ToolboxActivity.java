@@ -64,7 +64,7 @@ public class ToolboxActivity extends AppCompatActivity {
         // 压缩归档
         entries.add(new ToolEntry("压缩/解压", "ZIP 打包与解包", ArchiveActivity.class, PICK_NONE));
         // 清理
-        entries.add(new ToolEntry("空间清理", "扫描大文件与可清理项", CleanupActivity.class, PICK_NONE));
+        entries.add(new ToolEntry("扫描清理", "内存显示/缓存/安装包/不常用应用", CleanupActivity.class, PICK_NONE));
         entries.add(new ToolEntry("文件搜索", "按关键词全目录查找文件", FileSearchActivity.class, PICK_NONE));
         // APK 逆向
         entries.add(new ToolEntry("编码转换", "Unicode / Base64 / Hex 互转", EncodeActivity.class, PICK_NONE));

@@ -62,6 +62,19 @@ public class FileBrowserFragment extends Fragment {
     private ActivityResultLauncher<Intent> allFilesAccessLauncher;
     private ActivityResultLauncher<Uri> docTreeLauncher;
 
+    /** 底栏等宿主监听目录变化，用于自动切换图标动画。 */
+    private Runnable pathChangeListener;
+
+    public void setPathChangeListener(Runnable r) {
+        this.pathChangeListener = r;
+    }
+
+    public String getCurrentPathString() {
+        String p = viewModel != null && viewModel.getCurrentPath() != null
+                ? viewModel.getCurrentPath().getValue() : null;
+        return p != null ? p : "/";
+    }
+
     public static FileBrowserFragment newInstance(String path) {
         FileBrowserFragment f = new FileBrowserFragment();
         Bundle b = new Bundle();
@@ -641,6 +654,7 @@ public class FileBrowserFragment extends Fragment {
             tv.setOnClickListener(v -> viewModel.navigateTo(new File((String) v.getTag())));
             pathBar.addView(tv);
         }
+        if (pathChangeListener != null) pathChangeListener.run();
     }
 
     private String[] segmentPaths(String path) {
@@ -730,5 +744,75 @@ public class FileBrowserFragment extends Fragment {
             return true;
         }
         return false;
+    }
+
+    // ------------------------------------------------------------------
+    // 底栏联动：上一页 / 下一页 / 添加 / 回到首页 / 设为首页
+    // ------------------------------------------------------------------
+
+    /** 上一页（历史后退）。返回是否执行。 */
+    public boolean goBackDir() {
+        return viewModel.goBack();
+    }
+
+    /** 下一页（历史前进）。 */
+    public boolean goForwardDir() {
+        return viewModel.goForward();
+    }
+
+    public boolean canGoBackDir() {
+        return viewModel.canGoBack();
+    }
+
+    public boolean canGoForwardDir() {
+        return viewModel.canGoForward();
+    }
+
+    /** 回到设置的首页；未设置则回根目录。 */
+    public void goHome() {
+        String home = com.alltoolbox.core.setting.Settings.getString(
+                requireContext(), com.alltoolbox.core.setting.Settings.KEY_HOME_PATH, "");
+        File h = (home != null && !home.isEmpty() && new File(home).isDirectory())
+                ? new File(home) : defaultRoot();
+        viewModel.navigateTo(h);
+    }
+
+    /** 把当前目录设为首页。 */
+    public void setCurrentAsHome() {
+        String p = currentDir().getAbsolutePath();
+        com.alltoolbox.core.setting.Settings.putString(
+                requireContext(), com.alltoolbox.core.setting.Settings.KEY_HOME_PATH, p);
+        toast("已设为首页：" + p);
+    }
+
+    private File defaultRoot() {
+        File[] roots = Permissions.getBrowseableRoots(requireContext());
+        return roots.length > 0 ? roots[0] : new File("/");
+    }
+
+    /** 底栏“+”号：新建文件夹或文件。 */
+    public void showAddDialog() {
+        String[] items = {"新建文件夹", "新建文件"};
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("添加")
+                .setItems(items, (d, w) -> {
+                    if (w == 0) createFolderDialog();
+                    else createFileDialog();
+                }).show();
+    }
+
+    /** 带过渡动画的刷新。 */
+    public void refreshWithAnimation() {
+        reload();
+        animateContent();
+    }
+
+    /** 内容淡入过渡动画，用于刷新/切换目录。 */
+    public void animateContent() {
+        if (getView() == null) return;
+        View content = getView().findViewById(R.id.file_recycler);
+        if (content == null) return;
+        content.setAlpha(0.4f);
+        content.animate().alpha(1f).setDuration(320).start();
     }
 }

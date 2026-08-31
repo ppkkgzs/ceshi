@@ -14,6 +14,8 @@ local.properties
 gradle.properties
 *.apk
 *.keystore
+keystore.properties
+keystore/
 .superpowers/
 .trae-html-share-packages/
 captures/

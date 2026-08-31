@@ -2,7 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- 右上角三点菜单：设置首页 / 添加书签 / 排序方式 / 全选 / 刷新 / 退出 -->
+    <!-- 右上角三点菜单：设置 / 设为首页 / 添加书签 / 排序方式 / 全选 / 刷新 / 退出 -->
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/nav_settings"
+        app:showAsAction="never" />
+
     <item
         android:id="@+id/action_settings_home"
         android:title="@string/menu_settings_home"

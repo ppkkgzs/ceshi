@@ -2,12 +2,17 @@ package com.alltoolbox.fbrowser;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -104,6 +109,31 @@ public class DualPaneActivity extends AppCompatActivity {
         findViewById(R.id.left_pane).setOnClickListener(v -> setActiveSide(Side.LEFT));
         findViewById(R.id.right_pane).setOnClickListener(v -> setActiveSide(Side.RIGHT));
 
+        // 底栏：上一页 / 下一页 / 添加 / 回到首页（针对当前选中的栏）
+        findViewById(R.id.dual_prev).setOnClickListener(v -> {
+            Pane active = currentPane();
+            boolean ok = active.goBack();
+            if (!ok) ok = active.goUp();
+            animateTab();
+            toast(ok ? "上一页 " + active.currentPath : "已是第一页");
+        });
+        findViewById(R.id.dual_next).setOnClickListener(v -> {
+            Pane active = currentPane();
+            boolean ok = active.goForward();
+            animateTab();
+            toast(ok ? "下一页 " + active.currentPath : "已到最后一页");
+        });
+        findViewById(R.id.dual_add).setOnClickListener(v -> showAddDialog(currentPane()));
+        findViewById(R.id.dual_home).setOnClickListener(v -> {
+            Pane active = currentPane();
+            String home = com.alltoolbox.core.setting.Settings.getString(
+                    this, com.alltoolbox.core.setting.Settings.KEY_HOME_PATH, "");
+            File h = (home != null && !home.isEmpty() && new File(home).isDirectory())
+                    ? new File(home) : rootFor(0);
+            active.load(h);
+            toast("回到首页 " + h.getAbsolutePath());
+        });
+
         ensureStoragePermission();
         left.load(null);
         right.load(null);
@@ -117,6 +147,72 @@ public class DualPaneActivity extends AppCompatActivity {
         findViewById(R.id.right_pane).setBackgroundColor(side == Side.RIGHT ? 0x331A73E8 : 0x05FFFFFF);
         findViewById(R.id.tab_left).setSelected(side == Side.LEFT);
         findViewById(R.id.tab_right).setSelected(side == Side.RIGHT);
+        animateTab();
+    }
+
+    /** 底栏选中图标/按钮的弹跳切换动画（随左右栏切换而切换）。 */
+    private void animateTab() {
+        animateTabButton(findViewById(R.id.tab_left));
+        animateTabButton(findViewById(R.id.tab_right));
+    }
+
+    private void animateTabButton(View v) {
+        if (v == null) return;
+        v.animate().cancel();
+        v.setScaleX(0.82f);
+        v.setScaleY(0.82f);
+        v.animate().scaleX(1f).scaleY(1f).setDuration(280)
+                .setStartDelay(30).start();
+    }
+
+    /** 当前选中的栏对应的 Pane。 */
+    private Pane currentPane() {
+        return activeSide == Side.LEFT ? left : right;
+    }
+
+    /** 底栏：在当前选中目录新建文件夹/文件。 */
+    private void showAddDialog(Pane pane) {
+        File dir = new File(pane.currentPath);
+        if (!dir.exists() || !dir.isDirectory()) {
+            toast("当前目录不可用");
+            return;
+        }
+        final File parent = dir;
+        String[] options = {"新建文件夹", "新建文件"};
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("添加到 " + parent.getAbsolutePath())
+                .setItems(options, (d, w) -> promptNewName(parent, w == 0))
+                .show();
+    }
+
+    private void promptNewName(final File parent, final boolean isFolder) {
+        final android.widget.EditText input = new android.widget.EditText(this);
+        input.setHint(isFolder ? "输入文件夹名称" : "输入文件名（含扩展名）");
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(isFolder ? "新建文件夹" : "新建文件")
+                .setView(input)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("创建", (d, w) -> {
+                    String name = input.getText().toString().trim();
+                    if (name.isEmpty()) {
+                        toast("名称不能为空");
+                        return;
+                    }
+                    File target = new File(parent, name);
+                    boolean ok = isFolder ? target.mkdirs() : createNew(target);
+                    toast(ok ? "已创建 " + name : "创建失败");
+                    refreshBoth();
+                })
+                .show();
+    }
+
+    static boolean createNew(File f) {
+        if (f.exists()) return false;
+        try {
+            return f.createNewFile();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /** 左/右栏默认根目录：均为外部存储（root 时为文件系统根），切到单栏即从主界面进入。 */
@@ -433,6 +529,9 @@ public class DualPaneActivity extends AppCompatActivity {
         String currentPath;
         boolean showHidden = false;
         int sortMode = 0;
+        /** 历史栈：后退/前进。 */
+        final Deque<String> backStack = new ArrayDeque<>();
+        final Deque<String> forwardStack = new ArrayDeque<>();
 
         Pane(RecyclerView list, TextView pathView, TextView emptyView, Side side, File root) {
             this.list = list;
@@ -452,6 +551,46 @@ public class DualPaneActivity extends AppCompatActivity {
             this.list.setOnScrollListener(null);
             this.currentPath = root.getAbsolutePath();
             this.list.setOnClickListener(null);
+
+            // 滑动该栏任意位置即可切换选中该栏（横向滑动）
+            final GestureDetector gd = new GestureDetector(DualPaneActivity.this,
+                    new GestureDetector.SimpleOnGestureListener() {
+                        @Override public boolean onFling(MotionEvent e1, MotionEvent e2,
+                                                         float vx, float vy) {
+                            if (Math.abs(vx) > Math.abs(vy)) setActiveSide(side);
+                            return true;
+                        }
+                    });
+            this.list.setOnTouchListener((v, ev) -> gd.onTouchEvent(ev));
+        }
+
+        /** 进入目录：记录历史并加载。 */
+        void navigate(@Nullable File target) {
+            if (target == null) return;
+            String tp = target.getAbsolutePath();
+            if (!tp.equals(currentPath)) {
+                backStack.push(currentPath);
+                forwardStack.clear();
+            }
+            load(target);
+        }
+
+        boolean goBack() {
+            if (backStack.isEmpty()) return false;
+            String cur = currentPath;
+            if (cur != null) forwardStack.push(cur);
+            String p = backStack.pop();
+            load(new File(p));
+            return true;
+        }
+
+        boolean goForward() {
+            if (forwardStack.isEmpty()) return false;
+            String cur = currentPath;
+            if (cur != null) backStack.push(cur);
+            String p = forwardStack.pop();
+            load(new File(p));
+            return true;
         }
 
         void load(@Nullable File target) {
@@ -521,7 +660,7 @@ public class DualPaneActivity extends AppCompatActivity {
                 }
                 // 进入目录即视为选中该栏
                 setActiveSide(side);
-                load(target);
+                navigate(target);
             } else {
                 DualPaneActivity.this.onOpenFile(fi.getFile());
             }

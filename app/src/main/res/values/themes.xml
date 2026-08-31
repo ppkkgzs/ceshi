@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- 深色主题资源 -->
+    <!-- 跟随系统浅/深主题资源 -->
     <style name="Theme.Toolbox" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/toolbox_primary</item>
         <item name="colorPrimaryVariant">@color/toolbox_primary_dark</item>
         <item name="colorAccent">@color/toolbox_accent</item>
-        <item name="android:windowBackground">@android:color/background_light</item>
+        <!-- 窗口背景交给 DayNight 自动切换（浅=白 / 深=黑），保证深色模式下文字变白 -->
     </style>
 
 </resources>
