@@ -1,5 +1,18 @@
 # 更新日志
 
+## PK管理器 [1.6.4] - 2026-08-31
+
+### 修复
+- 修复 Shizuku 集成后启动即闪退的问题：`ShizukuProvider` 必须 `android:exported="true"`（Shizuku 官方要求，由 `android.permission.INTERACT_ACROSS_USERS_FULL` 保护安全），此前误设为 `false` 导致应用启动时 Provider 初始化崩溃
+- Shizuku 功能完整保留：以 adb/shell 权限访问 Android/data、Android/obb 等受限目录，无需 Root
+- 版本号更新为 1.6.4（versionCode 10），请覆盖安装本版
+
+### 下载
+- 安装包：`AllToolbox_1.6.4.apk`（约 6.5MB）
+- 支持 Android 5.0 及以上版本
+
+---
+
 ## PK管理器 [1.6.3] - 2026-08-31
 
 ### 新增（恢复 Shizuku 支持）
