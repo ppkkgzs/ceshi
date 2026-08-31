@@ -63,6 +63,13 @@
                 android:text="@string/about_check_update"
                 android:layout_marginTop="8dp" />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_open_source"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="开源声明"
+                android:layout_marginTop="8dp" />
+
             <TextView
                 android:id="@+id/update_result"
                 android:layout_width="match_parent"

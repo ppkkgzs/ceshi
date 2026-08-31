@@ -35,6 +35,18 @@ public class AboutActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.btn_check_update).setOnClickListener(v -> checkUpdate(true));
+
+        findViewById(R.id.btn_open_source).setOnClickListener(v ->
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle("开源声明")
+                        .setMessage("本软件以 GNU 通用公共许可证第 3 版（GPL v3）开源。\n\n"
+                                + "· 您有权免费获取、研究、修改与再分发本软件源代码\n"
+                                + "· 任何修改版或衍生作品再分发时，须以相同协议（GPL v3）开源并保留署名\n"
+                                + "· 本软件按「原样」提供，作者不承担担保\n\n"
+                                + "开源仓库：github.com/ppkkgzs/ceshi")
+                        .setPositiveButton("打开仓库", (d, w) -> openBrowser("https://github.com/ppkkgzs/ceshi"))
+                        .setNegativeButton("关闭", null)
+                        .show());
     }
 
     private void checkUpdate(boolean manual) {

@@ -222,6 +222,8 @@ public class MainActivity extends AppCompatActivity {
                 "· 应用文件夹显示对应应用图标\n" +
                 "· 压缩包支持在软件内直接解压，不跳转外部应用\n" +
                 "· 点击文件弹打开方式，长按文件弹操作菜单\n\n" +
+                "【开源声明】本软件以 GNU GPL v3 协议开源，可自由研究、修改与分发，分发时须遵守 GPL v3 条款。\n" +
+                "开源仓库：github.com/ppkkgzs/ceshi\n\n" +
                 "下载最新版本链接：\n" + UpdateChecker.DOWNLOAD_URL + "\n\n" +
                 "联系邮箱：gexinggzs@163.com";
         MaterialAlertDialogBuilder builder =
