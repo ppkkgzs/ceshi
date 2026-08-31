@@ -6,7 +6,7 @@
 
 | 应用 | 最新版本 | 安装包 | 更新日志 |
 |---|---|---|---|
-| PK管理器（AllToolbox） | v1.6.5 | [下载 AllToolbox_1.6.5.apk](./release/AllToolbox_1.6.5.apk)（约 6.5MB） | [CHANGELOG.md](./CHANGELOG.md) |
+| PK管理器（AllToolbox） | v1.6.6 | [下载 AllToolbox_1.6.6.apk](./release/AllToolbox_1.6.6.apk)（约 6.5MB） | [CHANGELOG.md](./CHANGELOG.md) |
 | 易析 | v1.2.7 | [下载 易析_1.2.7.apk](./release/易析_1.2.7.apk)（约 18MB） | [CHANGELOG.md](./CHANGELOG.md) |
 
 ## PK管理器 是什么
@@ -29,7 +29,7 @@ PK管理器 是一款集 **文件管理、压缩解压、APK 处理、系统清�
 
 方式二：通过 GitHub Releases 页面获取（推荐，链接更稳定）：
 
-- [PK管理器 v1.6.5 Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.6.5)
+- [PK管理器 v1.6.6 Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.6.6)
 - [易析 v1.2.7 Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.2.7)
 
 ## 安装说明

@@ -213,9 +213,17 @@ public class MainActivity extends AppCompatActivity {
 
     /** 每次打开 APP 的公告弹窗，含可点击的下载链接。 */
     private void showAnnouncement() {
-        String message = "该软件为本UP制作，请勿盗用他人劳动成果，" +
-                "该软件为测试版本，后续将会优化以及更新。\n\n" +
-                "下载最新版本链接：\n" + UpdateChecker.DOWNLOAD_URL;
+        String message = "欢迎使用 PK管理器 " + UpdateChecker.localVersion(this) + "！\n\n" +
+                "本软件为本UP制作，请勿盗用或二次分发他人劳动成果，\n" +
+                "本软件为测试版本，后续将持续优化与更新。\n\n" +
+                "本次更新公告：\n" +
+                "· 用户协议与隐私政策补充联系邮箱\n" +
+                "· 启动弹窗顺序优化，启动自动检测 Shizuku 并引导授权\n" +
+                "· 应用文件夹显示对应应用图标\n" +
+                "· 压缩包支持在软件内直接解压，不跳转外部应用\n" +
+                "· 点击文件弹打开方式，长按文件弹操作菜单\n\n" +
+                "下载最新版本链接：\n" + UpdateChecker.DOWNLOAD_URL + "\n\n" +
+                "联系邮箱：gexinggzs@163.com";
         MaterialAlertDialogBuilder builder =
                 new MaterialAlertDialogBuilder(this)
                         .setTitle("公告")

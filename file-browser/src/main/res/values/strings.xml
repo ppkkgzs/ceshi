@@ -6,6 +6,12 @@
     <string name="toggle_view">切换列表/网格视图</string>
     <string name="empty_folder">此目录为空</string>
 
+    <string name="restricted_dir_hint">Android/data 与 Android/obb 受系统保护，普通权限无法读取。\n可选择 SAF 授权指定目录，或使用 Shizuku（无需 Root，以 adb/shell 权限访问）。</string>
+    <string name="restricted_saf_btn">SAF 授权目录</string>
+    <string name="restricted_shizuku_btn">Shizuku 授权</string>
+    <string name="shizuku_ok">Shizuku 已就绪</string>
+    <string name="shizuku_not_online">Shizuku 未运行，请先在 Shizuku 应用中启动并授权</string>
+
     <string name="act_copy">复制</string>
     <string name="act_cut">剪切</string>
     <string name="act_paste">粘贴</string>
@@ -25,6 +31,8 @@
     <string name="media_pause">暂停</string>
     <string name="media_error">无法播放该媒体文件</string>
 
+    <string name="switch_to_single">切到单栏</string>
+    <string name="switch_to_dual">切到双栏</string>
     <string name="title_dual_pane">双栏文件管理</string>
     <string name="copy_to_left">复制选中项到左栏</string>
     <string name="copy_to_right">复制选中项到右栏</string>

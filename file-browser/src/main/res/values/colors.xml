@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 双栏页面用到的公共颜色（与 app 模块保持一致） -->
+    <color name="white">#FFFFFF</color>
+    <color name="path_text">#1565C0</color>
+    <color name="bottom_bar_bg">#F7F7F7</color>
+</resources>
