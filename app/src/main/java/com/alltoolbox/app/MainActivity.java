@@ -21,11 +21,14 @@ import androidx.fragment.app.FragmentManager;
 import com.alltoolbox.archive.ArchiveActivity;
 import com.alltoolbox.cleanup.CleanupActivity;
 import com.alltoolbox.core.permission.Permissions;
+import com.alltoolbox.core.permission.ShizukuShell;
 import com.alltoolbox.core.setting.Settings;
 import com.alltoolbox.fbrowser.FileBrowserFragment;
 import com.alltoolbox.transfer.TransferActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
+
+import rikka.shizuku.Shizuku;
 
 /**
  * 主界面：侧边栏 + 内容区。
@@ -36,6 +39,21 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private TextView rootBadge;
+
+    /** 启动时申请 Shizuku 权限的请求码。 */
+    private static final int REQUEST_CODE_SHIZUKU_STARTUP = 10086;
+
+    /** Shizuku 权限申请结果监听。 */
+    private final Shizuku.OnRequestPermissionResultListener shizukuResultListener =
+            (requestCode, grantResult) -> {
+                if (requestCode != REQUEST_CODE_SHIZUKU_STARTUP) return;
+                runOnUiThread(() -> {
+                    if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                        android.widget.Toast.makeText(this,
+                                "Shizuku 已授权", android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +95,60 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
 
-        // 启动公告弹窗
+        // 启动公告 → 更新公告 → Shizuku 检测（按顺序弹出）
+        Shizuku.addRequestPermissionResultListener(shizukuResultListener);
         showAnnouncement();
+        checkUpdateQuietly(() -> checkShizukuOnStartup());
 
         setupBottomBar();
+    }
 
-        // 启动时检查更新
-        if (Settings.getBoolean(this, Settings.KEY_UPDATE_CHECK, true)) {
-            checkUpdateQuietly();
+    @Override
+    protected void onDestroy() {
+        Shizuku.removeRequestPermissionResultListener(shizukuResultListener);
+        super.onDestroy();
+    }
+
+    /**
+     * 打开软件时检测 Shizuku：未开启则弹出提醒，用户确认后前往授权。
+     * 仅在“支持 Shizuku 但尚未就绪”时打扰一次。
+     */
+    private void checkShizukuOnStartup() {
+        if (!ShizukuShell.isSupported()) return; // Android 6.0 以下不支持，跳过
+        if (ShizukuShell.isReady()) return;      // 已开启且已授权，无需提醒
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("检测到未开启 Shizuku")
+                .setMessage("部分功能（如访问 Android/data 等受限目录、解压受限目录内文件）"
+                        + "需要 Shizuku 权限。\n\n是否前往授权 Shizuku？")
+                .setNegativeButton("暂不", null)
+                .setPositiveButton("去授权", (d, w) -> gotoShizukuAuthorize())
+                .show();
+    }
+
+    /** 前往授权 Shizuku：已在线但未授权则发起申请；否则引导安装/启动 Shizuku。 */
+    private void gotoShizukuAuthorize() {
+        if (ShizukuShell.isOnline()) {
+            ShizukuShell.requestPermission(REQUEST_CODE_SHIZUKU_STARTUP);
+            return;
         }
+        // Shizuku 未运行：引导安装/启动 Shizuku 应用
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Shizuku 未启动")
+                .setMessage("请先在本机安装并启动 Shizuku（moe.shizuku.privileged.api），"
+                        + "并通过 adb/无线调试 或 Root 激活后，再回到本应用授权。\n\n"
+                        + "点击「打开 Shizuku」进行设置。")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("打开 Shizuku", (d, w) -> {
+                    try {
+                        startActivity(new Intent("android.intent.action.MAIN")
+                                .setPackage("moe.shizuku.privileged.api")
+                                .addCategory("android.intent.category.LAUNCHER"));
+                    } catch (Exception e) {
+                        // 未安装 Shizuku，跳转官网
+                        openBrowser("https://shizuku.rikka.app/");
+                    }
+                }).show();
     }
 
     /** 单栏底栏：上一页 / 下一页 / 添加 / 回到首页。 */
@@ -173,19 +236,30 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void checkUpdateQuietly() {
+    private void checkUpdateQuietly(Runnable onDone) {
+        if (!Settings.getBoolean(this, Settings.KEY_UPDATE_CHECK, true)) {
+            if (onDone != null) onDone.run();
+            return;
+        }
         UpdateChecker.checkAsync(this, (isLatest, tag, msg) -> {
-            if (!isLatest) {
-                runOnUiThread(() -> new MaterialAlertDialogBuilder(this)
-                        .setTitle("发现新版本")
-                        .setMessage("最新版本：" + tag
-                                + "\n当前版本：" + UpdateChecker.localVersion(this)
-                                + "\n\n点击「去下载」前往 GitHub 获取最新版本。")
-                        .setPositiveButton("去下载", (d, w) ->
-                                openBrowser(UpdateChecker.DOWNLOAD_URL))
-                        .setNegativeButton("以后再说", null)
-                        .show());
-            }
+            runOnUiThread(() -> {
+                if (!isLatest) {
+                    new MaterialAlertDialogBuilder(this)
+                            .setTitle("发现新版本")
+                            .setMessage("最新版本：" + tag
+                                    + "\n当前版本：" + UpdateChecker.localVersion(this)
+                                    + "\n\n点击「去下载」前往 GitHub 获取最新版本。")
+                            .setPositiveButton("去下载", (d, w) ->
+                                    openBrowser(UpdateChecker.DOWNLOAD_URL))
+                            .setNegativeButton("以后再说", null)
+                            .setOnDismissListener(d -> {
+                                if (onDone != null) onDone.run();
+                            })
+                            .show();
+                } else if (onDone != null) {
+                    onDone.run();
+                }
+            });
         });
     }
 
@@ -211,6 +285,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, CleanupActivity.class));
         } else if (id == R.id.nav_extract_apk) {
             startActivity(new Intent(this, ExtractApkActivity.class));
+        } else if (id == R.id.nav_internal_storage) {
+            // 内部内存：直接打开系统数据目录（受限目录走 SAF 授权）
+            switchTo(FileBrowserFragment.newInstance("/data"));
         } else if (id == R.id.nav_archive) {
             startActivity(new Intent(this, ArchiveActivity.class));
         } else if (id == R.id.nav_transfer) {

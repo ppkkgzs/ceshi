@@ -95,6 +95,15 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.Holder> {
         listener.onSelectionChanged(0);
     }
 
+    /** 单选某个位置：清空其余选择并选中该项（用于操作菜单里的“多选/单选”）。 */
+    public void selectSingle(int position) {
+        if (position < 0 || position >= items.size()) return;
+        selected.clear();
+        selected.add(position);
+        notifyDataSetChanged();
+        listener.onSelectionChanged(selected.size());
+    }
+
     // ---------- Holder ----------
 
     class Holder extends RecyclerView.ViewHolder {
@@ -122,7 +131,14 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.Holder> {
             // 图片/视频：缩略图已加载时优先展示，否则按类型占位
             FileUtil.FileKind kind = fi.getKind();
             boolean media = kind == FileUtil.FileKind.IMAGE || kind == FileUtil.FileKind.VIDEO;
-            if (fi.isDirectory() || !media || thumbMap.get(fi.getPath()) == null) {
+            if (fi.isDirectory() && isAppFolder(fi)) {
+                android.graphics.drawable.Drawable appIcon = resolveAppIcon(fi, itemView.getContext());
+                if (appIcon != null) {
+                    icon.setImageDrawable(appIcon);
+                } else {
+                    icon.setImageResource(R.drawable.ic_folder);
+                }
+            } else if (fi.isDirectory() || !media || thumbMap.get(fi.getPath()) == null) {
                 icon.setImageResource(iconFor(fi));
             } else {
                 icon.setImageBitmap(thumbMap.get(fi.getPath()));
@@ -149,13 +165,9 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.Holder> {
                     listener.onOpen(fi);
                 }
             });
+            // 长按：不自动进入多选，直接弹出操作菜单
             itemView.setOnLongClickListener(v -> {
-                if (!selected.contains(getBindingAdapterPosition())) {
-                    selected.add(getBindingAdapterPosition());
-                    notifyItemChanged(getBindingAdapterPosition());
-                }
                 listener.onLongPress(fi);
-                listener.onSelectionChanged(selected.size());
                 return true;
             });
             itemView.setTag(fi);
@@ -234,6 +246,32 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.Holder> {
             case DOCUMENT: return R.drawable.ic_document;
             case text: return R.drawable.ic_text;
             default: return R.drawable.ic_file;
+        }
+    }
+
+    /**
+     * 是否为“应用文件夹”：位于 Android/data、Android/obb、/data/app 下，
+     * 且文件夹名与已安装应用包名一致（此时显示该应用的图标）。
+     */
+    private static boolean isAppFolder(FileInfo fi) {
+        String parent = fi.getFile().getParent();
+        if (parent == null) return false;
+        String p = parent.endsWith("/") ? parent : parent + "/";
+        return p.contains("/Android/data/")
+                || p.contains("/Android/obb/")
+                || p.contains("/data/app/")
+                || p.contains("/data/user/");
+    }
+
+    /** 根据应用文件夹名（包名）解析已安装应用的图标；未安装返回 null。 */
+    private static android.graphics.drawable.Drawable resolveAppIcon(FileInfo fi,
+            android.content.Context context) {
+        if (!isAppFolder(fi)) return null;
+        try {
+            android.content.pm.PackageManager pm = context.getPackageManager();
+            return pm.getApplicationIcon(fi.getName());
+        } catch (Throwable t) {
+            return null;
         }
     }
 

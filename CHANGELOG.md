@@ -2,6 +2,16 @@
 
 ## PK管理器 [1.6.4] - 2026-08-31
 
+### 新增
+- 启动弹窗顺序优化：先弹出公告弹窗，再弹出更新公告
+- 打开软件时自动检测 Shizuku：未开启则弹出提醒，点击「去授权」前往授权
+- 应用文件夹显示对应应用的图标（Android/data、Android/obb、/data/app 下的已安装应用）
+- 解压在软件内完成（点击压缩包可直接解压到当前目录），不再跳转外部
+
+### 交互优化
+- 点击文件：弹出「打开方式」菜单（打开 / 详情 / 分享，压缩包额外提供解压）
+- 长按文件：弹出操作菜单（打开 / 详情 / 复制 / 剪切 / 重命名 / 删除 / 分享 / 压缩 / 解压 / 复制路径 / 多选）
+
 ### 修复
 - 修复 Shizuku 集成后启动即闪退的问题：`ShizukuProvider` 必须 `android:exported="true"`（Shizuku 官方要求，由 `android.permission.INTERACT_ACROSS_USERS_FULL` 保护安全），此前误设为 `false` 导致应用启动时 Provider 初始化崩溃
 - Shizuku 功能完整保留：以 adb/shell 权限访问 Android/data、Android/obb 等受限目录，无需 Root

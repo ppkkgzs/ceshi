@@ -1,6 +1,7 @@
 package com.alltoolbox.fbrowser;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alltoolbox.core.permission.Permissions;
 import com.alltoolbox.core.permission.Root;
+import com.alltoolbox.core.permission.ShizukuShell;
 import com.alltoolbox.fbrowser.model.FileInfo;
 import com.alltoolbox.fops.FileOpsController;
 import com.alltoolbox.fops.ShareUtil;
@@ -32,7 +34,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+
+import rikka.shizuku.Shizuku;
 
 /**
  * 文件浏览主界面。
@@ -48,6 +54,7 @@ public class FileBrowserFragment extends Fragment {
     private FileBrowserViewModel viewModel;
     private RecyclerView recycler;
     private TextView emptyView;
+    private View restrictedView;
     private LinearLayout pathBar;
     private LinearLayout selectionBar;
     private ImageButton toggleView;
@@ -57,10 +64,29 @@ public class FileBrowserFragment extends Fragment {
 
     private boolean gridMode = false;
 
+    /** 各目录最近一次的文件签名（名称+大小+修改时间），用于检测文件是否有增加/变化，无变化则不刷新。 */
+    private final java.util.Map<String, String> dirSignatures = new java.util.HashMap<>();
+
     // 权限请求
     private ActivityResultLauncher<String> storagePermissionLauncher;
     private ActivityResultLauncher<Intent> allFilesAccessLauncher;
     private ActivityResultLauncher<Uri> docTreeLauncher;
+
+    // Shizuku
+    private static final int REQUEST_CODE_SHIZUKU = 10086;
+    private final Shizuku.OnRequestPermissionResultListener shizukuResultListener =
+            (requestCode, grantResult) -> {
+                if (requestCode != REQUEST_CODE_SHIZUKU) return;
+                if (getActivity() == null) return;
+                getActivity().runOnUiThread(() -> {
+                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                        toast(getString(R.string.shizuku_ok));
+                        reload();
+                    } else {
+                        toast("Shizuku 授权被拒绝");
+                    }
+                });
+            };
 
     /** 底栏等宿主监听目录变化，用于自动切换图标动画。 */
     private Runnable pathChangeListener;
@@ -87,6 +113,7 @@ public class FileBrowserFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(FileBrowserViewModel.class);
+        Shizuku.addRequestPermissionResultListener(shizukuResultListener);
 
         storagePermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -100,12 +127,13 @@ public class FileBrowserFragment extends Fragment {
         docTreeLauncher = registerForActivityResult(
                 new ActivityResultContracts.OpenDocumentTree(),
                 treeUri -> {
-                    // SAF tree 目录读写：保存授权并挂载（本版通过权限门控后 File 直读）
+                    // SAF tree 目录读写：保存授权并重新加载
                     if (treeUri != null) {
                         getContext().getContentResolver()
                                 .takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION
                                         | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         toast("已授权目录");
+                        reload();
                     }
                 });
     }
@@ -119,13 +147,40 @@ public class FileBrowserFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Shizuku.removeRequestPermissionResultListener(shizukuResultListener);
+    }
+
+    /** 是否已显示过一次（首次 onResume 用于初始加载，后续从其它界面返回时做变化检测刷新）。 */
+    private boolean resumedOnce = false;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (resumedOnce) {
+            // 从其它界面返回（如提取安装包后）：检测文件是否有增加，有则刷新，无则不刷新
+            reload();
+        }
+        resumedOnce = true;
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         recycler = view.findViewById(R.id.file_recycler);
         emptyView = view.findViewById(R.id.empty_view);
+        restrictedView = view.findViewById(R.id.restricted_view);
         pathBar = view.findViewById(R.id.path_bar);
         selectionBar = view.findViewById(R.id.selection_bar);
         toggleView = view.findViewById(R.id.toggle_view);
         searchInput = view.findViewById(R.id.search_input);
+
+        // 受限目录授权入口：SAF 授权
+        view.findViewById(R.id.btn_saf_authorize)
+                .setOnClickListener(v -> Permissions.openDirectoryPicker(docTreeLauncher));
+        // 受限目录授权入口：Shizuku（无需 Root，adb/shell 权限）
+        view.findViewById(R.id.btn_shizuku_authorize)
+                .setOnClickListener(v -> authorizeShizuku());
 
         layoutManager = new GridLayoutManager(getContext(), 1);
         recycler.setLayoutManager(layoutManager);
@@ -167,11 +222,18 @@ public class FileBrowserFragment extends Fragment {
 
         // 数据观察
         viewModel.getFiles().observe(getViewLifecycleOwner(), list -> {
-            emptyView.setVisibility(list == null || list.isEmpty() ? View.VISIBLE : View.GONE);
+            updateEmptyUi(Boolean.TRUE.equals(viewModel.getRestricted().getValue()));
             if (recycler.getAdapter() != null && recycler.getAdapter() instanceof FileAdapter) {
                 ((FileAdapter) recycler.getAdapter()).submit(list);
             }
+            // 目录加载完成后，以当前磁盘状态作为变化检测的基准签名
+            String p = viewModel.getCurrentPath().getValue();
+            if (p != null) {
+                String sig = directorySignature(new File(p));
+                if (sig != null) dirSignatures.put(p, sig);
+            }
         });
+        viewModel.getRestricted().observe(getViewLifecycleOwner(), this::updateEmptyUi);
         viewModel.getCurrentPath().observe(getViewLifecycleOwner(), p -> buildPathBar(p));
 
         // 初始目录
@@ -192,13 +254,13 @@ public class FileBrowserFragment extends Fragment {
                 if (file.isDirectory()) {
                     viewModel.navigateTo(file.getFile());
                 } else {
-                    onOpenFile(file);
+                    showOpenMethodDialog(file);
                 }
             }
 
             @Override
             public void onLongPress(FileInfo file) {
-                // adapter 已把该项加入选择集
+                showFileOperationMenu(file);
             }
 
             @Override
@@ -206,6 +268,162 @@ public class FileBrowserFragment extends Fragment {
                 updateSelectionMode(count);
             }
         };
+    }
+
+    /** 点击文件：弹出“打开方式”弹窗（含下载链接样式，与图例一致）。 */
+    private void showOpenMethodDialog(FileInfo file) {
+        String ext = com.alltoolbox.core.file.FileUtil
+                .getExtension(file.getName()).toLowerCase();
+        boolean archive = ext.equals("zip") || ext.equals("7z")
+                || ext.equals("tar") || ext.equals("rar") || ext.equals("gz");
+        String[] items = archive
+                ? new String[]{"打开", "解压", "详情", "分享"}
+                : new String[]{"打开", "详情", "分享"};
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(file.getName())
+                .setItems(items, (d, w) -> {
+                    if (archive) {
+                        if (w == 0) {
+                            onOpenFile(file);
+                        } else if (w == 1) {
+                            decompressSingle(file.getFile());
+                        } else if (w == 2) {
+                            showFileDetailDialog(file);
+                        } else {
+                            ShareUtil.shareFiles(requireContext(),
+                                    java.util.Collections.singletonList(file.getFile()));
+                        }
+                    } else if (w == 0) {
+                        onOpenFile(file);
+                    } else if (w == 1) {
+                        showFileDetailDialog(file);
+                    } else {
+                        ShareUtil.shareFiles(requireContext(),
+                                java.util.Collections.singletonList(file.getFile()));
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .show();
+    }
+
+    /** 长按文件：弹出操作菜单（打开/详情/复制/剪切/重命名/删除/分享/多选）。 */
+    private void showFileOperationMenu(FileInfo file) {
+        final File f = file.getFile();
+        String[] items = {"打开", "详情", "复制", "剪切", "重命名",
+                "删除", "分享", "压缩", "解压", "复制路径", "多选"};
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(file.getName())
+                .setItems(items, (d, w) -> {
+                    switch (w) {
+                        case 0:
+                            if (file.isDirectory()) {
+                                viewModel.navigateTo(f);
+                            } else {
+                                onOpenFile(file);
+                            }
+                            break;
+                        case 1:
+                            showFileDetailDialog(file);
+                            break;
+                        case 2:
+                            FileOpsController.get().setClip(
+                                    java.util.Collections.singletonList(f), false);
+                            toast("已复制");
+                            break;
+                        case 3:
+                            FileOpsController.get().setClip(
+                                    java.util.Collections.singletonList(f), true);
+                            toast("已剪切");
+                            break;
+                        case 4:
+                            renameDialog(f);
+                            break;
+                        case 5:
+                            new MaterialAlertDialogBuilder(requireContext())
+                                    .setTitle("删除")
+                                    .setMessage("确定删除 " + f.getName() + " ？")
+                                    .setNegativeButton("取消", null)
+                                    .setPositiveButton("删除", (d2, w2) -> {
+                                        FileOpsController.get().delete(
+                                                java.util.Collections.singletonList(f));
+                                        reload();
+                                    }).show();
+                            break;
+                        case 6:
+                            ShareUtil.shareFiles(requireContext(),
+                                    java.util.Collections.singletonList(f));
+                            break;
+                        case 7:
+                            compressSelected(java.util.Collections.singletonList(f));
+                            break;
+                        case 8:
+                            decompressSingle(f);
+                            break;
+                        case 9:
+                            ShareUtil.copyPath(requireContext(), f.getAbsolutePath());
+                            break;
+                        case 10:
+                            enterMultiSelect(file);
+                            break;
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .show();
+    }
+
+    /** 详情弹窗：名称/大小/路径/时间 + 提示去打开或解压。 */
+    private void showFileDetailDialog(FileInfo file) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("名称：").append(file.getName()).append('\n');
+        sb.append("大小：").append(file.isDirectory() ? "文件夹"
+                : FileAdapter.formatSize(file.getSize())).append('\n');
+        sb.append("路径：").append(file.getPath()).append('\n');
+        sb.append("修改时间：")
+                .append(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm",
+                        java.util.Locale.getDefault())
+                        .format(new java.util.Date(file.getLastModified())));
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(file.isDirectory() ? "文件夹详情" : "文件详情")
+                .setMessage(sb.toString())
+                .setNegativeButton("关闭", null)
+                .setPositiveButton("打开", (d, w) -> {
+                    if (file.isDirectory()) viewModel.navigateTo(file.getFile());
+                    else onOpenFile(file);
+                })
+                .show();
+    }
+
+    /** 操作菜单“多选”：选中单项并进入多选模式。 */
+    private void enterMultiSelect(FileInfo file) {
+        List<FileInfo> cur = viewModel.getFiles().getValue();
+        if (cur == null) return;
+        int idx = -1;
+        for (int i = 0; i < cur.size(); i++) {
+            if (cur.get(i).getPath().equals(file.getPath())) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx >= 0) adapter.selectSingle(idx);
+    }
+
+    /** 重命名单个文件。 */
+    private void renameDialog(File f) {
+        final EditText et = new EditText(requireContext());
+        et.setText(f.getName());
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("重命名")
+                .setView(et)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", (d, w) -> {
+                    FileOpsController.get().rename(f, et.getText().toString());
+                    reload();
+                }).show();
+    }
+
+    /** 软件内解压单个压缩包到当前目录（不跳转外部）。 */
+    private void decompressSingle(File f) {
+        decompressSelected(java.util.Collections.singletonList(f));
     }
 
     private void updateSelectionMode(int count) {
@@ -680,6 +898,15 @@ public class FileBrowserFragment extends Fragment {
         }
     }
 
+    /** 在“普通空目录”与“受限目录需授权”两种空态展示间切换。 */
+    private void updateEmptyUi(Boolean restricted) {
+        List<FileInfo> cur = viewModel.getFiles().getValue();
+        boolean isEmpty = cur == null || cur.isEmpty();
+        boolean isRestricted = Boolean.TRUE.equals(restricted);
+        emptyView.setVisibility(isEmpty && !isRestricted ? View.VISIBLE : View.GONE);
+        restrictedView.setVisibility(isRestricted ? View.VISIBLE : View.GONE);
+    }
+
     private void requestStorageAccess() {
         if (Permissions.requiresAllFilesAccess()) {
             Permissions.requestAllFilesAccess(requireActivity(), allFilesAccessLauncher);
@@ -688,21 +915,85 @@ public class FileBrowserFragment extends Fragment {
         }
     }
 
+    /** Shizuku 授权入口：未运行提示先启动；未授权发起申请；已就绪直接刷新。 */
+    private void authorizeShizuku() {
+        if (!ShizukuShell.isSupported()) {
+            toast("Shizuku 需 Android 6.0 及以上");
+            return;
+        }
+        if (!ShizukuShell.isOnline()) {
+            toast(getString(R.string.shizuku_not_online));
+            return;
+        }
+        if (ShizukuShell.isGranted()) {
+            toast(getString(R.string.shizuku_ok));
+            reload();
+            return;
+        }
+        ShizukuShell.requestPermission(REQUEST_CODE_SHIZUKU);
+    }
+
     private boolean FilesWritable(File dir) {
         return dir.canWrite() || !Permissions.shouldHandleViaSaf(dir)
                 || Permissions.hasAllFilesAccess(requireContext());
     }
 
     private void reload() {
-        viewModel.loadDirectory(currentDir());
+        File dir = currentDir();
+        // 先检测目录文件是否有增加/变化：无变化则不刷新
+        if (!directoryChanged(dir)) return;
+        viewModel.loadDirectory(dir);
+    }
+
+    /**
+     * 检测当前目录文件是否发生变化（对比名称+大小+修改时间的签名）。
+     * 有增加/删除/改动时返回 true，无变化返回 false。
+     */
+    private boolean directoryChanged(File dir) {
+        String path = dir.getAbsolutePath();
+        String signature = directorySignature(dir);
+        if (signature == null) {
+            // 受限目录（Android/data、Android/obb）普通 File API 读取不到，
+            // 保守起见直接视为变化，交由 loadDirectory 重新加载。
+            return true;
+        }
+        String last = dirSignatures.get(path);
+        if (signature.equals(last)) {
+            return false; // 文件没有增加也没有变化，不刷新
+        }
+        dirSignatures.put(path, signature);
+        return true;
+    }
+
+    /** 计算目录内容签名：每个条目 名称|类型|大小|修改时间，排序后拼接。 */
+    private String directorySignature(File dir) {
+        File[] children = dir.listFiles();
+        if (children == null) return null;
+        StringBuilder sb = new StringBuilder();
+        File[] arr = children.clone();
+        Arrays.sort(arr, Comparator.comparing(File::getName));
+        for (File f : arr) {
+            if (!viewModel.isShowHidden() && (f.isHidden() || f.getName().startsWith("."))) continue;
+            sb.append(f.getName()).append('|')
+              .append(f.isDirectory() ? 'd' : 'f')
+              .append('|').append(f.length())
+              .append('|').append(f.lastModified()).append(';');
+        }
+        return sb.toString();
     }
 
     // ---------- 右上角三点菜单动作 ----------
 
     /** 刷新当前目录。 */
     public void refreshCurrent() {
-        reload();
+        forceReload();
         toast("已刷新");
+    }
+
+    /** 强制重新加载当前目录（跳过文件变化检测）。 */
+    private void forceReload() {
+        dirSignatures.remove(currentDir().getAbsolutePath());
+        reload();
     }
 
     /** 全选/取消全选当前目录。 */
@@ -803,7 +1094,7 @@ public class FileBrowserFragment extends Fragment {
 
     /** 带过渡动画的刷新。 */
     public void refreshWithAnimation() {
-        reload();
+        forceReload();
         animateContent();
     }
 
