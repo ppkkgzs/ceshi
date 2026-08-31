@@ -1,5 +1,24 @@
 # 更新日志
 
+## PK管理器 [1.6.3] - 2026-08-31
+
+### 新增（恢复 Shizuku 支持）
+- 重新集成 Shizuku：以 adb/shell 权限直接访问 Android/data、Android/obb 等受限目录，无需 Root
+- 受限目录页新增「Shizuku 授权」按钮：一键发起授权，授权后即可浏览受限目录内容
+- 受限目录内的删除 / 重命名 / 新建 / 复制 / 剪切粘贴 / 移动均通过 Shizuku shell 执行，稳定可靠
+- 未安装或未启动 Shizuku 时自动提示，不影响普通目录与 SAF 方式使用
+
+### 修复
+- 采用 Shizuku 官方 Provider + shell 命令（newProcess）方案，避免自定义 AIDL 服务导致的启动兼容性问题
+- 应用图标保持旧版纯色矢量图标，兼容 Android 5.0 及以上
+- 版本号更新为 1.6.3（versionCode 9），请覆盖安装本版
+
+### 下载
+- 安装包：`AllToolbox_1.6.3.apk`（约 6.5MB）
+- 支持 Android 5.0 及以上版本
+
+---
+
 ## PK管理器 [1.6.2] - 2026-08-31
 
 ### 修复
