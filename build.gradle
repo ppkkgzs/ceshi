@@ -10,8 +10,8 @@ ext {
     targetSdkVersion = 34
     compileSdkVersion = 34
 
-    versionName = "1.5.0"
-    versionCode = 5
+    versionName = "1.6.5"
+    versionCode = 11
 
     // release 签名：仅当本地存在 keystore.properties 时启用，避免克隆仓库缺密钥导致构建失败
     hasReleaseSigning = false
@@ -37,6 +37,9 @@ ext {
     lifecycleVersion = "2.7.0"
     okioVersion = "3.9.0"
     apacheCommonsCompress = "1.26.2"
+
+    // Shizuku：以 adb/shell 权限访问 Android/data、Android/obb 等受限目录（无需 Root）
+    shizukuVersion = "13.1.5"
 }
 
 // 所有 Android 模块：release 不再被 lint Vital 阻断，保证可产出发布包
