@@ -26,8 +26,20 @@ public final class UpdateChecker {
     public static final String DOWNLOAD_URL =
             "https://github.com/ppkkgzs/ceshi/tree/main/release";
 
+    /** Release 安装包直链前缀（不带 tag 与文件名，见 {@link #apkDirectUrl}）。 */
+    static final String RELEASE_BASE =
+            "https://github.com/ppkkgzs/ceshi/releases/download/%s/AllToolbox_%s.apk";
+
     private static final String RELEASES_API =
             "https://api.github.com/repos/ppkkgzs/ceshi/releases/latest";
+
+    /** 由 tag（如 v1.6.6）构造安装包直接下载链接。 */
+    public static String apkDirectUrl(String tag) {
+        if (tag == null) tag = "";
+        String v = tag;
+        if (v.toLowerCase(Locale.ROOT).startsWith("v")) v = v.substring(1);
+        return String.format(RELEASE_BASE, tag, v);
+    }
 
     private UpdateChecker() {
     }

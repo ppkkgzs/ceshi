@@ -253,11 +253,13 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 if (!isLatest) {
                     new MaterialAlertDialogBuilder(this)
-                            .setTitle("发现新版本")
-                            .setMessage("最新版本：" + tag
-                                    + "\n当前版本：" + UpdateChecker.localVersion(this)
-                                    + "\n\n点击「去下载」前往 GitHub 获取最新版本。")
-                            .setPositiveButton("去下载", (d, w) ->
+                            .setTitle("发现新版本 " + tag)
+                            .setMessage("当前版本：" + UpdateChecker.localVersion(this)
+                                    + "\n优化建议、Bug 反馈请发邮件：gexinggzs@163.com\n\n"
+                                    + "点击「直接更新」将在应用内下载并自动进入安装。")
+                            .setPositiveButton("直接更新", (d, w) ->
+                                    Updater.downloadAndInstall(this, tag))
+                            .setNeutralButton("去下载", (d, w) ->
                                     openBrowser(UpdateChecker.DOWNLOAD_URL))
                             .setNegativeButton("以后再说", null)
                             .setOnDismissListener(d -> {
