@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.alltoolbox.core.LocaleUtil;
 import com.alltoolbox.core.setting.Settings;
 import com.alltoolbox.core.theme.ThemeManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -263,7 +264,9 @@ public class SettingsActivity extends AppCompatActivity {
                     getSharedPreferences(Settings.PREFS, MODE_PRIVATE)
                             .edit().putString(Settings.KEY_LANGUAGE, v).commit();
                     d.dismiss();
-                    // 直接退出应用，重新打开后即应用新语言
+                    // 先即时应用新语言（AppCompat 会重建界面），再退出
+                    LocaleUtil.applyToApp(SettingsActivity.this);
+                    // 直接退出应用，重新打开后即切换为所选语言
                     restartToApplyLanguage();
                 })
                 .setNegativeButton("取消", null)

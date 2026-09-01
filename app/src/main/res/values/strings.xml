@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PK管理器</string>
+    <string name="app_name">PK管理器 Beta</string>
 
     <!-- 侧边栏 -->
     <string name="nav_home">文件</string>

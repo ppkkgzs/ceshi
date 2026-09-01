@@ -1,7 +1,6 @@
 package com.alltoolbox.app;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.alltoolbox.core.AppContext;
 import com.alltoolbox.core.LocaleUtil;
@@ -13,16 +12,12 @@ import com.alltoolbox.core.theme.ThemeManager;
  */
 public class ToolboxApplication extends Application {
 
-    /** 启动时即应用所选语言，使全局资源按该语言解析。 */
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(LocaleUtil.wrap(base));
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
         AppContext.init(this);
+        // 启动时即按所选语言配置应用，使每个 AppCompatActivity 的界面文本正确解析
+        LocaleUtil.applyToApp(this);
         ThemeManager.apply(this);
     }
 }
