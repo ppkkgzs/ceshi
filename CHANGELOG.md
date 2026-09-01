@@ -1,5 +1,21 @@
 # 更新日志
 
+## PK管理器 [1.8.8.1] - 2026-09-01（正式版 Stable）
+
+正式版小幅更新，版本号 1.8.8.1（versionCode 112），正式版签名（alltoolbox.jks），包名 `com.alltoolbox`。
+
+### 修复
+- **公告链接补全**：启动公告与 About 中的开源仓库链接补全为完整网址 `https://github.com/ppkkgzs/ceshi`
+
+### 版本
+- 版本号升至 1.8.8.1（versionCode 112），使用正式版签名密钥库（alltoolbox.jks），包名 `com.alltoolbox`
+
+### 下载
+- 安装包：`AllToolbox_1.8.8.1.apk`（约 11MB，含 7-Zip 原生库）
+- 支持 Android 5.0 及以上版本
+
+---
+
 ## PK管理器 [1.8.8] - 2026-09-01（正式版 Stable）
 
 正式版更新，版本号 1.8.8（versionCode 111），正式版签名（alltoolbox.jks），包名 `com.alltoolbox`。
