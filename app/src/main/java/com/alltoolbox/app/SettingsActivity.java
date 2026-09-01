@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -250,9 +251,19 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void showPrivacy() {
         String content = getString(R.string.privacy_text);
+        ScrollView scrollView = new ScrollView(this);
+        TextView textView = new TextView(this);
+        int padding = dp(16);
+        textView.setPadding(padding, padding/2, padding, padding);
+        textView.setText(content);
+        textView.setTextSize(14);
+        scrollView.addView(textView);
+        int maxH = (int) (getResources().getDisplayMetrics().heightPixels * 0.6f);
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, maxH));
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.privacy_title)
-                .setMessage(content)
+                .setView(scrollView)
                 .setPositiveButton("我已阅读并同意", null)
                 .show();
     }
