@@ -5,14 +5,12 @@ import android.content.pm.PackageManager;
 
 import com.alltoolbox.core.task.TaskExecutor;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -21,7 +19,7 @@ import java.util.Locale;
  * GitHub 版本检测与公告。
  *
  * 公告：应用启动时展示（见 MainActivity）。
- * 版本：请求 GitHub Releases API 与本地 versionName 比较，回调给出是否更新。
+ * 版本：请求 GitHub 标签订阅源（tags.atom，无 API 限流）与本地 versionName 比较，回调给出是否更新。
  */
 public final class UpdateChecker {
 
@@ -41,16 +39,32 @@ public final class UpdateChecker {
     static final String BETA_RELEASE_BASE =
             "https://github.com/ppkkgzs/ceshi-beta/releases/download/%s/AllToolbox_%s.apk";
 
-    private static final String RELEASES_API =
-            "https://api.github.com/repos/ppkkgzs/ceshi/releases/latest";
+    /** 正式版 Tag 列表（Atom feed，无 API 限流），供「选择版本下载」与最新版检测使用。 */
+    private static final String STABLE_TAGS_ATOM =
+            "https://github.com/ppkkgzs/ceshi/tags.atom";
 
-    /** 正式版本列表（不含预发行/草稿），供「选择版本下载」使用。 */
-    private static final String STABLE_RELEASES_API =
-            "https://api.github.com/repos/ppkkgzs/ceshi/releases?per_page=100&page=1";
+    /** Beta 版 Tag 列表（Atom feed，无 API 限流）。 */
+    private static final String BETA_TAGS_ATOM =
+            "https://github.com/ppkkgzs/ceshi-beta/tags.atom";
 
-    /** 拉取最近若干 Release（含预发行），供 Beta 通道选最高 tag。 */
-    private static final String ALL_RELEASES_API =
-            "https://api.github.com/repos/ppkkgzs/ceshi-beta/releases?per_page=100&page=1";
+    /**
+     * jsDelivr CDN 版版本列表（{@code version.json}，含 {@code stable} / {@code beta} 两个数组）。
+     * 直连 GitHub Atom feed 失败（用户网络无法连接 GitHub）时回退到该源。
+     */
+    public static final String CDN_VERSION_JSON =
+            "https://cdn.jsdelivr.net/gh/ppkkgzs/ceshi@main/version.json";
+
+    /** GitHub 直连下载镜像前缀（ghfast.top），下载原始直连超时/失败时回退。 */
+    private static final String MIRROR_PREFIX = "https://ghfast.top/";
+
+    /** 将 GitHub 原始直链转为镜像直链；非 GitHub 链接原样返回。下载回退用。 */
+    public static String mirrorUrl(String githubUrl) {
+        if (githubUrl == null) return null;
+        if (githubUrl.startsWith("https://github.com/")) {
+            return MIRROR_PREFIX + githubUrl;
+        }
+        return githubUrl;
+    }
 
     /** 由 tag（如 v1.6.6）构造正式版安装包直接下载链接。 */
     public static String apkDirectUrl(String tag) {
@@ -104,67 +118,139 @@ public final class UpdateChecker {
     public static void fetchAllVersionsAsync(Context ctx, AllVersionsCallback cb) {
         TaskExecutor.get().io().execute(() -> {
             try {
-                List<VersionInfo> stable = fetchVersionInfos(STABLE_RELEASES_API, false);
-                List<VersionInfo> beta = fetchVersionInfos(ALL_RELEASES_API, true);
+                List<VersionInfo> stable = fetchVersionInfos(CHANNEL_STABLE, false);
+                List<VersionInfo> beta = fetchVersionInfos(CHANNEL_BETA, true);
                 if (cb != null) cb.onResult(stable, beta, null);
             } catch (Exception e) {
                 if (cb != null) {
                     cb.onResult(java.util.Collections.emptyList(),
-                            java.util.Collections.emptyList(), "无法连接 GitHub：" + e.getMessage());
+                            java.util.Collections.emptyList(), "无法连接更新源：" + e.getMessage());
                 }
             }
         });
     }
 
+    private static final String CHANNEL_STABLE = "stable";
+    private static final String CHANNEL_BETA = "beta";
+
     /**
-     * 从 Releases 列表拉取版本信息（标签 + 真实安装包直链）。
+     * 从 tag 列表拉取版本信息（标签 + 安装包直链）。
+     * 先直连 GitHub 原子订阅源（tags.atom，无 API 限流）；连接失败时回退到
+     * jsDelivr CDN 的 {@code version.json}，保证用户网络无法连接 GitHub 时仍能检测。
      *
-     * @param prereleaseOnly true 时仅保留预发行（Beta）版；false 时排除预发行（正式版）。
+     * @param channel 通道：{@code "stable"} 或 {@code "beta"}。
+     * @param beta    下载链接归属的通道（true = ceshi-beta）。
      */
-    private static List<VersionInfo> fetchVersionInfos(String api, boolean prereleaseOnly) throws Exception {
-        boolean beta = prereleaseOnly;
-        HttpURLConnection conn = (HttpURLConnection) new URL(api).openConnection();
+    private static List<VersionInfo> fetchVersionInfos(String channel, boolean beta) throws Exception {
+        List<String> tags = fetchTagsWithFallback(channel);
+        List<VersionInfo> out = new ArrayList<>();
+        for (String tag : tags) {
+            if (tag.isEmpty()) continue;
+            String url = beta ? apkDirectUrlBeta(tag) : apkDirectUrl(tag);
+            out.add(new VersionInfo(tag, url, beta));
+        }
+        return out;
+    }
+
+    /**
+     * 拉取指定通道的 tag 列表：优先直连 GitHub Atom feed，失败则回退到 jsDelivr CDN 的 version.json。
+     */
+    private static List<String> fetchTagsWithFallback(String channel) throws Exception {
+        String atom = CHANNEL_BETA.equals(channel) ? BETA_TAGS_ATOM : STABLE_TAGS_ATOM;
+        try {
+            return fetchTags(atom);
+        } catch (Exception directErr) {
+            try {
+                return fetchTagsFromCdn(channel);
+            } catch (Exception cdnErr) {
+                throw new IOException("直连(Atom)与 CDN(version.json) 均失败：" + cdnErr.getMessage());
+            }
+        }
+    }
+
+    /**
+     * 从 jsDelivr CDN 的 {@code version.json} 拉取指定通道的 tag 列表。
+     * json 形如 {@code {"stable":["v1.8.8",...],"beta":[...]}}。
+     */
+    private static List<String> fetchTagsFromCdn(String channel) throws Exception {
+        HttpURLConnection conn = (HttpURLConnection) new URL(CDN_VERSION_JSON).openConnection();
         conn.setConnectTimeout(8000);
         conn.setReadTimeout(8000);
-        conn.setRequestProperty("Accept", "application/vnd.github+json");
         conn.setRequestProperty("User-Agent", "AllToolbox");
         int code = conn.getResponseCode();
         if (code != 200) throw new IOException(code);
         InputStream in = conn.getInputStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in));
+        BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         StringBuilder sb = new StringBuilder();
         String line;
         while ((line = r.readLine()) != null) sb.append(line);
         r.close();
-        JSONArray arr = new JSONArray(sb.toString());
-        List<VersionInfo> out = new ArrayList<>();
-        for (int i = 0; i < arr.length(); i++) {
-            JSONObject rel = arr.optJSONObject(i);
-            if (rel == null) continue;
-            if (rel.optBoolean("draft", false)) continue;
-            if (rel.optBoolean("prerelease", false) != prereleaseOnly) continue;
-            String tag = rel.optString("tag_name", "");
-            if (tag.isEmpty()) continue;
-            // 取第一个 .apk 资产的真实直链；取不到则退化为按 tag 拼接（保持兼容）
-            String url = null;
-            JSONArray assets = rel.optJSONArray("assets");
-            if (assets != null) {
-                for (int j = 0; j < assets.length(); j++) {
-                    JSONObject a = assets.optJSONObject(j);
-                    if (a == null) continue;
-                    String nm = a.optString("name", "");
-                    if (nm.toLowerCase(Locale.ROOT).endsWith(".apk")) {
-                        url = a.optString("browser_download_url", null);
-                        break;
-                    }
-                }
-            }
-            if (url == null) {
-                url = beta ? apkDirectUrlBeta(tag) : apkDirectUrl(tag);
-            }
-            out.add(new VersionInfo(tag, url, beta));
+        List<String> tags = new ArrayList<>();
+        parseChannel(sb.toString(), channel, tags);
+        if (tags.isEmpty()) throw new IOException("CDN 版本列表为空");
+        return tags;
+    }
+
+    /** 轻量 JSON 数组解析（避免额外依赖）。 */
+    private static void parseChannel(String json, String channel, List<String> tags) {
+        String key = "\"" + channel + "\"";
+        int k = json.indexOf(key);
+        if (k < 0) return;
+        int colon = json.indexOf(':', k);
+        if (colon < 0) return;
+        int open = json.indexOf('[', colon);
+        if (open < 0) return;
+        int close = json.indexOf(']', open);
+        if (close < 0) return;
+        String body = json.substring(open + 1, close);
+        int idx = 0;
+        while (true) {
+            int q = body.indexOf('"', idx);
+            if (q < 0) break;
+            int e = body.indexOf('"', q + 1);
+            if (e < 0) break;
+            String tag = body.substring(q + 1, e).trim();
+            if (!tag.isEmpty()) tags.add(tag);
+            idx = e + 1;
         }
-        return out;
+    }
+
+    /**
+     * 从 Atom feed 拉取全部 Release 标签（按时间倒序，最新在前）。
+     * 从每条 entry 的 {@code <id>tag:github.com,2008:Repository/<仓库ID>/<tag></id>} 中截取 tag。
+     */
+    private static List<String> fetchTags(String feedUrl) throws Exception {
+        HttpURLConnection conn = (HttpURLConnection) new URL(feedUrl).openConnection();
+        conn.setConnectTimeout(8000);
+        conn.setReadTimeout(8000);
+        conn.setRequestProperty("User-Agent", "AllToolbox");
+        int code = conn.getResponseCode();
+        if (code != 200) throw new IOException(code);
+        InputStream in = conn.getInputStream();
+        BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) sb.append(line);
+        r.close();
+        List<String> tags = new ArrayList<>();
+        String xml = sb.toString();
+        int idx = 0;
+        while (true) {
+            int s = xml.indexOf("<id>", idx);
+            if (s < 0) break;
+            s += "<id>".length();
+            int e = xml.indexOf("</id>", s);
+            if (e < 0) break;
+            String id = xml.substring(s, e).trim();
+            idx = e + "</id>".length();
+            // 跳过 feed 级的 <id>，只保留仓库条目：.../Repository/<id>/<tag>
+            if (!id.contains("Repository/")) continue;
+            int slash = id.lastIndexOf('/');
+            if (slash < 0) continue;
+            String tag = id.substring(slash + 1).trim();
+            if (!tag.isEmpty()) tags.add(tag);
+        }
+        return tags;
     }
 
     /** 是否为 Beta 版版本名（版本串中带「beta」字样）。 */
@@ -204,23 +290,7 @@ public final class UpdateChecker {
     }
 
     private static String fetchLatestTag() throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(RELEASES_API).openConnection();
-        conn.setConnectTimeout(8000);
-        conn.setReadTimeout(8000);
-        conn.setRequestProperty("Accept", "application/vnd.github+json");
-        conn.setRequestProperty("User-Agent", "AllToolbox");
-        int code = conn.getResponseCode();
-        if (code != 200) throw new IOException(code);
-        InputStream in = conn.getInputStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) sb.append(line);
-        r.close();
-        JSONObject obj = new JSONObject(sb.toString());
-        String tag = obj.optString("tag_name", "");
-        if (tag.isEmpty()) throw new IOException("仓库 Release 为空");
-        return tag;
+        return pickHighestTag(fetchTagsWithFallback(CHANNEL_STABLE));
     }
 
     /** 异步检查 Beta 测试版更新；异常也走回调（message 携带原因）。 */
@@ -244,36 +314,21 @@ public final class UpdateChecker {
     }
 
     /**
-     * 从 Releases 列表里选出最新的预发行（Prerelease）版 tag。
-     * 预发型即测试版（Beta），正式版不带「beta」字样。
+     * 从 Atom 标签列表中选出最高的 tag 作为最新版。
      */
     private static String fetchLatestBetaTag() throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(ALL_RELEASES_API).openConnection();
-        conn.setConnectTimeout(8000);
-        conn.setReadTimeout(8000);
-        conn.setRequestProperty("Accept", "application/vnd.github+json");
-        conn.setRequestProperty("User-Agent", "AllToolbox");
-        int code = conn.getResponseCode();
-        if (code != 200) throw new IOException(code);
-        InputStream in = conn.getInputStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) sb.append(line);
-        r.close();
-        JSONArray arr = new JSONArray(sb.toString());
+        return pickHighestTag(fetchTagsWithFallback(CHANNEL_BETA));
+    }
+
+    /** 从 tag 列表选出数值最大者；无标签则抛异常。 */
+    private static String pickHighestTag(List<String> tags) throws Exception {
         String best = "";
-        for (int i = 0; i < arr.length(); i++) {
-            JSONObject rel = arr.optJSONObject(i);
-            if (rel == null) continue;
-            // 只认预发行（Beta）版本
-            if (!rel.optBoolean("prerelease", false)) continue;
-            if (rel.optBoolean("draft", false)) continue;
-            String tag = rel.optString("tag_name", "");
-            if (tag.isEmpty()) continue;
-            if (compareVersions(tag, best)) best = tag;
+        for (String t : tags) {
+            if (t != null && t.length() > 0 && compareVersions(t, best)) {
+                best = t;
+            }
         }
-        if (best.isEmpty()) throw new IOException("仓库暂无 Beta 预发行版本");
+        if (best.isEmpty()) throw new IOException("仓库 Release 为空");
         return best;
     }
 

@@ -1,5 +1,25 @@
 # 更新日志
 
+## PK管理器 [1.8.8] - 2026-09-01（正式版 Stable）
+
+正式版更新，版本号 1.8.8（versionCode 111），正式版签名（alltoolbox.jks），包名 `com.alltoolbox`。
+
+### 修复
+- **版本检测无法连接 GitHub（超时/HTTP 403）**：原先直连 `github.com` 的 `tags.atom`，在部分网络环境下连接超时或触发 `api.github.com` 限流（403）；现改为「直连 GitHub → 镜像/CDN 回退」——
+  - 版本检测：直连 Atom feed 失败时自动回退到 jsDelivr CDN 上的 `version.json`（`cdn.jsdelivr.net`），仍能稳定检测正式版与 Beta 版最新版本
+  - 版本选择下载：沿用同一回退链，列表来自 CDN 或 GitHub 均可
+  - 安装包下载：直连 `github.com` 失败时自动改用镜像 `ghfast.top` 代理下载，解决「无法连接 GitHub 下载不了更新」的问题
+- **选择版本下载**：仅列出严格高于当前安装版本的选项，避免出现旧版本或相同版本
+
+### 版本
+- 版本号升至 1.8.8（versionCode 111），使用正式版签名密钥库（alltoolbox.jks），包名 `com.alltoolbox`
+
+### 下载
+- 安装包：`AllToolbox_1.8.8.apk`（约 11MB，含 7-Zip 原生库）
+- 支持 Android 5.0 及以上版本
+
+---
+
 ## PK管理器 [1.8.7] - 2026-09-01（正式版 Stable）
 
 正式版更新，版本号 1.8.7（versionCode 110），正式版签名（alltoolbox.jks），包名 `com.alltoolbox`。

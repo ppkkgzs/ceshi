@@ -163,6 +163,33 @@ public final class Updater {
     /** 应用自身把直链下载到目标文件（带进度、速度、预计剩余时长统计）。 */
     private static void download(String url, File target, String selfVersion,
                                  Context ctx, DownloadProgressListener listener) throws Exception {
+        String[] candidates = downloadCandidates(url);
+        Exception last = null;
+        for (String candidate : candidates) {
+            try {
+                downloadOnce(candidate, target, selfVersion, ctx, listener);
+                return;
+            } catch (Exception e) {
+                // 直连失败（用户网络无法连接 GitHub）时回退到镜像（ghfast.top）
+                last = e;
+            }
+        }
+        if (last != null) throw last;
+        throw new java.io.IOException(ctx.getString(R.string.update_download_failed, "无法连接下载源"));
+    }
+
+    /** 构造下载候选链接：原始直链优先，失败后再试镜像。 */
+    private static String[] downloadCandidates(String url) {
+        if (url == null) return new String[0];
+        String mirror = UpdateChecker.mirrorUrl(url);
+        if (mirror != null && !mirror.equals(url)) {
+            return new String[]{url, mirror};
+        }
+        return new String[]{url};
+    }
+
+    private static void downloadOnce(String url, File target, String selfVersion,
+                                     Context ctx, DownloadProgressListener listener) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setConnectTimeout(15000);
         conn.setReadTimeout(15000);
