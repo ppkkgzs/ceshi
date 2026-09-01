@@ -1,0 +1,28 @@
+// file-ops 模块 —— 文件操作（多选、复制/剪切/粘贴、重命名、批量重命名、属性）
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.alltoolbox.fops'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(':core')
+
+    implementation "androidx.core:core:1.13.1"
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
+    implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:${rootProject.ext.lifecycleVersion}"
+    implementation "androidx.lifecycle:lifecycle-livedata:${rootProject.ext.lifecycleVersion}"
+}

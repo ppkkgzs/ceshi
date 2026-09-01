@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".ImagePreviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MediaPlayActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false" />
+        <activity
+            android:name=".DualPaneActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ZipBrowserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".shell.ShellConsoleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ftp.FtpActivity"
+            android:exported="false" />
+    </application>
+</manifest>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 整个文件系统：让任意路径下的文件都能被系统其它应用打开（含 root 浏览 /system、/data 等） -->
+    <root-path
+        name="root"
+        path="." />
+    <!-- 外部存储根：sdcard 的读写内容 -->
+    <external-path
+        name="external"
+        path="." />
+    <!-- 缓存与内部存储 -->
+    <cache-path
+        name="cache"
+        path="." />
+    <files-path
+        name="files"
+        path="." />
+    <external-files-path
+        name="ext_files"
+        path="." />
+</paths>

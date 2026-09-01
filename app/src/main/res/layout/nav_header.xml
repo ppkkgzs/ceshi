@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/nav_header_bg"
+    android:padding="18dp">
+
+    <ImageView
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_launcher"
+        android:contentDescription="@string/app_name"
+        android:background="@drawable/nav_icon_circle"
+        android:padding="10dp" />
+
+    <TextView
+        android:id="@+id/nav_app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="@string/app_name"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/nav_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="文件管理 · 压缩解压 · APK 工具 · 空间清理"
+        android:textColor="#E0FFFFFF"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/nav_root_badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="已获 Root"
+        android:textSize="12sp"
+        android:textColor="#FFB300"
+        android:visibility="gone" />
+</LinearLayout>

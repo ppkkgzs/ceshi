@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- APK 包详情 -->
+    <string name="apk_info_title">APK 包详情</string>
+    <string name="apk_info_pick">选择 APK 文件</string>
+    <string name="apk_info_hint">点击上方按钮选择 APK，解析包详细信息。</string>
+    <string name="apk_info_parsing">正在解析 %1$s …</string>
+    <string name="apk_info_empty_list">尚未选择 APK</string>
+
+    <!-- 字段标签 -->
+    <string name="apk_info_app_name">应用名</string>
+    <string name="apk_info_package">包名</string>
+    <string name="apk_info_version_name">版本名</string>
+    <string name="apk_info_version_code">版本号</string>
+    <string name="apk_info_target_sdk">targetSdk</string>
+    <string name="apk_info_min_sdk">minSdk</string>
+    <string name="apk_info_path">安装路径</string>
+    <string name="apk_info_size">APK 文件大小</string>
+    <string name="apk_info_sign_sha1">签名 SHA-1</string>
+    <string name="apk_info_sign_md5">签名 MD5</string>
+    <string name="apk_info_permissions">权限列表</string>
+
+    <string name="apk_info_none">无</string>
+    <string name="apk_info_read_fail">读取 APK 失败: %1$s</string>
+</resources>

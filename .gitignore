@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+.DS_Store
+# VCS 兜底
+.placeholder
+.classpath
+.project
+
+# 沙箱/本机构建产物，不入库
+gradle.properties
+*.apk
+*.keystore
+keystore.properties
+keystore/
+.superpowers/
+.trae-html-share-packages/
+captures/
+.externalNativeBuild/
+.cxx/
+# 签名密钥库，不入库
+*.jks

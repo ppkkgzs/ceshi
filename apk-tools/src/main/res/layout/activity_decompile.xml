@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <Button
+            android:id="@+id/dc_pick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="选择 APK 反编译" />
+
+        <TextView
+            android:id="@+id/dc_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="6dp"
+            android:text="尚未选择 APK"
+            android:textColor="#666666"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="本机反编译依赖 java 运行时；若设备没有 java，将生成 PC 协作命令。加固 APK 无法完整反编译。"
+            android:textColor="#E67E22"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="8dp">
+
+            <Button
+                android:id="@+id/dc_decompile"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="反编译" />
+
+            <Button
+                android:id="@+id/dc_build"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="回编译" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="工作目录 / 日志"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/dc_out"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:gravity="top|start"
+            android:fontFamily="monospace"
+            android:scrollbars="vertical"
+            android:textSize="12sp" />
+    </LinearLayout>
+</ScrollView>

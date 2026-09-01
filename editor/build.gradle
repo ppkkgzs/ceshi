@@ -1,0 +1,28 @@
+// editor 模块 —— 内置查看&编辑器（文本/代码、十六进制、对比、高亮）
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.alltoolbox.editor'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(':core')
+
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
+    implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:${rootProject.ext.lifecycleVersion}"
+    implementation "androidx.lifecycle:lifecycle-livedata:${rootProject.ext.lifecycleVersion}"
+    implementation "androidx.recyclerview:recyclerview:${rootProject.ext.recyclerviewVersion}"
+}

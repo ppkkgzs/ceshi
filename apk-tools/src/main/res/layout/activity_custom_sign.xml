@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <Button
+            android:id="@+id/cs_pick_apk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="选择 APK 文件" />
+
+        <TextView
+            android:id="@+id/cs_apk_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            android:text="尚未选择 APK"
+            android:textColor="#666666"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/cs_pick_keystore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="选择密钥库 (.keystore/.jks/.p12)" />
+
+        <TextView
+            android:id="@+id/cs_keystore_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:paddingBottom="10dp"
+            android:text="尚未选择密钥库"
+            android:textColor="#666666"
+            android:textSize="13sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="密钥库密码 (store pass)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/cs_store_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="密钥别名 (alias)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/cs_alias"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="密钥密码 (key pass)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/cs_key_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/cs_sign"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="开始签名" />
+
+        <TextView
+            android:id="@+id/cs_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:paddingTop="10dp"
+            android:text="选择 APK 与自己生成的密钥库，填写密码与别名后点击开始签名。"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/cs_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:enabled="false"
+            android:text="保存签名结果 APK" />
+    </LinearLayout>
+</ScrollView>

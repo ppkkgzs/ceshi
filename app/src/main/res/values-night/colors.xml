@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 深色模式：文字变白、背景变暗 -->
+    <color name="path_text">#E1F0FF</color>
+    <color name="bottom_bar_bg">#1F242A</color>
+    <color name="section_text">#8AB4F8</color>
+
+</resources>

@@ -1,0 +1,26 @@
+// security 模块 —— AES 加密保险箱、安全个性化
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.alltoolbox.security'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(':core')
+
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
+    implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
+    implementation "androidx.recyclerview:recyclerview:${rootProject.ext.recyclerviewVersion}"
+}

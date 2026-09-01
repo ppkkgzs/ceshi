@@ -1,0 +1,27 @@
+// cleanup 模块 —— 清理工具（书签、回收站、大文件/重复文件扫描、文件筛选）
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.alltoolbox.cleanup'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(':core')
+
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
+    implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
+    implementation "androidx.recyclerview:recyclerview:${rootProject.ext.recyclerviewVersion}"
+    implementation "androidx.documentfile:documentfile:1.0.1"
+}

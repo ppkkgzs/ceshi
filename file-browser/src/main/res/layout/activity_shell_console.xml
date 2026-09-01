@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#1E1E1E">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/shell_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#2D2D2D"
+        app:titleTextColor="@color/white"
+        app:subtitleTextColor="#CCFFFFFF" />
+
+    <!-- 参数输入行 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/shell_args"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="脚本参数（可选，用空格分隔）"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="#88FFFFFF"
+            android:background="@drawable/shell_input_bg"
+            android:padding="8dp"
+            android:textSize="13sp"
+            android:fontFamily="monospace" />
+
+        <!-- 操作按钮 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="8dp">
+
+            <Button
+                android:id="@+id/shell_run"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="运行"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/shell_stop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="停止"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/shell_copy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="复制日志"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/shell_clear"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="清空"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/shell_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <TextView
+            android:id="@+id/shell_output"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:fontFamily="monospace"
+            android:textSize="13sp"
+            android:textColor="@color/white"
+            android:textIsSelectable="true" />
+    </ScrollView>
+</LinearLayout>

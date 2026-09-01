@@ -1,0 +1,37 @@
+// archive 模块 —— 压缩解压（ZIP/7Z/RAR、包内编辑、Zipalign）
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.alltoolbox.archive'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(':core')
+
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
+    implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
+    implementation "androidx.documentfile:documentfile:1.0.1"
+
+    // Commons Compress 支持 ZIP / 7Z / RAR 解压
+    implementation "org.apache.commons:commons-compress:${rootProject.ext.apacheCommonsCompress}"
+    // 7Z LZMA2 解压编码器
+    implementation "org.tukaani:xz:1.10"
+    // Okio 高性能 IO
+    implementation "com.squareup.okio:okio:${rootProject.ext.okioVersion}"
+
+    // 7-Zip-JBinding-4Android（LGPL-2.1）：原生 7-Zip 引擎，用于解压 zip/7z/rar/tar 等
+    // 本应用以「库」形式使用并随 APK 分发，已在应用内加入开源声明与许可证文本。
+    implementation "com.github.omicronapps:7-Zip-JBinding-4Android:Release-16.02-2.03"
+}

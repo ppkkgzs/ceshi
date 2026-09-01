@@ -1,0 +1,27 @@
+// transfer 模块 —— 传输与外设（HTTP 文件服务器、蓝牙发送、局域网共享）
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.alltoolbox.transfer'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':file-ops')
+
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
+    implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
+    implementation "androidx.documentfile:documentfile:1.0.1"
+}

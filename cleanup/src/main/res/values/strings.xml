@@ -1,0 +1,58 @@
+<resources>
+    <string name="cleanup_title">扫描清理</string>
+    <string name="cleanup_scan">扫描清理</string>
+    <string name="cleanup_scanning">扫描中…</string>
+    <string name="cleanup_empty">暂无结果</string>
+    <string name="cleanup_delete">删除</string>
+    <string name="cleanup_confirm">确认删除所选文件？</string>
+    <string name="cleanup_deleted">已删除 %1$d 项</string>
+    <string name="cleanup_fail">部分删除失败，请检查权限</string>
+    <string name="cleanup_select_hint">长按选择，可多选后删除</string>
+
+    <!-- 扫描清理：手机内存 -->
+    <string name="storage_title">手机存储</string>
+    <string name="storage_dummy">—</string>
+    <string name="storage_used">已用 %1$s</string>
+    <string name="storage_free">可用 %1$s</string>
+    <string name="storage_total">总容量 %1$s</string>
+
+    <!-- 缓存垃圾 -->
+    <string name="clean_cache_title">缓存垃圾</string>
+    <string name="not_scanned">尚未扫描</string>
+    <string name="clean_key">清理</string>
+    <string name="cache_scanned">缓存垃圾 %1$s</string>
+    <string name="cache_clean_confirm">确认清理全部缓存垃圾？</string>
+    <string name="cache_cleaned">已清理缓存 %1$s</string>
+
+    <!-- 安装包 -->
+    <string name="clean_apk_title">安装包</string>
+    <string name="clean_apk_clear">清理</string>
+    <string name="apk_scanned">检测到 %1$d 个安装包，共 %2$s</string>
+    <string name="apk_clean_confirm">确认删除检测到的安装包（APK）？提取的安装包位于 PK2 文件夹。</string>
+    <string name="apk_cleaned">已清理 %1$d 个安装包，释放 %2$s</string>
+
+    <!-- 不常用应用 -->
+    <string name="clean_rare_title">不常用应用（超过7天未打开）</string>
+    <string name="rare_count_hint">检测到 %1$d 个应用可删除</string>
+    <string name="rare_no_unused">未发现超过7天未打开的应用</string>
+    <string name="open_usage_access">开启「使用情况访问权限」以检测应用使用时间</string>
+    <string name="rare_rescan">重新检测</string>
+    <string name="rare_empty">暂无应用</string>
+    <string name="clean_rare_delete">删除</string>
+    <string name="app_icon">应用图标</string>
+    <string name="rare_last_used">上次打开 %1$s</string>
+    <string name="rare_never_used">从未打开过</string>
+    <string name="rare_delete_confirm">确认卸载 %1$s？</string>
+
+    <string name="file_search_title">文件搜索</string>
+    <string name="file_search_hint">输入文件名关键词</string>
+    <string name="file_search_btn">搜索</string>
+    <string name="file_search_choose">选择目录</string>
+    <string name="file_search_count">共找到 %1$d 个</string>
+    <string name="file_search_empty">搜索结果将显示在这里</string>
+    <string name="file_search_need_dir">请先选择目录</string>
+    <string name="file_search_need_kw">请输入关键词</string>
+    <string name="file_search_chosen">已选择目录：%1$s</string>
+    <string name="file_search_open_fail">无法打开该文件</string>
+    <string name="file_search_scanning">搜索中…</string>
+</resources>

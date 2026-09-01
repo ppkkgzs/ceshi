@@ -1,0 +1,30 @@
+// apk-tools 模块 —— APK 全套逆向工具
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.alltoolbox.apktools'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':editor')
+
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
+    implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
+    implementation "androidx.recyclerview:recyclerview:${rootProject.ext.recyclerviewVersion}"
+
+    // APK 重签名：官方 apksig（v1/v2/v3 签名与校验）
+    implementation 'com.android.tools.build:apksig:8.5.2'
+}

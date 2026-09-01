@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/btn_compress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/archive_compress" />
+
+    <Button
+        android:id="@+id/btn_compress_dir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/archive_compress_dir" />
+
+    <Button
+        android:id="@+id/btn_extract"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/archive_extract" />
+
+    <ProgressBar
+        android:id="@+id/archive_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:max="100" />
+
+    <TextView
+        android:id="@+id/archive_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textColor="#666666"
+        android:textSize="13sp" />
+</LinearLayout>

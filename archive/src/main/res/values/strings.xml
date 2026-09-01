@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="archive_compress">压缩文件为 ZIP</string>
+    <string name="archive_compress_dir">压缩整个目录为 ZIP</string>
+    <string name="archive_extract">解压压缩包</string>
+    <string name="archive_pick_src">选择要压缩的文件</string>
+    <string name="archive_pick_zip">选择压缩包（zip/7z/tar）</string>
+    <string name="archive_pick_dir">选择解压目标目录</string>
+    <string name="archive_working">处理中…</string>
+    <string name="archive_empty_src">未选择有效文件</string>
+    <string name="archive_done_zip">已生成:%1$s</string>
+    <string name="archive_done_extract">已解压到:%1$s</string>
+    <string name="archive_error">操作失败:%1$s</string>
+    <string name="archive_output_root">归档工具</string>
+</resources>

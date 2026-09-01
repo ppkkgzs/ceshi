@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="root_title">Root 增强</string>
+    <string name="root_status_loading">正在检测 Root 状态…</string>
+    <string name="root_status_rooted">已获取 Root，可执行系统级操作</string>
+    <string name="root_status_no_root">未检测到 Root。部分系统级操作将被禁用，仅可查看应用列表。</string>
+    <string name="root_apps">已安装应用</string>
+    <string name="root_search_hint">搜索应用</string>
+    <string name="root_freeze">冻结</string>
+    <string name="root_unfreeze">解冻</string>
+    <string name="root_uninstall">卸载</string>
+    <string name="root_grant_perm">授予存储</string>
+    <string name="root_working">操作中…</string>
+    <string name="root_done_frozen">已冻结 %1$s</string>
+    <string name="root_done_unfrozen">已解冻 %1$s</string>
+    <string name="root_done_uninstalled">已卸载 %1$s</string>
+    <string name="root_done_granted">已授予存储权限 %1$s</string>
+    <string name="root_fail">操作失败：%1$s</string>
+    <string name="root_clear_perm">清除应用数据</string>
+    <string name="root_done_clear">已清除 %1$s 数据</string>
+</resources>

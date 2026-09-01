@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <Button
+            android:id="@+id/so_pick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="选择 .so 文件" />
+
+        <TextView
+            android:id="@+id/so_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="6dp"
+            android:text="尚未选择 SO 文件"
+            android:textColor="#666666"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="查找字节（Hex，如 010203）"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/so_find"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:hint="示例: 00 00 00 00"
+            android:inputType="text"
+            android:textColorHint="#999999" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="替换字节（Hex，必须等长）"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/so_replace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:hint="示例: 01 00 00 00"
+            android:inputType="text"
+            android:textColorHint="#999999" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="提醒：仅支持等长替换，避免破坏偏移/重定位。正式使用时请先备份原文件。"
+            android:textColor="#E67E22"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/so_apply"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="应用补丁" />
+
+        <TextView
+            android:id="@+id/so_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text=""
+            android:fontFamily="monospace"
+            android:textSize="12sp" />
+    </LinearLayout>
+</ScrollView>

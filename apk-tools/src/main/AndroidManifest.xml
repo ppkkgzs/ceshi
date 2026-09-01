@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".apk.ApkInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tool.EncodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tool.SignatureActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tool.SoPatchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tool.DecompileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tool.ManifestEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tool.DexSmaliActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tool.ReSignActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tool.CustomSignActivity"
+            android:exported="false" />
+    </application>
+</manifest>

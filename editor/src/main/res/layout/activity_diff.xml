@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_diff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="开始对比（高亮差异行）" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <EditText
+            android:id="@+id/diff_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="左侧文本"
+            android:gravity="top|start"
+            android:scrollbars="vertical"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:textColorHint="#999999" />
+
+        <EditText
+            android:id="@+id/diff_right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="右侧文本"
+            android:gravity="top|start"
+            android:scrollbars="vertical"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:textColorHint="#999999" />
+    </LinearLayout>
+</LinearLayout>

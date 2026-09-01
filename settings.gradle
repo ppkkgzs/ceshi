@@ -1,0 +1,29 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        // 7-Zip-JBinding-4Android（LGPL-2.1）经 JitPack 分发
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+rootProject.name = "AllToolbox"
+include ":app"
+include ":core"
+include ":file-browser"
+include ":file-ops"
+include ":archive"
+include ":cleanup"
+include ":editor"
+include ":apk-tools"
+include ":security"
+include ":root"
+include ":transfer"
