@@ -75,22 +75,45 @@ public final class Updater {
     }
 
     /**
+     * 下载并安装正式版 Beta Release 标签对应的最新版 APK。下载直链取自 {@link UpdateChecker#apkDirectUrlBeta}，
+     * 即全面对齐新 Beta 库 `ceshi-beta`。
+     */
+    public static void downloadAndInstallBeta(Context ctx, String tag) {
+        downloadAndInstallBeta(ctx, tag, null);
+    }
+
+    /**
      * 下载并安装指定 Release 标签对应的最新版 APK。
      *
      * @param tag      Release 标签（如 v1.7.0），用于构造直链与文件名。
      * @param listener 可选：下载进度回调（在应用内显示百分比/速度/预计时长），可为 null。
      */
     public static void downloadAndInstall(Context ctx, String tag, DownloadProgressListener listener) {
+        downloadAndInstall(ctx, tag, listener, UpdateChecker.apkDirectUrl(tag));
+    }
+
+    /**
+     * 下载并安装 Beta 版 Release 标签对应的最新版 APK（Beta 通道，直链指向 `ceshi-beta` 库）。
+     *
+     * @param tag      Beta Release 标签（如 v1.8.0.6-beta）。
+     * @param listener 可选：下载进度回调，可为 null。
+     */
+    public static void downloadAndInstallBeta(Context ctx, String tag, DownloadProgressListener listener) {
+        downloadAndInstall(ctx, tag, listener, UpdateChecker.apkDirectUrlBeta(tag));
+    }
+
+    private static void downloadAndInstall(Context ctx, String tag,
+                                           DownloadProgressListener listener, String directUrl) {
         // Android 8.0+ 未授权安装未知来源时，先引导用户去系统设置开启
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !canInstallApps(ctx)) {
             try {
                 ctx.startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
                         Uri.parse("package:" + ctx.getPackageName()))
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                Toast.makeText(ctx, "请在系统设置中开启「允许安装未知来源应用」后再次更新",
+                Toast.makeText(ctx, ctx.getString(R.string.update_enable_source_goto),
                         Toast.LENGTH_LONG).show();
             } catch (Exception e) {
-                Toast.makeText(ctx, "请在系统设置中允许安装未知来源应用",
+                Toast.makeText(ctx, ctx.getString(R.string.update_enable_source),
                         Toast.LENGTH_LONG).show();
             }
             return;
@@ -105,12 +128,12 @@ public final class Updater {
         // 清理同版本残留，避免旧文件残留
         if (target.exists()) target.delete();
 
-        Toast.makeText(ctx, "更新包开始下载…", Toast.LENGTH_LONG).show();
+        Toast.makeText(ctx, ctx.getString(R.string.update_download_started), Toast.LENGTH_LONG).show();
 
         final String selfVersion = UpdateChecker.localVersion(ctx);
         TaskExecutor.get().io().execute(() -> {
             try {
-                download(UpdateChecker.apkDirectUrl(tag), target, selfVersion, ctx, listener);
+                download(directUrl, target, selfVersion, ctx, listener);
                 postMain(ctx, () -> {
                     if (listener != null) listener.onFinish(true, null);
                     install(ctx, target);
@@ -119,7 +142,7 @@ public final class Updater {
                 final String msg = e.getMessage();
                 postMain(ctx, () -> {
                     if (listener != null) listener.onFinish(false, msg);
-                    Toast.makeText(ctx, "下载失败：" + msg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ctx, ctx.getString(R.string.update_download_failed, msg), Toast.LENGTH_LONG).show();
                 });
             }
         });
@@ -165,9 +188,9 @@ public final class Updater {
         } finally {
             conn.disconnect();
         }
-        if (tmp.length() == 0) throw new java.io.IOException("下载内容为空");
+        if (tmp.length() == 0) throw new java.io.IOException(ctx.getString(R.string.update_download_empty));
         if (!tmp.renameTo(target)) {
-            throw new java.io.IOException("写入安装包失败");
+            throw new java.io.IOException(ctx.getString(R.string.update_write_failed));
         }
     }
 
@@ -189,7 +212,7 @@ public final class Updater {
     /** 用 FileProvider 拉起系统安装界面（确定性交付，不会「跳转失败」）。 */
     private static void install(Context ctx, File target) {
         if (target == null || !target.exists() || target.length() == 0) {
-            Toast.makeText(ctx, "更新包下载失败或被清除", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, ctx.getString(R.string.update_missing), Toast.LENGTH_SHORT).show();
             return;
         }
         try {
@@ -201,7 +224,7 @@ public final class Updater {
             install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             ctx.startActivity(install);
         } catch (Exception e) {
-            Toast.makeText(ctx, "无法打开安装界面：" + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(ctx, ctx.getString(R.string.update_open_install_failed, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 

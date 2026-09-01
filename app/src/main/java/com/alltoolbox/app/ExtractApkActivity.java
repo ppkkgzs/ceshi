@@ -72,7 +72,7 @@ public class ExtractApkActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_extract_apk);
-        setTitle("提取安装包");
+        setTitle(R.string.nav_extract_apk);
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -122,7 +122,7 @@ public class ExtractApkActivity extends AppCompatActivity {
 
         storagePermLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
-                granted -> { if (granted) toast("已获得存储权限"); });
+                granted -> { if (granted) toast(getString(R.string.perm_storage_granted)); });
         allFilesLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> { /* 返回后由用户重试 */ });
@@ -131,7 +131,7 @@ public class ExtractApkActivity extends AppCompatActivity {
     }
 
     private void loadApps() {
-        Toast.makeText(this, "正在读取应用列表…", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.extract_loading_apps), Toast.LENGTH_SHORT).show();
         TaskExecutor.get().io().execute(() -> {
             final List<AppItem>[] buckets = loadInstalledApps(this);
             runOnUiThread(() -> {
@@ -218,7 +218,7 @@ public class ExtractApkActivity extends AppCompatActivity {
         if (ic != null) icon.setImageDrawable(ic);
         name.setText(app.label);
         version.setText(app.versionName != null && !app.versionName.isEmpty()
-                ? app.versionName : "版本未知");
+                ? app.versionName : getString(R.string.extract_version_unknown));
 
         // 详情字段（包名、版本号、大小、签名状态、加固状态、数据目录、APK路径、UID）
         List<String[]> infos = new ArrayList<>();
@@ -228,13 +228,13 @@ public class ExtractApkActivity extends AppCompatActivity {
                     PackageManager.GET_SIGNATURES);
         } catch (Exception ignored) {
         }
-        infos.add(new String[]{"包名", app.packageName()});
-        infos.add(new String[]{"版本号", pi != null ? String.valueOf(pi.versionCode) : "未知"});
-        infos.add(new String[]{"安装包大小", formatSize(app.size)});
-        infos.add(new String[]{"签名状态", signatureStatus(app, pi)});
-        infos.add(new String[]{"加固状态", detectProtection(new File(app.apkPath()))});
-        infos.add(new String[]{"数据目录", "/data/user/0/" + app.packageName()});
-        infos.add(new String[]{"APK路径", app.apkPath()});
+        infos.add(new String[]{getString(R.string.extract_label_pkg_name), app.packageName()});
+        infos.add(new String[]{getString(R.string.extract_label_version), pi != null ? String.valueOf(pi.versionCode) : getString(R.string.extract_unknown)});
+        infos.add(new String[]{getString(R.string.extract_label_size), formatSize(app.size)});
+        infos.add(new String[]{getString(R.string.extract_label_signature), signatureStatus(app, pi)});
+        infos.add(new String[]{getString(R.string.extract_label_protection), detectProtection(new File(app.apkPath()))});
+        infos.add(new String[]{getString(R.string.extract_label_data_dir), "/data/user/0/" + app.packageName()});
+        infos.add(new String[]{getString(R.string.extract_label_apk_path), app.apkPath()});
         infos.add(new String[]{"UID", String.valueOf(app.ai.uid)});
 
         for (String[] kv : infos) {
@@ -247,14 +247,17 @@ public class ExtractApkActivity extends AppCompatActivity {
 
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this)
                 .setView(v)
-                .setNegativeButton("更多", (d, w) -> showMoreMenu(app))
-                .setPositiveButton("提取安装包", (d, w) -> extract(app));
+                .setNegativeButton(getString(R.string.extract_more), (d, w) -> showMoreMenu(app))
+                .setPositiveButton(getString(R.string.nav_extract_apk), (d, w) -> extract(app));
         builder.show();
     }
 
     /** 更多：启动 / 详情 / 卸载。 */
     private void showMoreMenu(AppItem app) {
-        final String[] actions = {"启动", "详情", "卸载"};
+        final String[] actions = {
+                getString(R.string.extract_action_launch),
+                getString(R.string.extract_action_detail),
+                getString(R.string.extract_action_uninstall)};
         new MaterialAlertDialogBuilder(this)
                 .setTitle(app.label)
                 .setItems(actions, (d, w) -> {
@@ -277,9 +280,9 @@ public class ExtractApkActivity extends AppCompatActivity {
         try {
             Intent i = getPackageManager().getLaunchIntentForPackage(app.packageName());
             if (i != null) startActivity(i);
-            else toast("该应用没有可启动的入口");
+            else toast(getString(R.string.extract_no_launch_intent));
         } catch (Exception e) {
-            toast("启动失败：" + e.getMessage());
+            toast(getString(R.string.extract_launch_failed, e.getMessage()));
         }
     }
 
@@ -288,7 +291,7 @@ public class ExtractApkActivity extends AppCompatActivity {
             startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                     Uri.parse("package:" + app.packageName())));
         } catch (Exception e) {
-            toast("无法打开应用详情");
+            toast(getString(R.string.extract_open_details_failed));
         }
     }
 
@@ -297,7 +300,7 @@ public class ExtractApkActivity extends AppCompatActivity {
             startActivity(new Intent(Intent.ACTION_DELETE,
                     Uri.parse("package:" + app.packageName())));
         } catch (Exception e) {
-            toast("无法发起卸载");
+            toast(getString(R.string.extract_uninstall_failed));
         }
     }
 
@@ -308,7 +311,7 @@ public class ExtractApkActivity extends AppCompatActivity {
         if (v1 && v2) return "V1 + V2";
         if (v1) return "V1";
         if (v2) return "V2";
-        return "未签名";
+        return getString(R.string.extract_unsigned);
     }
 
     /**
@@ -338,20 +341,20 @@ public class ExtractApkActivity extends AppCompatActivity {
     }
 
     /** 通过特征文件判断是否加壳（加固）。 */
-    private static String detectProtection(File apk) {
-        if (apk == null || !apk.isFile()) return "未加固";
+    private String detectProtection(File apk) {
+        if (apk == null || !apk.isFile()) return getString(R.string.extract_no_protection);
         final String[][] markers = {
-                {"jiagu", "360加固"}, {"qihoo", "360加固"}, {"libjiagu", "360加固"},
-                {"secneo", "爱加密"}, {"ijiami", "爱加密"}, {"libexec", "爱加密"},
-                {"secshell", "梆梆加固"}, {"SecShell", "梆梆加固"},
-                {"shellx", "梆梆加固"},
-                {"stubshell", "腾讯乐固"}, {"DexHelper", "腾讯乐固"},
-                {"shella", "腾讯乐固"},
-                {"baiduprotect", "百度加固"}, {"libprotect", "百度加固"},
-                {"chaosvmp", "娜迦加固"}, {"wnaggezhly", "娜迦加固"},
-                {"nqshield", "娜迦加固"},
+                {"jiagu", getString(R.string.extract_prot_360)}, {"qihoo", getString(R.string.extract_prot_360)}, {"libjiagu", getString(R.string.extract_prot_360)},
+                {"secneo", getString(R.string.extract_prot_ijiami)}, {"ijiami", getString(R.string.extract_prot_ijiami)}, {"libexec", getString(R.string.extract_prot_ijiami)},
+                {"secshell", getString(R.string.extract_prot_bangcle)}, {"SecShell", getString(R.string.extract_prot_bangcle)},
+                {"shellx", getString(R.string.extract_prot_bangcle)},
+                {"stubshell", getString(R.string.extract_prot_tencent)}, {"DexHelper", getString(R.string.extract_prot_tencent)},
+                {"shella", getString(R.string.extract_prot_tencent)},
+                {"baiduprotect", getString(R.string.extract_prot_baidu)}, {"libprotect", getString(R.string.extract_prot_baidu)},
+                {"chaosvmp", getString(R.string.extract_prot_naga)}, {"wnaggezhly", getString(R.string.extract_prot_naga)},
+                {"nqshield", getString(R.string.extract_prot_naga)},
                 {"apkprotect", "APKProtect"},
-                {"libfake", "腾讯乐固"}
+                {"libfake", getString(R.string.extract_prot_tencent)}
         };
         try (ZipFile zf = new ZipFile(apk)) {
             Enumeration<? extends ZipEntry> en = zf.entries();
@@ -363,7 +366,7 @@ public class ExtractApkActivity extends AppCompatActivity {
             }
         } catch (Exception ignored) {
         }
-        return "未加固";
+        return getString(R.string.extract_no_protection);
     }
 
     @Override
@@ -377,7 +380,7 @@ public class ExtractApkActivity extends AppCompatActivity {
         if (Permissions.requiresAllFilesAccess()) {
             if (!Permissions.hasAllFilesAccess(this)) {
                 Permissions.requestAllFilesAccess(this, allFilesLauncher);
-                toast("正在请求「所有文件访问」权限，授权后请重新点击提取");
+                toast(getString(R.string.extract_request_all_files));
                 return;
             }
         } else if (Build.VERSION.SDK_INT >= 23
@@ -387,13 +390,13 @@ public class ExtractApkActivity extends AppCompatActivity {
         }
 
         extracting = true;
-        Toast.makeText(this, "正在提取 " + app.label + " …", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.extract_extracting, app.label), Toast.LENGTH_SHORT).show();
         TaskExecutor.get().io().execute(() -> {
             final String[] result = {null};
             try {
                 result[0] = writeApk(app);
             } catch (Exception e) {
-                result[0] = "提取失败: " + e.getMessage();
+                result[0] = getString(R.string.extract_failed, e.getMessage());
             }
             runOnUiThread(() -> {
                 extracting = false;
@@ -414,13 +417,13 @@ public class ExtractApkActivity extends AppCompatActivity {
             cv.put(MediaStore.Downloads.MIME_TYPE, "application/vnd.android.package-archive");
             cv.put(MediaStore.Downloads.RELATIVE_PATH, "PK2");
             Uri uri = getContentResolver().insert(MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), cv);
-            if (uri == null) throw new Exception("无法写入主目录");
+            if (uri == null) throw new Exception(getString(R.string.extract_cannot_write_main_dir));
             try (FileInputStream in = new FileInputStream(src);
                  OutputStream out = getContentResolver().openOutputStream(uri)) {
-                if (out == null) throw new Exception("无法打开输出流");
+                if (out == null) throw new Exception(getString(R.string.extract_cannot_open_output));
                 copy(in, out);
             }
-            return "已提取到「主页面/PK2」：" + fileName;
+            return getString(R.string.extract_done_main, fileName);
         }
 
         // 低版本：直接写主目录 PK2 文件夹
@@ -431,7 +434,7 @@ public class ExtractApkActivity extends AppCompatActivity {
              java.io.FileOutputStream out = new java.io.FileOutputStream(dst)) {
             copy(in, out);
         }
-        return "已提取到：" + dst.getAbsolutePath();
+        return getString(R.string.extract_done_path, dst.getAbsolutePath());
     }
 
     private static void copy(FileInputStream in, OutputStream out) throws Exception {

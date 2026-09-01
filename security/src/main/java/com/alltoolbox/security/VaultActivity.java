@@ -50,7 +50,7 @@ public class VaultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vault);
-        setTitle("加密保险箱");
+        setTitle(getString(R.string.vault_title));
 
         vault = VaultManager.get(this);
         list = findViewById(R.id.vault_list);
@@ -86,7 +86,7 @@ public class VaultActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.vault_lock) {
             vault.lock();
-            Toast.makeText(this, "已上锁", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.vault_locked), Toast.LENGTH_SHORT).show();
             promptUnlock();
             return true;
         }
@@ -102,52 +102,52 @@ public class VaultActivity extends AppCompatActivity {
 
     private void promptSetPassword() {
         final AppCompatEditText input = new AppCompatEditText(this);
-        input.setHint("设置解锁密码");
+        input.setHint(getString(R.string.vault_set_password_hint));
         new AlertDialog.Builder(this)
-                .setTitle("初始化保险箱")
-                .setMessage("设置密码后，加入的文件将用该密码 AES 加密。请牢记密码，忘记将无法恢复。")
+                .setTitle(getString(R.string.vault_init_title))
+                .setMessage(getString(R.string.vault_init_message))
                 .setView(input)
-                .setPositiveButton("确定", (d, w) -> {
+                .setPositiveButton(getString(R.string.vault_confirm), (d, w) -> {
                     char[] pw = input.getText().toString().toCharArray();
                     if (pw.length < 4) {
-                        Toast.makeText(this, "密码过短", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.vault_password_too_short), Toast.LENGTH_SHORT).show();
                         promptSetPassword();
                         return;
                     }
                     if (vault.setPassword(pw)) {
                         VaultShared.set(pw);
-                        Toast.makeText(this, "保险箱已创建", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.vault_created), Toast.LENGTH_SHORT).show();
                         refresh();
                     } else {
-                        Toast.makeText(this, "设置失败", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.vault_set_failed), Toast.LENGTH_SHORT).show();
                         finish();
                     }
                     Arrays.fill(pw, '\0');
                 })
-                .setNegativeButton("取消", (d, w) -> finish())
+                .setNegativeButton(getString(R.string.vault_cancel), (d, w) -> finish())
                 .setCancelable(false)
                 .show();
     }
 
     private void promptUnlock() {
         final AppCompatEditText input = new AppCompatEditText(this);
-        input.setHint("输入解锁密码");
+        input.setHint(getString(R.string.vault_unlock_hint));
         new AlertDialog.Builder(this)
-                .setTitle("输入密码解锁")
+                .setTitle(getString(R.string.vault_unlock_title))
                 .setView(input)
-                .setPositiveButton("解锁", (d, w) -> {
+                .setPositiveButton(getString(R.string.vault_unlock_button), (d, w) -> {
                     char[] pw = input.getText().toString().toCharArray();
                     if (vault.unlock(pw)) {
                         VaultShared.set(pw);
-                        Toast.makeText(this, "已解锁", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.vault_unlocked), Toast.LENGTH_SHORT).show();
                         refresh();
                     } else {
-                        Toast.makeText(this, "密码错误", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.vault_wrong_password), Toast.LENGTH_SHORT).show();
                         promptUnlock();
                     }
                     Arrays.fill(pw, '\0');
                 })
-                .setNegativeButton("退出", (d, w) -> finish())
+                .setNegativeButton(getString(R.string.vault_exit), (d, w) -> finish())
                 .setCancelable(false)
                 .show();
     }
@@ -174,14 +174,14 @@ public class VaultActivity extends AppCompatActivity {
                 tmp.delete();
                 runOnUiThread(() -> {
                     if (ok) {
-                        Toast.makeText(this, "已加密保存", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.vault_saved_encrypted), Toast.LENGTH_SHORT).show();
                         refresh();
                     } else {
-                        Toast.makeText(this, "加密失败", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.vault_encrypt_failed), Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (Exception e) {
-                runOnUiThread(() -> Toast.makeText(this, "添加失败: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, getString(R.string.vault_add_failed, e.getMessage()), Toast.LENGTH_SHORT).show());
             }
         });
     }
@@ -195,19 +195,19 @@ public class VaultActivity extends AppCompatActivity {
         File enc = new File(vault.encDir(), name);
         if (!enc.exists()) return;
         new AlertDialog.Builder(this)
-                .setTitle("文件已加密")
-                .setMessage("是否用当前密码解密并打开？\n" + name)
-                .setPositiveButton("解密查看", (d, w) -> {
+                .setTitle(getString(R.string.vault_file_encrypted_title))
+                .setMessage(getString(R.string.vault_decrypt_open_confirm, name))
+                .setPositiveButton(getString(R.string.vault_decrypt_view_btn), (d, w) -> {
                     final AppCompatEditText input = new AppCompatEditText(this);
-                    input.setHint("输入密码");
+                    input.setHint(getString(R.string.vault_enter_password_hint));
                     new AlertDialog.Builder(this)
-                            .setTitle("解密")
+                            .setTitle(getString(R.string.vault_decrypt_title))
                             .setView(input)
-                            .setPositiveButton("解密", (d2, w2) -> doDecrypt(enc, name, input.getText().toString().toCharArray()))
-                            .setNegativeButton("取消", null)
+                            .setPositiveButton(getString(R.string.vault_decrypt_button), (d2, w2) -> doDecrypt(enc, name, input.getText().toString().toCharArray()))
+                            .setNegativeButton(getString(R.string.vault_cancel), null)
                             .show();
                 })
-                .setNegativeButton("删除", (d, w) -> {
+                .setNegativeButton(getString(R.string.vault_delete), (d, w) -> {
                     vault.delete(enc);
                     refresh();
                 })
@@ -222,7 +222,7 @@ public class VaultActivity extends AppCompatActivity {
                 if (ok) {
                     openFile(dec);
                 } else {
-                    Toast.makeText(this, "解密失败（密码错误或文件损坏）", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.vault_decrypt_failed), Toast.LENGTH_LONG).show();
                 }
             });
         });
@@ -237,9 +237,9 @@ public class VaultActivity extends AppCompatActivity {
             String mime = com.alltoolbox.core.file.FileUtil.getMimeType(f.getName());
             intent.setDataAndType(uri, mime);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(Intent.createChooser(intent, "打开文件"));
+            startActivity(Intent.createChooser(intent, getString(R.string.vault_open_file)));
         } catch (Exception e) {
-            Toast.makeText(this, "无法打开: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.vault_open_failed, e.getMessage()), Toast.LENGTH_SHORT).show();
         }
     }
 

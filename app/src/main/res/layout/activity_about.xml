@@ -51,17 +51,31 @@
                 android:paddingBottom="16dp" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_open_github"
+                android:id="@+id/btn_dl_stable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/about_download" />
+                android:text="@string/about_dl_stable" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_dl_beta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about_dl_beta"
+                android:layout_marginTop="8dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_dl_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about_dl_history"
+                android:layout_marginTop="8dp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_check_update"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/about_check_update"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="16dp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_check_beta"

@@ -67,36 +67,37 @@ public class SettingsActivity extends AppCompatActivity {
     // ------------------------------------------------------------------
 
     private void buildStartup() {
-        addSection("启动");
+        addSection(getString(R.string.set_section_startup));
         // 默认首页目录
-        addRow("默认首页目录",
-                "当前：" + defaultHomeDesc(),
+        addRow(getString(R.string.set_home_dir),
+                getString(R.string.set_home_dir_summary, defaultHomeDesc()),
                 v -> chooseHomePath());
         // 启动时检查更新
-        addSwitch("启动时检查更新",
-                "开启后每次打开应用自动检测 GitHub 最新版本",
+        addSwitch(getString(R.string.set_check_update_on_start),
+                getString(R.string.set_check_update_on_start_summary),
                 Settings.getBoolean(this, Settings.KEY_UPDATE_CHECK, true),
                 (btn, checked) -> Settings.putBoolean(this, Settings.KEY_UPDATE_CHECK, checked));
     }
 
     private void buildAppearance() {
-        addSection("外观");
-        addRow("主题模式",
+        addSection(getString(R.string.set_section_appearance));
+        addRow(getString(R.string.set_theme),
                 themeDesc(),
                 v -> chooseTheme());
-        addRow("显示方式",
-                Settings.getBoolean(this, Settings.KEY_GRID_MODE, false) ? "网格" : "列表",
+        addRow(getString(R.string.set_display_mode),
+                Settings.getBoolean(this, Settings.KEY_GRID_MODE, false)
+                        ? getString(R.string.set_grid) : getString(R.string.set_list),
                 v -> chooseDisplayMode());
     }
 
     private void buildGeneral() {
-        addSection("常规");
-        addSwitch("显示隐藏文件",
-                "开启后浏览器中显示 . 开头的隐藏文件",
+        addSection(getString(R.string.set_section_general));
+        addSwitch(getString(R.string.set_show_hidden),
+                getString(R.string.set_show_hidden_summary),
                 Settings.getBoolean(this, Settings.KEY_SHOW_HIDDEN, false),
                 (btn, checked) -> Settings.putBoolean(this, Settings.KEY_SHOW_HIDDEN, checked));
-        addSwitch("默认双栏模式",
-                "进入双栏文件管理器时是否显示左右两栏；关闭则切到单栏（平板默认开启，小屏默认单栏）",
+        addSwitch(getString(R.string.set_dual_pane),
+                getString(R.string.set_dual_pane_summary),
                 Settings.getBoolean(this, Settings.KEY_DUAL_PANE, isTablet(this)),
                 (btn, checked) -> Settings.putBoolean(this, Settings.KEY_DUAL_PANE, checked));
     }
@@ -109,38 +110,38 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void buildInstall() {
-        addSection("安装");
-        addSwitch("允许提取/安装 APK",
-                "开启后可从文件管理器/包详情提取安装包并请求安装权限",
+        addSection(getString(R.string.set_section_install));
+        addSwitch(getString(R.string.set_install),
+                getString(R.string.set_install_summary),
                 Settings.getBoolean(this, "install_extract", true),
                 (btn, checked) -> Settings.putBoolean(this, "install_extract", checked));
-        addRow("安装未知来源说明",
-                "安装第三方 APK 时，系统会引导到「允许此来源的应用」设置页",
+        addRow(getString(R.string.set_unknown_source),
+                getString(R.string.set_unknown_source_summary),
                 v -> new MaterialAlertDialogBuilder(this)
-                        .setTitle("安装未知来源")
-                        .setMessage("提取的安装包可通过系统安装器安装。\n\n若系统弹出「未知来源」提示，请到\n设置 → 应用 → 本应用 → 允许安装未知应用\n中开启权限。")
-                        .setPositiveButton("知道了", null)
+                        .setTitle(R.string.set_unknown_source_title)
+                        .setMessage(R.string.set_unknown_source_msg)
+                        .setPositiveButton(R.string.ok, null)
                         .show());
-        addRow("提取安装包",
-                "提取已安装应用的 APK 到「下载」目录（需存储权限）",
+        addRow(getString(R.string.set_extract_apk),
+                getString(R.string.set_extract_apk_summary),
                 v -> startActivity(new android.content.Intent(this, ExtractApkActivity.class)));
     }
 
     private void buildUpdate() {
-        addSection("更新");
-        addRow("检查最新版本",
-                "当前版本：" + UpdateChecker.localVersion(this) + "｜检测 GitHub 最新版并直接下载安装",
+        addSection(getString(R.string.set_section_update));
+        addRow(getString(R.string.set_check_latest),
+                getString(R.string.set_check_latest_summary, UpdateChecker.localVersion(this)),
                 v -> checkUpdate());
-        addRow("检查 Beta 测试版更新（直链）",
-                "获取最新测试版 Pre-Release，可直接下载安装",
+        addRow(getString(R.string.set_check_beta),
+                getString(R.string.set_check_beta_summary),
                 v -> checkBetaUpdate());
     }
 
     /** 点击「检查 Beta 测试版更新（直链）」：查找 GitHub 最新 Pre-Release 并直接下载。 */
     private void checkBetaUpdate() {
         android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
-        pd.setTitle("检查 Beta 更新");
-        pd.setMessage("正在检查最新测试版本…");
+        pd.setTitle(getString(R.string.set_check_beta_title));
+        pd.setMessage(getString(R.string.set_check_beta_msg));
         pd.setIndeterminate(true);
         pd.setCancelable(false);
         pd.show();
@@ -150,21 +151,21 @@ public class SettingsActivity extends AppCompatActivity {
                 pd.dismiss();
                 if (!isLatest && latestTag != null && !latestTag.isEmpty()) {
                     new MaterialAlertDialogBuilder(this)
-                            .setTitle("发现 Beta 新版本")
-                            .setMessage("检测到最新测试版本 " + latestTag + "\n是否立即下载并安装？")
-                            .setNegativeButton("取消", null)
-                            .setPositiveButton("立即下载", (d, w) ->
-                                    Updater.downloadAndInstall(this, latestTag,
+                            .setTitle(R.string.set_found_beta_title)
+                            .setMessage(getString(R.string.set_found_beta_msg, latestTag))
+                            .setNegativeButton(R.string.cancel, null)
+                            .setPositiveButton(R.string.download_now, (d, w) ->
+                                    Updater.downloadAndInstallBeta(this, latestTag,
                                             new UpdateDownloadProgress()))
                             .show();
                 } else {
                     String tip = (message == null || message.isEmpty())
-                            ? "当前已是最新 Beta 版本"
-                            : ("当前已是最新 Beta 版本；" + message);
+                            ? getString(R.string.set_latest_beta)
+                            : getString(R.string.set_latest_beta_extra, message);
                     new MaterialAlertDialogBuilder(this)
-                            .setTitle("检查 Beta 更新")
+                            .setTitle(R.string.set_check_beta_title)
                             .setMessage(tip)
-                            .setPositiveButton("知道了", null)
+                            .setPositiveButton(R.string.ok, null)
                             .show();
                 }
             });
@@ -172,40 +173,40 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void buildBookmarksBottomBar() {
-        addSection("书签与底栏");
-        addSwitch("启用底栏",
-                "主界面底部显示功能导航栏",
+        addSection(getString(R.string.set_section_bookmarks));
+        addSwitch(getString(R.string.set_bottom_bar),
+                getString(R.string.set_bottom_bar_summary),
                 Settings.getBoolean(this, "bottom_bar", true),
                 (btn, checked) -> Settings.putBoolean(this, "bottom_bar", checked));
-        addRow("底栏左/右切换",
-                "双栏模式下，底栏用于选择当前操作的栏（左栏/右栏）",
+        addRow(getString(R.string.set_pane_switch),
+                getString(R.string.set_pane_switch_summary),
                 v -> new MaterialAlertDialogBuilder(this)
-                        .setTitle("底栏双栏说明")
-                        .setMessage("双栏模式下，点击底栏的「左栏/右栏」选中当前操作的栏。\n返回键只在选中的栏内向上返回，不影响另一栏。")
-                        .setPositiveButton("知道了", null)
+                        .setTitle(R.string.set_pane_switch_title)
+                        .setMessage(R.string.set_pane_switch_msg)
+                        .setPositiveButton(R.string.ok, null)
                         .show());
-        addRow("书签管理",
-                "文件管理器右键/菜单「添加书签」，可在书签与底栏中跳转",
+        addRow(getString(R.string.set_bookmarks),
+                getString(R.string.set_bookmarks_summary),
                 v -> new MaterialAlertDialogBuilder(this)
-                        .setTitle("书签")
-                        .setMessage("书签功能已集成在文件管理器右上角菜单的「添加书签」中，添加后可在书签页快速跳转。")
-                        .setPositiveButton("知道了", null)
+                        .setTitle(R.string.set_bookmarks_title)
+                        .setMessage(R.string.set_bookmarks_msg)
+                        .setPositiveButton(R.string.ok, null)
                         .show());
     }
 
     private void buildOthers() {
-        addSection("其他");
+        addSection(getString(R.string.set_section_others));
         // 时间/日期格式
-        addRow("时间/日期格式",
+        addRow(getString(R.string.set_datetime_format),
                 Settings.getString(this, Settings.KEY_DATETIME_FORMAT, "yyyy-MM-dd HH:mm:ss"),
                 v -> chooseDatetimeFormat());
         // 语言
-        addRow("语言",
+        addRow(getString(R.string.set_language),
                 languageDesc(),
                 v -> chooseLanguage());
         // 用户协议与隐私政策
-        addRow("用户协议与隐私政策",
-                "查看本应用的用户协议与隐私说明",
+        addRow(getString(R.string.set_privacy),
+                getString(R.string.set_privacy_summary),
                 v -> showPrivacy());
     }
 
@@ -216,26 +217,26 @@ public class SettingsActivity extends AppCompatActivity {
     private void chooseHomePath() {
         final EditText et = new EditText(this);
         et.setInputType(InputType.TYPE_CLASS_TEXT);
-        et.setHint("输入绝对路径，如 /sdcard/Download");
+        et.setHint(R.string.set_home_path_hint);
         et.setText(Settings.getString(this, Settings.KEY_HOME_PATH, ""));
         new MaterialAlertDialogBuilder(this)
-                .setTitle("默认首页目录")
+                .setTitle(R.string.set_home_dir)
                 .setView(et)
-                .setNegativeButton("清除", (d, w) -> {
+                .setNegativeButton(R.string.set_clear, (d, w) -> {
                     Settings.putString(this, Settings.KEY_HOME_PATH, "");
-                    toast("已清除，首页回到默认目录");
+                    toast(getString(R.string.toast_home_cleared));
                     refreshRows();
                 })
-                .setPositiveButton("确定", (d, w) -> {
+                .setPositiveButton(R.string.set_ok, (d, w) -> {
                     String p = et.getText().toString().trim();
                     if (p.isEmpty()) {
                         SelectItem.clearHome(this);
-                        toast("已清除，首页回到默认目录");
+                        toast(getString(R.string.toast_home_cleared));
                     } else if (new File(p).exists()) {
                         Settings.putString(this, Settings.KEY_HOME_PATH, p);
-                        toast("已设置首页目录");
+                        toast(getString(R.string.toast_home_set));
                     } else {
-                        toast("路径不存在");
+                        toast(getString(R.string.toast_path_not_exist));
                     }
                     refreshRows();
                 })
@@ -243,29 +244,36 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void chooseTheme() {
-        String[] items = {"跟随系统", "浅色", "深色"};
+        String[] items = {
+                getString(R.string.set_follow_system),
+                getString(R.string.set_light),
+                getString(R.string.set_dark)
+        };
         new MaterialAlertDialogBuilder(this)
-                .setTitle("主题模式")
+                .setTitle(R.string.set_theme)
                 .setSingleChoiceItems(items, ThemeManager.readMode(this), (d, w) -> {
                     ThemeManager.setMode(this, w);
                     d.dismiss();
                     refreshRows();
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
     private void chooseDisplayMode() {
-        String[] items = {"列表", "网格"};
+        String[] items = {
+                getString(R.string.set_list),
+                getString(R.string.set_grid)
+        };
         boolean grid = Settings.getBoolean(this, Settings.KEY_GRID_MODE, false);
         new MaterialAlertDialogBuilder(this)
-                .setTitle("显示方式")
+                .setTitle(R.string.set_display_mode)
                 .setSingleChoiceItems(items, grid ? 1 : 0, (d, w) -> {
                     Settings.putBoolean(this, Settings.KEY_GRID_MODE, w == 1);
                     d.dismiss();
                     refreshRows();
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -280,22 +288,26 @@ public class SettingsActivity extends AppCompatActivity {
         String cur = Settings.getString(this, Settings.KEY_DATETIME_FORMAT, "yyyy-MM-dd HH:mm:ss");
         int check = java.util.Arrays.asList(items).indexOf(cur);
         new MaterialAlertDialogBuilder(this)
-                .setTitle("时间/日期格式")
+                .setTitle(R.string.set_datetime_format)
                 .setSingleChoiceItems(items, Math.max(check, 0), (d, w) -> {
                     Settings.putString(this, Settings.KEY_DATETIME_FORMAT, items[w]);
                     d.dismiss();
                     refreshRows();
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
     private void chooseLanguage() {
-        String[] items = {"跟随系统", "简体中文", "English"};
+        String[] items = {
+                getString(R.string.set_follow_system),
+                getString(R.string.set_zh),
+                "English"
+        };
         String cur = Settings.getString(this, Settings.KEY_LANGUAGE, "auto");
         int idx = "zh".equals(cur) ? 1 : ("en".equals(cur) ? 2 : 0);
         new MaterialAlertDialogBuilder(this)
-                .setTitle("语言")
+                .setTitle(R.string.set_language)
                 .setSingleChoiceItems(items, idx, (d, w) -> {
                     String v = w == 0 ? "auto" : (w == 1 ? "zh" : "en");
                     // 同步落盘，确保进程退出后下次启动能读到
@@ -307,13 +319,13 @@ public class SettingsActivity extends AppCompatActivity {
                     // 直接退出应用，重新打开后即切换为所选语言
                     restartToApplyLanguage();
                 })
-                .setNegativeButton("取消", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
     /** 语言生效需重建整个界面：直接退出应用，用户重新打开后即切换到所选语言。 */
     private void restartToApplyLanguage() {
-        toast("语言已切换，正在退出应用，请重新打开");
+        toast(getString(R.string.toast_lang_switched));
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
             finishAffinity();
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -336,7 +348,7 @@ public class SettingsActivity extends AppCompatActivity {
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.privacy_title)
                 .setView(scrollView)
-                .setPositiveButton("我已阅读并同意", null)
+                .setPositiveButton(R.string.set_i_agree, null)
                 .show();
     }
 
@@ -344,8 +356,8 @@ public class SettingsActivity extends AppCompatActivity {
     private void checkUpdate() {
         // 检查动画：带旋转进度条的对话框
         android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
-        pd.setTitle("检查更新");
-        pd.setMessage("正在检查最新版本…");
+        pd.setTitle(getString(R.string.set_check_update_title));
+        pd.setMessage(getString(R.string.set_check_update_msg));
         pd.setIndeterminate(true);
         pd.setCancelable(false);
         pd.show();
@@ -356,22 +368,22 @@ public class SettingsActivity extends AppCompatActivity {
                 if (!isLatest && latestTag != null && !latestTag.isEmpty()) {
                     // 有最新版本 -> 弹窗提示，点击后直接下载（直链）
                     new MaterialAlertDialogBuilder(this)
-                            .setTitle("发现新版本")
-                            .setMessage("检测到最新版本 " + latestTag + "\n是否立即下载并安装？")
-                            .setNegativeButton("取消", null)
-                            .setPositiveButton("立即下载", (d, w) ->
+                            .setTitle(R.string.set_found_update_title)
+                            .setMessage(getString(R.string.set_found_update_msg, latestTag))
+                            .setNegativeButton(R.string.cancel, null)
+                            .setPositiveButton(R.string.download_now, (d, w) ->
                                     Updater.downloadAndInstall(this, latestTag,
                                             new UpdateDownloadProgress()))
                             .show();
                 } else {
                     // 已是最新（或网络异常），提示原因
                     String tip = (message == null || message.isEmpty())
-                            ? "你已经是最新版本"
-                            : ("你已经是最新版本；" + message);
+                            ? getString(R.string.set_latest)
+                            : getString(R.string.set_latest_extra, message);
                     new MaterialAlertDialogBuilder(this)
-                            .setTitle("检查更新")
+                            .setTitle(R.string.set_check_update_title)
                             .setMessage(tip)
-                            .setPositiveButton("知道了", null)
+                            .setPositiveButton(R.string.ok, null)
                             .show();
                 }
             });
@@ -385,14 +397,15 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onStarted(long totalBytes) {
             pd = new android.app.ProgressDialog(SettingsActivity.this);
-            pd.setTitle("下载更新包");
+            pd.setTitle(getString(R.string.set_download_title));
             pd.setProgressStyle(android.app.ProgressDialog.STYLE_HORIZONTAL);
             pd.setIndeterminate(false);
             pd.setCancelable(false);
             if (totalBytes > 0) {
                 pd.setMax((int) Math.min(Integer.MAX_VALUE, totalBytes));
             }
-            pd.setMessage("0 B / " + (totalBytes > 0 ? fmtSize(totalBytes) : "未知"));
+            pd.setMessage("0 B / " + (totalBytes > 0 ? fmtSize(totalBytes)
+                    : getString(R.string.set_download_unknown)));
             pd.show();
         }
 
@@ -403,9 +416,9 @@ public class SettingsActivity extends AppCompatActivity {
             if (totalBytes > 0 && pd.getMax() > 0) {
                 pd.setProgress((int) Math.min(pd.getMax(), downloadedBytes));
             }
-            pd.setMessage("已下载 " + fmtSize(downloadedBytes)
-                    + (totalBytes > 0 ? " / " + fmtSize(totalBytes) : "")
-                    + "\n速度：" + fmtSize(speedBps) + "/s");
+            String total = totalBytes > 0 ? " / " + fmtSize(totalBytes) : "";
+            pd.setMessage(getString(R.string.set_download_progress,
+                    fmtSize(downloadedBytes), total, fmtSize(speedBps)));
         }
 
         @Override
@@ -431,22 +444,22 @@ public class SettingsActivity extends AppCompatActivity {
 
     private String defaultHomeDesc() {
         String p = Settings.getString(this, Settings.KEY_HOME_PATH, "");
-        return p.isEmpty() ? "默认（外部存储）" : p;
+        return p.isEmpty() ? getString(R.string.set_default_home) : p;
     }
 
     private String themeDesc() {
         switch (ThemeManager.readMode(this)) {
-            case 1: return "浅色";
-            case 2: return "深色";
-            default: return "跟随系统";
+            case 1: return getString(R.string.set_light);
+            case 2: return getString(R.string.set_dark);
+            default: return getString(R.string.set_follow_system);
         }
     }
 
     private String languageDesc() {
         String cur = Settings.getString(this, Settings.KEY_LANGUAGE, "auto");
-        if ("zh".equals(cur)) return "简体中文";
+        if ("zh".equals(cur)) return getString(R.string.set_zh);
         if ("en".equals(cur)) return "English";
-        return "跟随系统";
+        return getString(R.string.set_follow_system);
     }
 
     /** 重建行列表以刷新摘要。 */
@@ -469,8 +482,10 @@ public class SettingsActivity extends AppCompatActivity {
         TextView tv = new TextView(this);
         tv.setText(title);
         tv.setTextSize(14);
-        tv.setPadding(dp(16), dp(18), dp(16), dp(6));
+        tv.setTypeface(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD);
+        tv.setPadding(dp(12), dp(18), dp(12), dp(6));
         tv.setTextColor(0xFF1A73E8);
+        tv.setBackgroundResource(R.drawable.section_header_bg);
         container.addView(tv);
     }
 
@@ -480,6 +495,14 @@ public class SettingsActivity extends AppCompatActivity {
         ((TextView) v.findViewById(R.id.row_summary)).setText(summary);
         v.findViewById(R.id.row_chevron).setVisibility(View.VISIBLE);
         v.setOnClickListener(onClick);
+        // 行进入动画：淡入 + 上移，逐行顺次浮现
+        int pos = container.getChildCount();
+        v.setAlpha(0f);
+        v.setTranslationY(dp(16));
+        v.animate().alpha(1f).translationY(0f)
+                .setDuration(240).setStartDelay(pos * 30L)
+                .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                .start();
         container.addView(v);
     }
 

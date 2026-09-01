@@ -2,14 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="6dp"
+    android:layout_marginVertical="4dp"
+    android:background="@drawable/tool_item_bg"
     android:orientation="vertical"
-    android:padding="12dp"
-    android:background="?attr/selectableItemBackground">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tool_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="#DE000000"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -18,6 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="2dp"
-        android:textColor="#666666"
+        android:textColor="#8A000000"
         android:textSize="13sp" />
 </LinearLayout>

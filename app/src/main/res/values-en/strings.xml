@@ -28,12 +28,249 @@
     <string name="about_title">About</string>
     <string name="about_desc">This software is made by the author. Please do not steal others\' hard work.\nTest version, will be continuously optimized and updated.\n\nThis software is open-sourced under the GNU GPL v3 license. You are free to study, improve and modify it, but when redistributing you must keep this notice and comply with the GPL v3 terms. Source repository: github.com/ppkkgzs/ceshi</string>
     <string name="about_download">Download latest version</string>
+    <string name="about_dl_stable">Download Stable (direct)</string>
+    <string name="about_dl_beta">Download Beta (direct)</string>
+    <string name="about_dl_history">View all releases</string>
     <string name="about_check_update">Check update</string>
     <string name="about_check_beta">Check Beta update</string>
     <string name="about_check_beta_desc">Get the latest beta version (Pre-Release) and download it directly</string>
+    <string name="about_open_source">Open-Source Notice</string>
+    <string name="about_signing_note">Signature Change Notice</string>
+    <string name="about_source_title">Open-Source Notice</string>
+    <string name="about_open_repo">Open repository</string>
+    <string name="close">Close</string>
+    <string name="ok">Got it</string>
+    <string name="cancel">Cancel</string>
+    <string name="download_now">Download Now</string>
+    <string name="go_download">Go to download</string>
+    <string name="update_direct">Update directly</string>
+    <string name="update_later">Not now</string>
+    <string name="version">Version</string>
+
+    <!-- Toolbox -->
+    <string name="toolbox_title">Toolbox</string>
+    <string name="tool_title_editor">Text / Code Editor</string>
+    <string name="tool_desc_editor">Edit TXT, code, Smali, etc.</string>
+    <string name="tool_title_hex">Hex Viewer</string>
+    <string name="tool_desc_hex">Read binary, jump to offsets</string>
+    <string name="tool_title_diff">Text Diff</string>
+    <string name="tool_desc_diff">Highlight differences side by side</string>
+    <string name="tool_title_archive">Compress / Extract</string>
+    <string name="tool_desc_archive">ZIP archive and extract</string>
+    <string name="tool_title_cleanup">Scan &amp; Cleanup</string>
+    <string name="tool_desc_cleanup">Storage, cache, APKs, rarely-used apps</string>
+    <string name="tool_title_search">File Search</string>
+    <string name="tool_desc_search">Find files across all directories by keyword</string>
+    <string name="tool_title_encode">Encoding Converter</string>
+    <string name="tool_desc_encode">Convert between Unicode / Base64 / Hex</string>
+    <string name="tool_title_apkinfo">APK Details</string>
+    <string name="tool_desc_apkinfo">Version, permissions, signature fingerprint</string>
+    <string name="tool_title_extract">Extract APK</string>
+    <string name="tool_desc_extract">Extract APKs from installed apps to Downloads</string>
+    <string name="tool_title_sign">Signature Info</string>
+    <string name="tool_desc_sign">Inspect APK signing certificate fingerprint</string>
+    <string name="tool_title_dex2smali">DEX to Smali</string>
+    <string name="tool_desc_dex2smali">Parse DEX into structured smali skeleton</string>
+    <string name="tool_title_resign">Re-sign APK</string>
+    <string name="tool_desc_resign">Re-sign APK with debug key (v1/v2/v3)</string>
+    <string name="tool_title_customsign">Custom APK Signing</string>
+    <string name="tool_desc_customsign">Sign APK with your own keystore / password</string>
+    <string name="tool_title_sopatch">SO Patch</string>
+    <string name="tool_desc_sopatch">Equal-length hex patch on SO libraries</string>
+    <string name="tool_title_decompile">Decompile / Recompile</string>
+    <string name="tool_desc_decompile">Decompile and rebuild with apktool</string>
+    <string name="tool_title_manifest">Edit Manifest</string>
+    <string name="tool_desc_manifest">Edit decompiled AndroidManifest.xml</string>
+    <string name="tool_title_dual">Dual-Pane File Manager</string>
+    <string name="tool_desc_dual">Browse two panes side by side and copy across</string>
+    <string name="tool_title_ftp">FTP Remote Files</string>
+    <string name="tool_desc_ftp">Connect to FTP to browse / download / upload</string>
+    <string name="tool_title_vault">Encrypted Vault</string>
+    <string name="tool_desc_vault">Store private files encrypted with AES</string>
+    <string name="tool_title_root">Root Enhanced</string>
+    <string name="tool_desc_root">Freeze, uninstall, system file access</string>
+    <string name="tool_title_transfer">Transfer &amp; Peripherals</string>
+    <string name="tool_desc_transfer">HTTP file server, Bluetooth send</string>
+    <string name="tool_read_fail">Failed to read the selected file: %1$s</string>
+
+    <!-- Settings sections -->
+    <string name="set_section_startup">Startup</string>
+    <string name="set_section_appearance">Appearance</string>
+    <string name="set_section_general">General</string>
+    <string name="set_section_install">Install</string>
+    <string name="set_section_update">Update</string>
+    <string name="set_section_bookmarks">Bookmarks &amp; Bottom Bar</string>
+    <string name="set_section_others">Other</string>
+
+    <!-- Startup -->
+    <string name="set_home_dir">Default home directory</string>
+    <string name="set_home_dir_summary">Current: %1$s</string>
+    <string name="set_default_home">Default (external storage)</string>
+    <string name="set_check_update_on_start">Check for updates on startup</string>
+    <string name="set_check_update_on_start_summary">When enabled, auto-checks GitHub for the latest version each time the app opens</string>
+    <string name="set_home_path_hint">Enter an absolute path, e.g. /sdcard/Download</string>
+    <string name="set_clear">Clear</string>
+    <string name="set_ok">OK</string>
+    <string name="toast_home_cleared">Cleared, home back to default directory</string>
+    <string name="toast_home_set">Home directory set</string>
+    <string name="toast_path_not_exist">Path does not exist</string>
+
+    <!-- Appearance -->
+    <string name="set_theme">Theme mode</string>
+    <string name="set_display_mode">Display mode</string>
+    <string name="set_follow_system">Follow system</string>
+    <string name="set_light">Light</string>
+    <string name="set_dark">Dark</string>
+    <string name="set_list">List</string>
+    <string name="set_grid">Grid</string>
+
+    <!-- General -->
+    <string name="set_show_hidden">Show hidden files</string>
+    <string name="set_show_hidden_summary">When enabled, show hidden files starting with "." in the browser</string>
+    <string name="set_dual_pane">Default dual-pane mode</string>
+    <string name="set_dual_pane_summary">Whether to show two panes when entering the dual-pane manager; disable for single pane (on by default on tablets, single pane on small screens)</string>
+
+    <!-- Install -->
+    <string name="set_install">Allow APK extract / install</string>
+    <string name="set_install_summary">When enabled, you can extract APKs from the file manager / package details and request install permission</string>
+    <string name="set_unknown_source">Install from unknown sources</string>
+    <string name="set_unknown_source_summary">When installing third-party APKs, the system will guide you to the "Allow apps from this source" settings page</string>
+    <string name="set_unknown_source_title">Install from unknown sources</string>
+    <string name="set_unknown_source_msg">Extracted APKs can be installed with the system installer.\n\nIf the system shows an "Unknown source" prompt, go to\nSettings → Apps → This app → Allow installing unknown apps\nto enable permission.</string>
+    <string name="set_extract_apk">Extract APK</string>
+    <string name="set_extract_apk_summary">Extract APKs from installed apps to the Downloads folder (requires storage permission)</string>
+
+    <!-- Update -->
+    <string name="set_check_latest">Check latest version</string>
+    <string name="set_check_latest_summary">Current version: %1$s | Check GitHub for the latest version and download it directly</string>
+    <string name="set_check_beta">Check Beta update (direct link)</string>
+    <string name="set_check_beta_summary">Get the latest Beta Pre-Release and download it directly for installation</string>
+    <string name="set_check_update_title">Check for updates</string>
+    <string name="set_check_update_msg">Checking for the latest version…</string>
+    <string name="set_found_update_title">New version found</string>
+    <string name="set_found_update_msg">The latest version %1$s was detected.\nDownload and install now?</string>
+    <string name="set_latest">You are already on the latest version</string>
+    <string name="set_latest_extra">You are already on the latest version; %1$s</string>
+    <string name="set_check_beta_title">Check Beta update</string>
+    <string name="set_check_beta_msg">Checking for the latest beta version…</string>
+    <string name="set_found_beta_title">New Beta version found</string>
+    <string name="set_found_beta_msg">The latest beta version %1$s was detected.\nDownload and install now?</string>
+    <string name="set_latest_beta">You are already on the latest Beta version</string>
+    <string name="set_latest_beta_extra">You are already on the latest Beta version; %1$s</string>
+    <string name="set_download_title">Downloading update package</string>
+    <string name="set_download_unknown">unknown</string>
+    <string name="set_download_progress">Downloaded %1$s%2$s\nSpeed: %3$s/s</string>
+
+    <!-- Bookmarks & bottom bar -->
+    <string name="set_bottom_bar">Enable bottom bar</string>
+    <string name="set_bottom_bar_summary">Show a navigation bar at the bottom of the main screen</string>
+    <string name="set_pane_switch">Bottom bar left / right switch</string>
+    <string name="set_pane_switch_summary">In dual-pane mode, the bottom bar selects the currently active pane (left / right)</string>
+    <string name="set_pane_switch_title">Bottom bar dual-pane help</string>
+    <string name="set_pane_switch_msg">In dual-pane mode, tap "Left / Right" on the bottom bar to select the active pane.\nThe back key only goes up within the selected pane and does not affect the other pane.</string>
+    <string name="set_bookmarks">Bookmark management</string>
+    <string name="set_bookmarks_summary">Add bookmarks via the file manager\'s menu; jump to them from Bookmarks and the bottom bar</string>
+    <string name="set_bookmarks_title">Bookmarks</string>
+    <string name="set_bookmarks_msg">Bookmarks are integrated into the \"Add bookmark\" entry in the file manager\'s top-right menu. Once added, you can jump to them quickly on the Bookmarks page.</string>
+
+    <!-- Other -->
+    <string name="set_datetime_format">Date / time format</string>
+    <string name="set_language">Language</string>
+    <string name="set_privacy">User Agreement &amp; Privacy Policy</string>
+    <string name="set_privacy_summary">View this app\'s user agreement and privacy policy</string>
+    <string name="set_i_agree">I have read and agree</string>
+    <string name="set_zh">简体中文</string>
+    <string name="toast_lang_switched">Language changed, exiting the app. Please reopen it</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="privacy_title">User Agreement and Privacy Policy</string>
     <string name="privacy_text">[User Agreement]\nWelcome to this software. It was made by the author; please do not steal or redistribute others\' work.\n\n1. By using this software you agree to this agreement.\n2. This software is released as "Formal" and "Beta" versions. The beta version is for trying the latest features and collecting feedback and may contain unknown issues.\n3. This software is only for learning and personal use. Any illegal use is prohibited.\n\n[Version Overview]\n- Formal (Stable): a verified stable version, suitable for daily use, e.g. v1.6.8.\n- Beta: a preview version, e.g. v1.8.0.1-beta, for trying new features early and reporting issues. It may contain unknown issues or signature changes, so it is recommended to install it on a spare device.\n- For the most stable experience, choose the formal version; the beta version is only for trying out.\n\n[Open-Source Notice]\nThis software is licensed under the GNU General Public License, version 3 (GPL v3).\n\n1. You have the right to freely obtain, study, modify and redistribute the source code.\n2. When redistributing any modified or derivative work, it must be open-sourced under the same license (GPL v3) and keep the original author credit and this notice.\n3. This software is provided "as is"; the author makes no express or implied warranty. For details, refer to the GPL v3 license text.\n4. Source repository: github.com/ppkkgzs/ceshi\n\n[Privacy Policy]\nThis software is a purely local offline tool, with no data upload, no ads, and no third-party tracking.\n\n1. We do NOT collect, store or upload any of your personal data.\n2. File browsing, compression, APK processing and other operations are all done on your device.\n3. The software only accesses GitHub to read version information for update prompts when you enable "Check for updates on startup". It does not upload any data.\n4. You can disable version checking in Settings at any time to use it fully offline.\n\nIf you have any questions about this agreement or privacy policy, please give us feedback in the GitHub repository, or email: gexinggzs@163.com.</string>
+
+    <!-- About page additions -->
+    <string name="about_checking_update">Checking for updates…</string>
+    <string name="about_open_source_msg">This software is open-sourced under the GNU General Public License, version 3 (GPL v3).\n\n· You have the right to freely obtain, study, modify and redistribute the source code\n· When redistributing any modified or derivative work, it must be open-sourced under the same license (GPL v3) and keep the original credit\n· This software is provided as-is; the author makes no warranty\n\nThird-party components:\n· 7-Zip-JBinding-4Android (native 7-Zip extraction engine) — maintained by omicronapps, distributed under its LGPL-2.1 license.\n  The codec and the underlying 7-Zip were written by Igor Pavlov (c) 1999-2016.\n  This project links to it as a library and distributes that dynamic library with the APK, which LGPL-2.1 permits via dynamic linking; you may replace/upgrade the library, or relink it after modifying it (see LGPL-2.1 section 6 for disassembly/reverse-engineering).\n\nSource repository: github.com/ppkkgzs/ceshi</string>
+    <string name="about_signing_note_msg">Since v1.7.0 the APK signing key has changed.\n\n[Old versions v1.6.x and earlier]\nUses the old key, signing certificate subject:\nCN=PK Manager, OU=PKTools, O=PKTools, L=Shenzhen, ST=Guangdong, C=CN\n\n[New versions v1.7.0 and later]\nUses the new key alltoolbox.jks, signing certificate subject:\nCN=AllToolbox, OU=AllToolbox, O=AllToolbox, L=X, ST=X, C=CN\n\n[Impact and upgrade notes]\nAndroid does not allow installing over an existing app with a different signature. If you have the old-signed version (v1.6.x or earlier) installed, installing the new version directly will show "Signature abnormal / App not installed / INSTALL_FAILED_UPDATE_INCOMPATIBLE".\nSolution: uninstall the old version first, then install the new one (v1.7.0+).\n(Uninstalling clears this app\'s local settings, bookmarks, vault and other data)\n\n[Going forward] From v1.7.0 all versions are signed with the same AllToolbox key, so future sibling versions can be updated directly by overwriting and there will be no more signature issues.</string>
+    <string name="about_found_update_msg">Latest version: %1$s\nCurrent version: %2$s\n\nTap "Go to download" to get the latest APK on GitHub.</string>
+    <string name="about_found_beta_msg">Latest Beta version: %1$s\nCurrent version: %2$s\n\nDownload and install now?</string>
+    <string name="open_link_failed">Unable to open the link</string>
+
+    <!-- Extract APK page -->
+    <string name="extract_loading_apps">Loading app list…</string>
+    <string name="extract_version_unknown">Version unknown</string>
+    <string name="extract_unknown">Unknown</string>
+    <string name="extract_label_pkg_name">Package name</string>
+    <string name="extract_label_version">Version code</string>
+    <string name="extract_label_size">APK size</string>
+    <string name="extract_label_signature">Signature</string>
+    <string name="extract_label_protection">Protection</string>
+    <string name="extract_label_data_dir">Data directory</string>
+    <string name="extract_label_apk_path">APK path</string>
+    <string name="extract_more">More</string>
+    <string name="extract_action_launch">Launch</string>
+    <string name="extract_action_detail">Details</string>
+    <string name="extract_action_uninstall">Uninstall</string>
+    <string name="extract_no_launch_intent">This app has no launchable entry</string>
+    <string name="extract_launch_failed">Launch failed: %1$s</string>
+    <string name="extract_open_details_failed">Unable to open app details</string>
+    <string name="extract_uninstall_failed">Unable to initiate uninstall</string>
+    <string name="extract_unsigned">Unsigned</string>
+    <string name="extract_no_protection">Not protected</string>
+    <string name="extract_prot_360">360 Jiagu</string>
+    <string name="extract_prot_ijiami">iJiami</string>
+    <string name="extract_prot_bangcle">Bangcle</string>
+    <string name="extract_prot_tencent">Tencent Legu</string>
+    <string name="extract_prot_baidu">Baidu</string>
+    <string name="extract_prot_naga">Naga</string>
+    <string name="extract_request_all_files">Requesting "All files access" permission. Please tap Extract again after it is granted.</string>
+    <string name="extract_extracting">Extracting %1$s …</string>
+    <string name="extract_failed">Extract failed: %1$s</string>
+    <string name="extract_cannot_write_main_dir">Unable to write to the main directory</string>
+    <string name="extract_cannot_open_output">Unable to open output stream</string>
+    <string name="extract_done_main">Extracted to "Main page/PK2": %1$s</string>
+    <string name="extract_done_path">Extracted to: %1$s</string>
+
+    <!-- Main screen permissions/navigation -->
+    <string name="perm_storage_granted">Storage permission granted</string>
+    <string name="perm_shizuku_granted">Shizuku authorized</string>
+    <string name="perm_disagree_exit">Disagree and exit</string>
+    <string name="perm_agree_continue">Agree and continue</string>
+    <string name="perm_reason_allfiles">This app needs access to storage to browse and manage files.\n\nBesides storage permission, Android 11 and above also require "All files access" to read all directories.</string>
+    <string name="perm_reason_storage">This app needs to read and write storage to browse and manage files.</string>
+    <string name="perm_storage_title">Storage permission needed</string>
+    <string name="perm_later">Not now</string>
+    <string name="perm_allow">Allow</string>
+    <string name="perm_restricted_title">Security restriction detected</string>
+    <string name="perm_restricted_msg">The system currently has "All files access" turned off:\n· Cannot read restricted directories such as Android/data and Android/obb\n· Some file operations may be limited\n\nWould you like to go to system settings to lift this restriction?</string>
+    <string name="perm_resolve">Lift restriction</string>
+    <string name="perm_shizuku_not_running_title">Shizuku is not enabled</string>
+    <string name="perm_shizuku_not_running_msg">Some functions (e.g. accessing restricted directories like Android/data, extracting files in restricted directories) require Shizuku permission.\n\nGo to authorize Shizuku now?</string>
+    <string name="perm_shizuku_authorize">Authorize</string>
+    <string name="perm_shizuku_not_started">Shizuku is not running</string>
+    <string name="perm_shizuku_start_msg">Please install and start Shizuku (moe.shizuku.privileged.api) on this device, activate it via adb/wireless debugging or Root, then return to this app to authorize.\n\nTap "Open Shizuku" to set it up.</string>
+    <string name="perm_shizuku_open">Open Shizuku</string>
+    <string name="main_announcement_title">Announcement</string>
+    <string name="main_announcement_msg">Welcome to PK Manager %1$s!\n\nThis software is made by the author. Please do not steal or redistribute others\' work.\nThis is a test version that will be continuously optimized and updated.\n\nUpdate notes:\n· Added contact email to the user agreement and privacy policy\n· Optimized startup dialog order; auto-detects Shizuku on startup and guides authorization\n· Show the corresponding app icon for app folders\n· Archives can be extracted in-app without jumping to external apps\n· Tap a file to show the open menu, long-press to show the action menu\n\n[Open-Source Notice] This software is open-sourced under the GNU GPL v3 license; you may freely study, modify and redistribute it as long as you comply with the GPL v3 terms.\nSource repository: github.com/ppkkgzs/ceshi\n\nDownload link for the latest version:\n%2$s\n\nContact email: gexinggzs@163.com</string>
+    <string name="main_found_update_title">New version found %1$s</string>
+    <string name="main_found_update_msg">Current version: %1$s\nFor suggestions and bug reports, email: gexinggzs@163.com\n\nTap "Update directly" to download in-app and auto-install.</string>
+    <string name="main_btn_prev">◀ Previous</string>
+    <string name="main_first_page">Already on the first page</string>
+    <string name="main_btn_next">Next ▶</string>
+    <string name="main_last_page">Already on the last page</string>
+    <string name="main_btn_home">↑ Home</string>
+    <string name="main_dl_started">Connected, download started…</string>
+    <string name="main_dl_downloaded">Downloaded %1$s / %2$s  ·  Speed %3$s</string>
+    <string name="main_dl_eta">About %1$s remaining</string>
+    <string name="main_dl_speed">Speed %1$s</string>
+    <string name="main_dl_eta_calculating">Calculating remaining time…</string>
+
+    <!-- Update -->
+    <string name="update_enable_source_goto">Please enable "Allow installing from unknown sources" in system settings and then update again</string>
+    <string name="update_enable_source">Please allow installing from unknown sources in system settings</string>
+    <string name="update_download_started">Update package download started…</string>
+    <string name="update_download_failed">Download failed: %1$s</string>
+    <string name="update_download_empty">Downloaded content is empty</string>
+    <string name="update_write_failed">Failed to write the install package</string>
+    <string name="update_missing">Update package download failed or was deleted</string>
+    <string name="update_open_install_failed">Unable to open the install screen: %1$s</string>
 </resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 保险箱（VaultActivity） -->
+    <string name="vault_title">加密保险箱</string>
+    <string name="vault_locked">已上锁</string>
+    <string name="vault_set_password_hint">设置解锁密码</string>
+    <string name="vault_init_title">初始化保险箱</string>
+    <string name="vault_init_message">设置密码后，加入的文件将用该密码 AES 加密。请牢记密码，忘记将无法恢复。</string>
+    <string name="vault_confirm">确定</string>
+    <string name="vault_password_too_short">密码过短</string>
+    <string name="vault_created">保险箱已创建</string>
+    <string name="vault_set_failed">设置失败</string>
+    <string name="vault_cancel">取消</string>
+    <string name="vault_unlock_hint">输入解锁密码</string>
+    <string name="vault_unlock_title">输入密码解锁</string>
+    <string name="vault_unlock_button">解锁</string>
+    <string name="vault_unlocked">已解锁</string>
+    <string name="vault_wrong_password">密码错误</string>
+    <string name="vault_exit">退出</string>
+    <string name="vault_saved_encrypted">已加密保存</string>
+    <string name="vault_encrypt_failed">加密失败</string>
+    <string name="vault_add_failed">添加失败: %1$s</string>
+    <string name="vault_file_encrypted_title">文件已加密</string>
+    <string name="vault_decrypt_open_confirm">是否用当前密码解密并打开？\n%1$s</string>
+    <string name="vault_decrypt_view_btn">解密查看</string>
+    <string name="vault_enter_password_hint">输入密码</string>
+    <string name="vault_decrypt_title">解密</string>
+    <string name="vault_decrypt_button">解密</string>
+    <string name="vault_delete">删除</string>
+    <string name="vault_decrypt_failed">解密失败（密码错误或文件损坏）</string>
+    <string name="vault_open_file">打开文件</string>
+    <string name="vault_open_failed">无法打开: %1$s</string>
+</resources>

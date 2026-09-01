@@ -3,10 +3,38 @@
 
     <!-- 跟随系统浅/深主题资源 -->
     <style name="Theme.Toolbox" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- 品牌主色 -->
         <item name="colorPrimary">@color/toolbox_primary</item>
         <item name="colorPrimaryVariant">@color/toolbox_primary_dark</item>
         <item name="colorAccent">@color/toolbox_accent</item>
-        <!-- 窗口背景交给 DayNight 自动切换（浅=白 / 深=黑），保证深色模式下文字变白 -->
+        <item name="colorSecondary">@color/toolbox_accent</item>
+
+        <!-- 主色变体：控制 Toolbar / 按钮 / 强调色 -->
+        <item name="colorPrimaryDark">@color/toolbox_primary_dark</item>
+
+        <!-- Activity 转场动画（进入/退出/返回） -->
+        <item name="android:windowAnimationStyle">@style/WindowAnimation.Toolbox</item>
+        <item name="android:statusBarColor">@color/toolbox_primary</item>
+
+        <!-- 按钮统一圆角，提升质感 -->
+        <item name="materialButtonStyle">@style/Widget.Toolbox.Button</item>
+    </style>
+
+    <!-- 顺滑的窗口转场动画 -->
+    <style name="WindowAnimation.Toolbox" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_slide_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_slide_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_back_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_back_out</item>
+        <item name="android:taskOpenEnterAnimation">@anim/fade_in</item>
+        <item name="android:taskOpenExitAnimation">@anim/fade_out</item>
+    </style>
+
+    <!-- 统一按钮样式：圆角、内边距 -->
+    <style name="Widget.Toolbox.Button" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">10dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:letterSpacing">0.04</item>
     </style>
 
 </resources>

@@ -29,25 +29,38 @@ public final class UpdateChecker {
 
     /** Beta 版本下载页（仅显示全部 Beta 测试版预发行版本）。 */
     public static final String BETA_DOWNLOAD_URL =
-            "https://github.com/ppkkgzs/ceshi/releases";
+            "https://github.com/ppkkgzs/ceshi-beta/releases";
 
-    /** Release 安装包直链前缀（不带 tag 与文件名，见 {@link #apkDirectUrl}）。 */
+    /** Release 安装包直链前缀（正式版，见 {@link #apkDirectUrl}）。 */
     static final String RELEASE_BASE =
             "https://github.com/ppkkgzs/ceshi/releases/download/%s/AllToolbox_%s.apk";
+
+    /** Beta 版安装包直链前缀（见 {@link #apkDirectUrlBeta}）。 */
+    static final String BETA_RELEASE_BASE =
+            "https://github.com/ppkkgzs/ceshi-beta/releases/download/%s/AllToolbox_%s.apk";
 
     private static final String RELEASES_API =
             "https://api.github.com/repos/ppkkgzs/ceshi/releases/latest";
 
     /** 拉取最近若干 Release（含预发行），供 Beta 通道选最高 tag。 */
     private static final String ALL_RELEASES_API =
-            "https://api.github.com/repos/ppkkgzs/ceshi/releases?per_page=50&page=1";
+            "https://api.github.com/repos/ppkkgzs/ceshi-beta/releases?per_page=50&page=1";
 
-    /** 由 tag（如 v1.6.6）构造安装包直接下载链接。 */
+    /** 由 tag（如 v1.6.6）构造正式版安装包直接下载链接。 */
     public static String apkDirectUrl(String tag) {
+        return apkDirectUrlFor(RELEASE_BASE, tag);
+    }
+
+    /** 由 tag（如 v1.8.0.6-beta）构造 Beta 版安装包直接下载链接。 */
+    public static String apkDirectUrlBeta(String tag) {
+        return apkDirectUrlFor(BETA_RELEASE_BASE, tag);
+    }
+
+    private static String apkDirectUrlFor(String base, String tag) {
         if (tag == null) tag = "";
         String v = tag;
         if (v.toLowerCase(Locale.ROOT).startsWith("v")) v = v.substring(1);
-        return String.format(RELEASE_BASE, tag, v);
+        return String.format(base, tag, v);
     }
 
     private UpdateChecker() {

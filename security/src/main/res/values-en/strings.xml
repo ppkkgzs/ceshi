@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Vault (VaultActivity) -->
+    <string name="vault_title">Encrypted Vault</string>
+    <string name="vault_locked">Locked</string>
+    <string name="vault_set_password_hint">Set unlock password</string>
+    <string name="vault_init_title">Initialize Vault</string>
+    <string name="vault_init_message">After setting a password, files you add will be encrypted with that password using AES. Remember your password; if you forget it, it cannot be recovered.</string>
+    <string name="vault_confirm">OK</string>
+    <string name="vault_password_too_short">Password is too short</string>
+    <string name="vault_created">Vault created</string>
+    <string name="vault_set_failed">Failed to set password</string>
+    <string name="vault_cancel">Cancel</string>
+    <string name="vault_unlock_hint">Enter unlock password</string>
+    <string name="vault_unlock_title">Enter password to unlock</string>
+    <string name="vault_unlock_button">Unlock</string>
+    <string name="vault_unlocked">Unlocked</string>
+    <string name="vault_wrong_password">Wrong password</string>
+    <string name="vault_exit">Exit</string>
+    <string name="vault_saved_encrypted">Encrypted and saved</string>
+    <string name="vault_encrypt_failed">Encryption failed</string>
+    <string name="vault_add_failed">Add failed: %1$s</string>
+    <string name="vault_file_encrypted_title">File encrypted</string>
+    <string name="vault_decrypt_open_confirm">Decrypt and open with the current password?\n%1$s</string>
+    <string name="vault_decrypt_view_btn">Decrypt &amp; view</string>
+    <string name="vault_enter_password_hint">Enter password</string>
+    <string name="vault_decrypt_title">Decrypt</string>
+    <string name="vault_decrypt_button">Decrypt</string>
+    <string name="vault_delete">Delete</string>
+    <string name="vault_decrypt_failed">Decryption failed (wrong password or corrupted file)</string>
+    <string name="vault_open_file">Open file</string>
+    <string name="vault_open_failed">Cannot open: %1$s</string>
+</resources>

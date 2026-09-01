@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     if (grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED) {
                         android.widget.Toast.makeText(this,
-                                "Shizuku 已授权", android.widget.Toast.LENGTH_SHORT).show();
+                                getString(R.string.perm_shizuku_granted), android.widget.Toast.LENGTH_SHORT).show();
                     }
                 });
             };
@@ -163,11 +163,11 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle(R.string.privacy_title)
                 .setView(scrollView)
                 .setCancelable(false)
-                .setNegativeButton("不同意并退出", (d, w) -> {
+                .setNegativeButton(getString(R.string.perm_disagree_exit), (d, w) -> {
                     finishAffinity();
                     android.os.Process.killProcess(android.os.Process.myPid());
                 })
-                .setPositiveButton("同意并继续", (d, w) -> {
+                .setPositiveButton(getString(R.string.perm_agree_continue), (d, w) -> {
                     Settings.putBoolean(this, Settings.KEY_AGREEMENT_ACCEPTED, true);
                     startPermissionFlow();
                 })
@@ -195,15 +195,14 @@ public class MainActivity extends AppCompatActivity {
         }
         Settings.putBoolean(this, Settings.KEY_FIRST_PERMISSION_PROMPTED, true);
         String reason = Permissions.requiresAllFilesAccess()
-                ? "本软件需要访问存储空间以浏览和管理文件。" +
-                        "\n\n除存储权限外，Android 11 及以上还需开启「所有文件访问」才能读取全部目录。"
-                : "本软件需要读取和写入存储空间，以浏览、管理文件。";
+                ? getString(R.string.perm_reason_allfiles)
+                : getString(R.string.perm_reason_storage);
         new MaterialAlertDialogBuilder(this)
-                .setTitle("需要存储权限")
+                .setTitle(getString(R.string.perm_storage_title))
                 .setMessage(reason)
                 .setCancelable(false)
-                .setNegativeButton("暂不", (d, w) -> maybeGuideRestrictedDirs())
-                .setPositiveButton("允许", (d, w) ->
+                .setNegativeButton(getString(R.string.perm_later), (d, w) -> maybeGuideRestrictedDirs())
+                .setPositiveButton(getString(R.string.perm_allow), (d, w) ->
                         runtimePermLauncher.launch(perms))
                 .show();
     }
@@ -225,14 +224,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         new MaterialAlertDialogBuilder(this)
-                .setTitle("存在安全限制")
-                .setMessage("系统当前未开启「所有文件访问」：\n" +
-                        "· 无法读取 Android/data、Android/obb 等受限目录\n" +
-                        "· 部分文件操作可能受限\n\n" +
-                        "是否需要前往系统设置解除该安全限制？")
+                .setTitle(getString(R.string.perm_restricted_title))
+                .setMessage(getString(R.string.perm_restricted_msg))
                 .setCancelable(false)
-                .setNegativeButton("暂不", (d, w) -> checkShizukuOnStartup())
-                .setPositiveButton("去解除", (d, w) ->
+                .setNegativeButton(getString(R.string.perm_later), (d, w) -> checkShizukuOnStartup())
+                .setPositiveButton(getString(R.string.perm_resolve), (d, w) ->
                         Permissions.requestAllFilesAccess(this, allFilesLauncher))
                 .show();
     }
@@ -267,11 +263,10 @@ public class MainActivity extends AppCompatActivity {
         if (ShizukuShell.isReady()) return;      // 已开启且已授权，无需提醒
 
         new MaterialAlertDialogBuilder(this)
-                .setTitle("检测到未开启 Shizuku")
-                .setMessage("部分功能（如访问 Android/data 等受限目录、解压受限目录内文件）"
-                        + "需要 Shizuku 权限。\n\n是否前往授权 Shizuku？")
-                .setNegativeButton("暂不", null)
-                .setPositiveButton("去授权", (d, w) -> gotoShizukuAuthorize())
+                .setTitle(getString(R.string.perm_shizuku_not_running_title))
+                .setMessage(getString(R.string.perm_shizuku_not_running_msg))
+                .setNegativeButton(getString(R.string.perm_later), null)
+                .setPositiveButton(getString(R.string.perm_shizuku_authorize), (d, w) -> gotoShizukuAuthorize())
                 .show();
     }
 
@@ -283,12 +278,10 @@ public class MainActivity extends AppCompatActivity {
         }
         // Shizuku 未运行：引导安装/启动 Shizuku 应用
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Shizuku 未启动")
-                .setMessage("请先在本机安装并启动 Shizuku（moe.shizuku.privileged.api），"
-                        + "并通过 adb/无线调试 或 Root 激活后，再回到本应用授权。\n\n"
-                        + "点击「打开 Shizuku」进行设置。")
-                .setNegativeButton("取消", null)
-                .setPositiveButton("打开 Shizuku", (d, w) -> {
+                .setTitle(getString(R.string.perm_shizuku_not_started))
+                .setMessage(getString(R.string.perm_shizuku_start_msg))
+                .setNegativeButton(getString(R.string.cancel), null)
+                .setPositiveButton(getString(R.string.perm_shizuku_open), (d, w) -> {
                     try {
                         startActivity(new Intent("android.intent.action.MAIN")
                                 .setPackage("moe.shizuku.privileged.api")
@@ -309,14 +302,14 @@ public class MainActivity extends AppCompatActivity {
             FileBrowserFragment f = findFileFragment();
             if (f != null) {
                 boolean ok = f.goBackDir();
-                animateIndicator(indicator, ok ? "◀ 上一页" : "已是第一页", ok);
+                animateIndicator(indicator, ok ? getString(R.string.main_btn_prev) : getString(R.string.main_first_page), ok);
             }
         });
         findViewById(R.id.btn_next).setOnClickListener(v -> {
             FileBrowserFragment f = findFileFragment();
             if (f != null) {
                 boolean ok = f.goForwardDir();
-                animateIndicator(indicator, ok ? "▶ 下一页" : "已到最后一页", ok);
+                animateIndicator(indicator, ok ? getString(R.string.main_btn_next) : getString(R.string.main_last_page), ok);
             }
         });
         findViewById(R.id.btn_add).setOnClickListener(v -> {
@@ -327,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
             FileBrowserFragment f = findFileFragment();
             if (f != null) {
                 f.goHome();
-                animateIndicator(indicator, "↑ 首页", true);
+                animateIndicator(indicator, getString(R.string.main_btn_home), true);
             }
         });
 
@@ -362,24 +355,13 @@ public class MainActivity extends AppCompatActivity {
 
     /** 每次打开 APP 的公告弹窗，含可点击的下载链接。 */
     private void showAnnouncement() {
-        String message = "欢迎使用 PK管理器 " + UpdateChecker.localVersion(this) + "！\n\n" +
-                "本软件为本UP制作，请勿盗用或二次分发他人劳动成果，\n" +
-                "本软件为测试版本，后续将持续优化与更新。\n\n" +
-                "本次更新公告：\n" +
-                "· 用户协议与隐私政策补充联系邮箱\n" +
-                "· 启动弹窗顺序优化，启动自动检测 Shizuku 并引导授权\n" +
-                "· 应用文件夹显示对应应用图标\n" +
-                "· 压缩包支持在软件内直接解压，不跳转外部应用\n" +
-                "· 点击文件弹打开方式，长按文件弹操作菜单\n\n" +
-                "【开源声明】本软件以 GNU GPL v3 协议开源，可自由研究、修改与分发，分发时须遵守 GPL v3 条款。\n" +
-                "开源仓库：github.com/ppkkgzs/ceshi\n\n" +
-                "下载最新版本链接：\n" + UpdateChecker.DOWNLOAD_URL + "\n\n" +
-                "联系邮箱：gexinggzs@163.com";
+        String message = getString(R.string.main_announcement_msg,
+                UpdateChecker.localVersion(this), UpdateChecker.DOWNLOAD_URL);
         MaterialAlertDialogBuilder builder =
                 new MaterialAlertDialogBuilder(this)
-                        .setTitle("公告")
+                        .setTitle(getString(R.string.main_announcement_title))
                         .setMessage(message)
-                        .setPositiveButton("知道了", null);
+                        .setPositiveButton(getString(R.string.ok), null);
         androidx.appcompat.app.AlertDialog dialog = builder.create();
         dialog.setOnShowListener(d -> {
             try {
@@ -404,15 +386,14 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 if (!isLatest) {
                     new MaterialAlertDialogBuilder(this)
-                            .setTitle("发现新版本 " + tag)
-                            .setMessage("当前版本：" + UpdateChecker.localVersion(this)
-                                    + "\n优化建议、Bug 反馈请发邮件：gexinggzs@163.com\n\n"
-                                    + "点击「直接更新」将在应用内下载并自动进入安装。")
-                            .setPositiveButton("直接更新", (d, w) ->
+                            .setTitle(getString(R.string.main_found_update_title, tag))
+                            .setMessage(getString(R.string.main_found_update_msg,
+                                    UpdateChecker.localVersion(this)))
+                            .setPositiveButton(getString(R.string.update_direct), (d, w) ->
                                     startUpdateDownload(tag))
-                            .setNeutralButton("去下载", (d, w) ->
+                            .setNeutralButton(getString(R.string.go_download), (d, w) ->
                                     openBrowser(UpdateChecker.DOWNLOAD_URL))
-                            .setNegativeButton("以后再说", null)
+                            .setNegativeButton(getString(R.string.update_later), null)
                             .setOnDismissListener(d -> {
                                 if (onDone != null) onDone.run();
                             })
@@ -439,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
         Updater.downloadAndInstall(this, tag, new Updater.DownloadProgressListener() {
             @Override
             public void onStarted(long totalBytes) {
-                status.setText("连接成功，开始下载…");
+                status.setText(getString(R.string.main_dl_started));
             }
 
             @Override
@@ -449,14 +430,14 @@ public class MainActivity extends AppCompatActivity {
                     int p = (int) (downloaded * 100 / total);
                     bar.setProgress(p);
                     percent.setText(p + "%");
-                    status.setText("已下载 " + fmtSize(downloaded) + " / "
-                            + fmtSize(total) + "  ·  速度 " + fmtSpeed(speedBps));
-                    eta.setText("预计剩余 " + fmtEta(remainingSeconds));
+                    status.setText(getString(R.string.main_dl_downloaded,
+                            fmtSize(downloaded), fmtSize(total), fmtSpeed(speedBps)));
+                    eta.setText(getString(R.string.main_dl_eta, fmtEta(remainingSeconds)));
                 } else {
                     bar.setIndeterminate(true);
                     percent.setText(fmtSize(downloaded));
-                    status.setText("速度 " + fmtSpeed(speedBps));
-                    eta.setText("预计剩余 计算中…");
+                    status.setText(getString(R.string.main_dl_speed, fmtSpeed(speedBps)));
+                    eta.setText(getString(R.string.main_dl_eta_calculating));
                 }
             }
 
@@ -508,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)));
         } catch (Exception e) {
-            android.widget.Toast.makeText(this, "无法打开链接", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(this, getString(R.string.open_link_failed), android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -52,42 +52,42 @@ public class ToolboxActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_toolbox);
-        setTitle("工具箱");
+        setTitle(R.string.toolbox_title);
 
         docPicker = registerForActivityResult(new ActivityResultContracts.OpenDocument(), this::onPicked);
 
         List<ToolEntry> entries = new ArrayList<>();
         // 编辑器
-        entries.add(new ToolEntry("文本/代码编辑", "编辑 TXT / 代码 / Smali 等", TextEditorActivity.class, PICK_TEXT));
-        entries.add(new ToolEntry("十六进制查看", "二进制阅读、偏移跳转", HexViewerActivity.class, PICK_ANY));
-        entries.add(new ToolEntry("文本对比", "双栏高亮差异", DiffActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_editor, R.string.tool_desc_editor, TextEditorActivity.class, PICK_TEXT));
+        entries.add(new ToolEntry(R.string.tool_title_hex, R.string.tool_desc_hex, HexViewerActivity.class, PICK_ANY));
+        entries.add(new ToolEntry(R.string.tool_title_diff, R.string.tool_desc_diff, DiffActivity.class, PICK_NONE));
         // 压缩归档
-        entries.add(new ToolEntry("压缩/解压", "ZIP 打包与解包", ArchiveActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_archive, R.string.tool_desc_archive, ArchiveActivity.class, PICK_NONE));
         // 清理
-        entries.add(new ToolEntry("扫描清理", "内存显示/缓存/安装包/不常用应用", CleanupActivity.class, PICK_NONE));
-        entries.add(new ToolEntry("文件搜索", "按关键词全目录查找文件", FileSearchActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_cleanup, R.string.tool_desc_cleanup, CleanupActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_search, R.string.tool_desc_search, FileSearchActivity.class, PICK_NONE));
         // APK 逆向
-        entries.add(new ToolEntry("编码转换", "Unicode / Base64 / Hex 互转", EncodeActivity.class, PICK_NONE));
-        entries.add(new ToolEntry("APK 包详情", "版本/权限/签名指纹等信息", ApkInfoActivity.class, PICK_NONE));
-        entries.add(new ToolEntry("提取安装包", "从已安装应用中提取 APK 到下载目录", ExtractApkActivity.class, PICK_NONE));
-        entries.add(new ToolEntry("签名信息", "查看 APK 签名证书指纹", SignatureActivity.class, PICK_APK));
-        entries.add(new ToolEntry("DEX 转 Smali", "解析 DEX 为结构级 smali 骨架", com.alltoolbox.apktools.tool.DexSmaliActivity.class, PICK_APK));
-        entries.add(new ToolEntry("APK 重签名", "用调试密钥重签 APK (v1/v2/v3)", com.alltoolbox.apktools.tool.ReSignActivity.class, PICK_APK));
-        entries.add(new ToolEntry("自定义 APK 签名", "用自己的密钥库/密码签名 APK", com.alltoolbox.apktools.tool.CustomSignActivity.class, PICK_APK));
-        entries.add(new ToolEntry("SO 补丁", "SO 库十六进制等长补丁", SoPatchActivity.class, PICK_SO));
-        entries.add(new ToolEntry("反编译/回编译", "apktool 反编译与回编译", DecompileActivity.class, PICK_APK));
-        entries.add(new ToolEntry("编辑 Manifest", "编辑反编译的 AndroidManifest.xml", ManifestEditActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_encode, R.string.tool_desc_encode, EncodeActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_apkinfo, R.string.tool_desc_apkinfo, ApkInfoActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_extract, R.string.tool_desc_extract, ExtractApkActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_sign, R.string.tool_desc_sign, SignatureActivity.class, PICK_APK));
+        entries.add(new ToolEntry(R.string.tool_title_dex2smali, R.string.tool_desc_dex2smali, com.alltoolbox.apktools.tool.DexSmaliActivity.class, PICK_APK));
+        entries.add(new ToolEntry(R.string.tool_title_resign, R.string.tool_desc_resign, com.alltoolbox.apktools.tool.ReSignActivity.class, PICK_APK));
+        entries.add(new ToolEntry(R.string.tool_title_customsign, R.string.tool_desc_customsign, com.alltoolbox.apktools.tool.CustomSignActivity.class, PICK_APK));
+        entries.add(new ToolEntry(R.string.tool_title_sopatch, R.string.tool_desc_sopatch, SoPatchActivity.class, PICK_SO));
+        entries.add(new ToolEntry(R.string.tool_title_decompile, R.string.tool_desc_decompile, DecompileActivity.class, PICK_APK));
+        entries.add(new ToolEntry(R.string.tool_title_manifest, R.string.tool_desc_manifest, ManifestEditActivity.class, PICK_NONE));
         // 文件管理
-        entries.add(new ToolEntry("双栏文件管理", "左右两栏并排浏览与跨栏复制", com.alltoolbox.fbrowser.DualPaneActivity.class, PICK_NONE));
-        entries.add(new ToolEntry("FTP 远程文件", "连接 FTP 浏览/下载/上传", com.alltoolbox.fbrowser.ftp.FtpActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_dual, R.string.tool_desc_dual, com.alltoolbox.fbrowser.DualPaneActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_ftp, R.string.tool_desc_ftp, com.alltoolbox.fbrowser.ftp.FtpActivity.class, PICK_NONE));
         // 安全
-        entries.add(new ToolEntry("加密保险箱", "AES 加密保存与私密文件", VaultActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_vault, R.string.tool_desc_vault, VaultActivity.class, PICK_NONE));
         // 系统（仅 Root 设备显示）
         if (com.alltoolbox.core.permission.Root.isRooted()) {
-            entries.add(new ToolEntry("Root 增强", "冻结/解冻、卸载、系统文件访问", RootActivity.class, PICK_NONE));
+            entries.add(new ToolEntry(R.string.tool_title_root, R.string.tool_desc_root, RootActivity.class, PICK_NONE));
         }
         // 传输与外设
-        entries.add(new ToolEntry("传输与外设", "HTTP 文件服务器、蓝牙发送", TransferActivity.class, PICK_NONE));
+        entries.add(new ToolEntry(R.string.tool_title_transfer, R.string.tool_desc_transfer, TransferActivity.class, PICK_NONE));
 
         RecyclerView list = findViewById(R.id.tool_list);
         list.setLayoutManager(new LinearLayoutManager(this));
@@ -133,7 +133,7 @@ public class ToolboxActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 if (isFinishing()) return;
                 if (errMsg[0] != null) {
-                    android.widget.Toast.makeText(this, "读取所选文件失败: " + errMsg[0],
+                    android.widget.Toast.makeText(this, getString(R.string.tool_read_fail, errMsg[0]),
                             android.widget.Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -145,14 +145,14 @@ public class ToolboxActivity extends AppCompatActivity {
     }
 
     private static final class ToolEntry {
-        final String title;
-        final String desc;
+        final int titleRes;
+        final int descRes;
         final Class<?> target;
         final int pickType;
 
-        ToolEntry(String title, String desc, Class<?> target, int pickType) {
-            this.title = title;
-            this.desc = desc;
+        ToolEntry(int titleRes, int descRes, Class<?> target, int pickType) {
+            this.titleRes = titleRes;
+            this.descRes = descRes;
             this.target = target;
             this.pickType = pickType;
         }
@@ -176,8 +176,16 @@ public class ToolboxActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull VH h, int position) {
             ToolEntry e = data.get(position);
-            h.title.setText(e.title);
-            h.desc.setText(e.desc);
+            h.title.setText(e.titleRes);
+            h.desc.setText(e.descRes);
+            // 列表项进入动画：淡入 + 上移，营造顺滑的顺次浮现效果
+            h.itemView.setAlpha(0f);
+            h.itemView.setTranslationY(h.itemView.getResources()
+                    .getDisplayMetrics().density * 24f);
+            h.itemView.animate().alpha(1f).translationY(0f)
+                    .setDuration(260).setStartDelay(position * 40L)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                    .start();
             h.itemView.setOnClickListener(v -> {
                 if (e.pickType == PICK_NONE) {
                     startActivity(new Intent(ToolboxActivity.this, e.target));
