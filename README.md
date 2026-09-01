@@ -6,6 +6,7 @@
 
 | 应用 | 版本 | 类型 | 安装包 | 更新日志 |
 |---|---|---|---|---|
+| PK管理器（AllToolbox） | v1.8.0 | 正式版 | [下载 AllToolbox_1.8.0.apk](./release/AllToolbox_1.8.0.apk)（约 10MB，含 7-Zip 原生库） | [CHANGELOG.md](./CHANGELOG.md) |
 | PK管理器（AllToolbox） | v1.8.0.2-beta | 测试版（Beta） | [下载 AllToolbox_1.8.0.2-beta.apk](./release/AllToolbox_1.8.0.2-beta.apk)（约 10MB，含 7-Zip 原生库） | [CHANGELOG.md](./CHANGELOG.md) |
 | PK管理器（AllToolbox） | v1.6.8 | 正式版 | [下载 AllToolbox_1.6.8.apk](./release/AllToolbox_1.6.8.apk)（约 6.5MB，含 7-Zip 原生库） | [CHANGELOG.md](./CHANGELOG.md) |
 | 易析 | v1.2.7 | 正式版 | [下载 易析_1.2.7.apk](./release/易析_1.2.7.apk)（约 18MB） | [CHANGELOG.md](./CHANGELOG.md) |
@@ -13,7 +14,7 @@
 ### 关于测试版（Beta）与正式版
 
 - **测试版（Beta）**：如 `v1.8.0.2-beta`，为预览版本，用于体验最新功能并在正式发布前收集反馈，可能存在未知问题或与正式版签名变更相关的不稳定因素，建议在备用设备上体验。
-- **正式版（Stable）**：如 `v1.6.8` 等经过验证的稳定版本，可直接日常使用。
+- **正式版（Stable）**：如 `v1.8.0` 等经过验证的稳定版本，可直接日常使用。
 - 如需最稳定的版本，请优先选择正式版；测试版仅作体验用途。
 
 ## PK管理器 是什么
@@ -36,9 +37,8 @@ PK管理器 是一款集 **文件管理、压缩解压、APK 处理、系统清�
 
 方式二：通过 GitHub Releases 页面获取（推荐，链接更稳定）：
 
-- [PK管理器 v1.8.0.2-beta Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.8.0.2-beta)
-- [PK管理器 v1.6.8 Release（正式版）](https://github.com/ppkkgzs/ceshi/releases/tag/v1.6.8)
-- [易析 v1.2.7 Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.2.7)
+- [PK管理器 v1.8.0 Release（正式版）](https://github.com/ppkkgzs/ceshi/releases/tag/v1.8.0)
+- [PK管理器 v1.8.0.2-beta Release（测试版）](https://github.com/ppkkgzs/ceshi/releases/tag/v1.8.0.2-beta)
 
 ## 安装说明
 

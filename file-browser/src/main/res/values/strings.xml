@@ -43,6 +43,12 @@
     <string name="selected_count">已选 %1$d 项</string>
     <string name="tab_left">左栏</string>
     <string name="tab_right">右栏</string>
+    <string name="divider_hint">拖动调整两栏宽度，按钮用于跨栏复制/移动</string>
+
+    <!-- 首次进入双栏引导提示（普通用户学习门槛） -->
+    <string name="dual_onboarding_title">双栏操作小提示</string>
+    <string name="dual_onboarding_msg">在「左栏」或「右栏」长按选中文件，再点中缝的 ◀ / ▶ 按钮，即可把选中的文件 复制/移动 到另一栏当前目录。\n\n当前高亮边框的一栏为「激活栏」，返回键只在该栏内返回上一级。点击某栏或底栏「左栏 / 右栏」可切换激活栏。\n\n拖动中间分隔条可自由调整两栏宽度。</string>
+    <string name="dual_onboarding_ok">知道了</string>
 
     <!-- 压缩包内部浏览（包中包） -->
     <string name="title_zip_browser">压缩包浏览器</string>

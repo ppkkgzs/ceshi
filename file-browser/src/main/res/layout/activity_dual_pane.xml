@@ -60,8 +60,17 @@
             </FrameLayout>
         </LinearLayout>
 
+        <!-- 分割条拖动把手：左右拖动调整两栏宽度占比 -->
+        <View
+            android:id="@+id/divider"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:background="#2A000000"
+            android:contentDescription="@string/divider_hint" />
+
         <!-- 中缝操作条 -->
         <LinearLayout
+            android:id="@+id/mid_bar"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"

@@ -93,6 +93,17 @@ public class SettingsActivity extends AppCompatActivity {
                 "开启后浏览器中显示 . 开头的隐藏文件",
                 Settings.getBoolean(this, Settings.KEY_SHOW_HIDDEN, false),
                 (btn, checked) -> Settings.putBoolean(this, Settings.KEY_SHOW_HIDDEN, checked));
+        addSwitch("默认双栏模式",
+                "进入双栏文件管理器时是否显示左右两栏；关闭则切到单栏（平板默认开启，小屏默认单栏）",
+                Settings.getBoolean(this, Settings.KEY_DUAL_PANE, isTablet(this)),
+                (btn, checked) -> Settings.putBoolean(this, Settings.KEY_DUAL_PANE, checked));
+    }
+
+    /** 判断是否为平板（大屏）设备，用于确定双栏模式的默认值。 */
+    private static boolean isTablet(Context c) {
+        int size = c.getResources().getConfiguration().screenLayout
+                & android.content.res.Configuration.SCREENLAYOUT_SIZE_MASK;
+        return size >= android.content.res.Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
     private void buildInstall() {

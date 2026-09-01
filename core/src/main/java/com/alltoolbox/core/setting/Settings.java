@@ -26,6 +26,10 @@ public final class Settings {
     public static final String KEY_DATETIME_FORMAT = "datetime_format";
     /** 其他：语言（zh / en / 跟随系统）。 */
     public static final String KEY_LANGUAGE = "language";
+    /** 双栏：单/双栏模式偏好（true=双栏）。平板默认开启，小屏默认单栏。 */
+    public static final String KEY_DUAL_PANE = "dual_pane";
+    /** 双栏：首次进入引导提示是否已展示过。 */
+    public static final String KEY_DUAL_GUIDE_SEEN = "dual_guide_seen";
 
     private Settings() {
     }

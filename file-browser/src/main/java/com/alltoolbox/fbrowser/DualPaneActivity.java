@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -138,6 +139,100 @@ public class DualPaneActivity extends AppCompatActivity {
         left.load(null);
         right.load(null);
         setActiveSide(Side.LEFT);
+
+        setupMidBarDrag();
+        showOnboardingIfFirst();
+    }
+
+    // ------------------------------------------------------------------
+    // 中缝分割条拖动：自由调整左右栏宽度占比（缺点1③补齐）
+    // ------------------------------------------------------------------
+
+    private void setupMidBarDrag() {
+        final View divider = findViewById(R.id.divider);
+        final View leftPane = findViewById(R.id.left_pane);
+        final View rightPane = findViewById(R.id.right_pane);
+        final View midBar = findViewById(R.id.mid_bar);
+        final View container = (View) leftPane.getParent();
+        final LinearLayout.LayoutParams lpL =
+                (LinearLayout.LayoutParams) leftPane.getLayoutParams();
+        final LinearLayout.LayoutParams lpR =
+                (LinearLayout.LayoutParams) rightPane.getLayoutParams();
+        // ref = [按下时 X, 左栏 px, 右栏 px]
+        final float[] ref = new float[3];
+        final float minLen = 80f * getResources().getDisplayMetrics().density;
+        divider.setOnTouchListener((v, ev) -> {
+            switch (ev.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    // 两栏可用总宽 = 容器宽 - 分割条件(把手+中缝按钮条)
+                    float used = midBar.getWidth() + divider.getWidth();
+                    float avail = container.getWidth() - used;
+                    if (avail <= 0) return true;
+                    float unit = avail / (lpL.weight + lpR.weight);
+                    ref[0] = ev.getRawX();
+                    ref[1] = lpL.weight * unit;
+                    ref[2] = lpR.weight * unit;
+                    divider.animate().alpha(0.5f).setDuration(120).start();
+                    return true;
+                case MotionEvent.ACTION_MOVE: {
+                    float usedM = midBar.getWidth() + divider.getWidth();
+                    float availM = container.getWidth() - usedM;
+                    if (availM <= 0) return true;
+                    float dx = ev.getRawX() - ref[0];
+                    float leftLen = ref[1] + dx;
+                    float rightLen = ref[2] - dx;
+                    if (leftLen < minLen) { leftLen = minLen; rightLen = availM - minLen; }
+                    if (rightLen < minLen) { rightLen = minLen; leftLen = availM - minLen; }
+                    if (leftLen <= 0 || rightLen <= 0) return true;
+                    // 以 px 作为 weight，总 weight 恒等于可用总长，精确保持比例
+                    lpL.weight = leftLen;
+                    lpR.weight = rightLen;
+                    leftPane.setLayoutParams(lpL);
+                    rightPane.setLayoutParams(lpR);
+                    return true;
+                }
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    divider.animate().alpha(1f).setDuration(120).start();
+                    return true;
+                default:
+                    return true;
+            }
+        });
+    }
+
+    /** 首次进入双栏：弹出简易引导，降低普通用户学习门槛（缺点5①补齐）。 */
+    private void showOnboardingIfFirst() {
+        if (com.alltoolbox.core.setting.Settings.getBoolean(
+                this, com.alltoolbox.core.setting.Settings.KEY_DUAL_GUIDE_SEEN, false)) {
+            return;
+        }
+        com.alltoolbox.core.setting.Settings.putBoolean(
+                this, com.alltoolbox.core.setting.Settings.KEY_DUAL_GUIDE_SEEN, true);
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.dual_onboarding_title)
+                .setMessage(R.string.dual_onboarding_msg)
+                .setPositiveButton(R.string.dual_onboarding_ok, null)
+                .show();
+    }
+
+    /** 短暂高亮目标栏，视觉提示粘贴位置（缺点5②补齐）。 */
+    private void flashPane(final Side side) {
+        final View pane = findViewById(side == Side.LEFT ? R.id.left_pane : R.id.right_pane);
+        pane.animate().cancel();
+        pane.setAlpha(0.45f);
+        pane.animate().alpha(1f).setDuration(850)
+                .withEndAction(() -> setActiveSide(activeSide))
+                .start();
+    }
+
+    /** 判断是否为“压缩包虚拟路径”（如 zip:// 包内浏览）。虚拟目录禁止直接粘贴文件（缺点4②③补齐）。 */
+    private static boolean isVirtualPath(String path) {
+        if (path == null) return false;
+        return path.startsWith("zip://")
+                || path.startsWith("archive://")
+                || path.startsWith("jar://")
+                || path.contains("::");
     }
 
     /** 选中某一栏，并高亮该栏。返回键只在选中栏内回退。 */
@@ -246,11 +341,18 @@ public class DualPaneActivity extends AppCompatActivity {
             return;
         }
         Pane dstPane = to == Side.LEFT ? left : right;
+        // 压缩包虚拟路径禁止直接粘贴文件（补齐缺点4③）
+        if (isVirtualPath(dstPane.currentPath)) {
+            toast("目标为压缩包虚拟目录，无法直接粘贴，请先在另一栏定位到真实磁盘目录");
+            return;
+        }
         File dstDir = new File(dstPane.currentPath);
         if (!dstDir.exists() || !dstDir.isDirectory()) {
             toast("目标目录不可用");
             return;
         }
+        // 操作前短暂高亮目标栏，提示粘贴位置（补齐缺点5②）
+        flashPane(to);
         final boolean move = srcPane.isCutMode();
         new MaterialAlertDialogBuilder(this)
                 .setTitle(from == Side.LEFT ? "发送到右栏" : "发送到左栏")
@@ -378,8 +480,10 @@ public class DualPaneActivity extends AppCompatActivity {
                 .show();
     }
 
-    /** 切到单栏文件浏览器（回到主界面单栏）。 */
+    /** 切到单栏文件浏览器（回到主界面单栏），并记住偏好。 */
     private void switchToSinglePane() {
+        com.alltoolbox.core.setting.Settings.putBoolean(
+                this, com.alltoolbox.core.setting.Settings.KEY_DUAL_PANE, false);
         // 用包名启动主界面，避免库模块对 app 的编译期依赖
         Intent i = new Intent();
         i.setClassName(getPackageName(), "com.alltoolbox.app.MainActivity");
