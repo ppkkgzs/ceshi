@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_icon">File icon</string>
+    <string name="search_hint">Search this folder</string>
+    <string name="toggle_hidden">Show/hide hidden files</string>
+    <string name="toggle_view">Switch list/grid view</string>
+    <string name="empty_folder">This folder is empty</string>
+
+    <string name="restricted_dir_hint">Android/data and Android/obb are protected by the system and cannot be read with normal permissions.\nYou can authorize a specific folder via SAF, or use Shizuku (no Root required, access via adb/shell permission).</string>
+    <string name="restricted_saf_btn">Authorize via SAF</string>
+    <string name="restricted_shizuku_btn">Authorize via Shizuku</string>
+    <string name="shizuku_ok">Shizuku is ready</string>
+    <string name="shizuku_not_online">Shizuku is not running. Please start it in the Shizuku app first and grant permission.</string>
+
+    <string name="act_copy">Copy</string>
+    <string name="act_cut">Cut</string>
+    <string name="act_paste">Paste</string>
+    <string name="act_delete">Delete</string>
+    <string name="act_more">More</string>
+    <string name="act_rename">Rename</string>
+    <string name="act_new_folder">New folder</string>
+    <string name="act_new_file">New file</string>
+    <string name="act_properties">Properties</string>
+    <string name="act_share">Share</string>
+    <string name="act_bookmark">Add bookmark</string>
+    <string name="act_batch_rename">Batch rename</string>
+    <string name="act_compress">Compress</string>
+    <string name="act_preview">Preview image</string>
+    <string name="preview_error">Cannot preview this image</string>
+    <string name="media_play">Play</string>
+    <string name="media_pause">Pause</string>
+    <string name="media_error">Cannot play this media file</string>
+
+    <string name="switch_to_single">Switch to single pane</string>
+    <string name="switch_to_dual">Switch to dual pane</string>
+    <string name="title_dual_pane">Dual Pane File Manager</string>
+    <string name="copy_to_left">Copy selection to left pane</string>
+    <string name="copy_to_right">Copy selection to right pane</string>
+    <string name="move_to_left">Move selection to left pane</string>
+    <string name="move_to_right">Move selection to right pane</string>
+    <string name="cl_path">Copy path</string>
+    <string name="dual_pane_tools">Advanced tools</string>
+    <string name="selected_count">%1$d selected</string>
+    <string name="tab_left">Left</string>
+    <string name="tab_right">Right</string>
+    <string name="divider_hint">Drag to adjust pane widths; use the buttons to copy/move across panes</string>
+
+    <!-- First-run dual pane onboarding -->
+    <string name="dual_onboarding_title">Dual pane tip</string>
+    <string name="dual_onboarding_msg">In the "Left" or "Right" pane, long-press to select a file, then tap the ◀ / ▶ buttons in the middle to copy/move the selected files to the other pane\'s current folder.\n\nThe pane with the highlighted border is the "active pane"; the back key only goes up one level inside that pane. Tap a pane or the bottom bar "Left / Right" to switch the active pane.\n\nDrag the divider in the middle to freely adjust the width of the two panes.</string>
+    <string name="dual_onboarding_ok">Got it</string>
+
+    <!-- Archive inner browsing (zip in zip) -->
+    <string name="title_zip_browser">Archive browser</string>
+    <string name="zip_action_extract">Extract current level</string>
+    <string name="zip_action_refresh">Refresh</string>
+    <string name="zip_extract_dialog">Extract the current level to the chosen folder</string>
+    <string name="zip_extract_done">Extracted to: %1$s</string>
+    <string name="zip_extract_failed">Extract failed: %1$s</string>
+    <string name="zip_entry_dir">Folder</string>
+    <string name="zip_action_choose">Choose action</string>
+    <string name="zip_extract_entry">Extract this file</string>
+    <string name="zip_extract_entry_dialog">This file will be extracted to the chosen folder</string>
+</resources>

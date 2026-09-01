@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PK Manager</string>
+
+    <!-- Sidebar -->
+    <string name="nav_home">Files</string>
+    <string name="nav_cleanup">Cleanup</string>
+    <string name="nav_archive">Archive</string>
+    <string name="nav_transfer">Transfer</string>
+    <string name="nav_tools">Toolbox</string>
+    <string name="nav_dual">Dual Pane</string>
+    <string name="switch_to_dual">Switch to dual pane</string>
+    <string name="switch_to_single">Switch to single pane</string>
+    <string name="nav_ftp">FTP</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_extract_apk">Extract APK</string>
+    <string name="nav_internal_storage">Internal Storage</string>
+
+    <!-- Top-right menu -->
+    <string name="menu_settings_home">Set home directory</string>
+    <string name="menu_add_bookmark">Add bookmark</string>
+    <string name="menu_sort">Sort by</string>
+    <string name="menu_select_all">Select all</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_exit">Exit</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_desc">This software is made by the author. Please do not steal others\' hard work.\nTest version, will be continuously optimized and updated.\n\nThis software is open-sourced under the GNU GPL v3 license. You are free to study, improve and modify it, but when redistributing you must keep this notice and comply with the GPL v3 terms. Source repository: github.com/ppkkgzs/ceshi</string>
+    <string name="about_download">Download latest version</string>
+    <string name="about_check_update">Check update</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="privacy_title">User Agreement and Privacy Policy</string>
+    <string name="privacy_text">[User Agreement]\nWelcome to this software. It was made by the author; please do not steal or redistribute others\' work.\n\n1. By using this software you agree to this agreement.\n2. This software is released as "Formal" and "Beta" versions. The beta version is for trying the latest features and collecting feedback and may contain unknown issues.\n3. This software is only for learning and personal use. Any illegal use is prohibited.\n\n[Version Overview]\n- Formal (Stable): a verified stable version, suitable for daily use, e.g. v1.6.8.\n- Beta: a preview version, e.g. v1.8.0.1-beta, for trying new features early and reporting issues. It may contain unknown issues or signature changes, so it is recommended to install it on a spare device.\n- For the most stable experience, choose the formal version; the beta version is only for trying out.\n\n[Open-Source Notice]\nThis software is licensed under the GNU General Public License, version 3 (GPL v3).\n\n1. You have the right to freely obtain, study, modify and redistribute the source code.\n2. When redistributing any modified or derivative work, it must be open-sourced under the same license (GPL v3) and keep the original author credit and this notice.\n3. This software is provided "as is"; the author makes no express or implied warranty. For details, refer to the GPL v3 license text.\n4. Source repository: github.com/ppkkgzs/ceshi\n\n[Privacy Policy]\nThis software is a purely local offline tool, with no data upload, no ads, and no third-party tracking.\n\n1. We do NOT collect, store or upload any of your personal data.\n2. File browsing, compression, APK processing and other operations are all done on your device.\n3. The software only accesses GitHub to read version information for update prompts when you enable "Check for updates on startup". It does not upload any data.\n4. You can disable version checking in Settings at any time to use it fully offline.\n\nIf you have any questions about this agreement or privacy policy, please give us feedback in the GitHub repository, or email: gexinggzs@163.com.</string>
+</resources>

@@ -1,0 +1,58 @@
+<resources>
+    <string name="cleanup_title">Scan and clean</string>
+    <string name="cleanup_scan">Scan</string>
+    <string name="cleanup_scanning">Scanning…</string>
+    <string name="cleanup_empty">No results</string>
+    <string name="cleanup_delete">Delete</string>
+    <string name="cleanup_confirm">Delete the selected files?</string>
+    <string name="cleanup_deleted">Deleted %1$d item(s)</string>
+    <string name="cleanup_fail">Some files failed to delete. Please check permissions.</string>
+    <string name="cleanup_select_hint">Long-press to select, multi-select to delete</string>
+
+    <!-- Scan cleanup: phone storage -->
+    <string name="storage_title">Phone storage</string>
+    <string name="storage_dummy">—</string>
+    <string name="storage_used">Used %1$s</string>
+    <string name="storage_free">Free %1$s</string>
+    <string name="storage_total">Total %1$s</string>
+
+    <!-- Cache junk -->
+    <string name="clean_cache_title">Cache junk</string>
+    <string name="not_scanned">Not scanned yet</string>
+    <string name="clean_key">Clean</string>
+    <string name="cache_scanned">Cache junk %1$s</string>
+    <string name="cache_clean_confirm">Clean all cache junk?</string>
+    <string name="cache_cleaned">Cache cleaned %1$s</string>
+
+    <!-- APK files -->
+    <string name="clean_apk_title">APK files</string>
+    <string name="clean_apk_clear">Clean</string>
+    <string name="apk_scanned">Found %1$d APK file(s), total %2$s</string>
+    <string name="apk_clean_confirm">Delete the detected APK files? Extracted packages are located in the PK2 folder.</string>
+    <string name="apk_cleaned">Cleaned %1$d APK file(s), freed %2$s</string>
+
+    <!-- Rarely used apps -->
+    <string name="clean_rare_title">Rarely used apps (not opened for over 7 days)</string>
+    <string name="rare_count_hint">%1$d app(s) can be deleted</string>
+    <string name="rare_no_unused">No app not opened for over 7 days</string>
+    <string name="open_usage_access">Enable "Usage access" to detect app usage time</string>
+    <string name="rare_rescan">Re-scan</string>
+    <string name="rare_empty">No apps</string>
+    <string name="clean_rare_delete">Delete</string>
+    <string name="app_icon">App icon</string>
+    <string name="rare_last_used">Last opened %1$s</string>
+    <string name="rare_never_used">Never opened</string>
+    <string name="rare_delete_confirm">Uninstall %1$s?</string>
+
+    <string name="file_search_title">File search</string>
+    <string name="file_search_hint">Enter a file name keyword</string>
+    <string name="file_search_btn">Search</string>
+    <string name="file_search_choose">Choose folder</string>
+    <string name="file_search_count">Found %1$d result(s)</string>
+    <string name="file_search_empty">Search results will appear here</string>
+    <string name="file_search_need_dir">Please choose a folder first</string>
+    <string name="file_search_need_kw">Please enter a keyword</string>
+    <string name="file_search_chosen">Folder chosen: %1$s</string>
+    <string name="file_search_open_fail">Cannot open this file</string>
+    <string name="file_search_scanning">Searching…</string>
+</resources>

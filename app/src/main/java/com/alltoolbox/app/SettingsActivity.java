@@ -259,13 +259,25 @@ public class SettingsActivity extends AppCompatActivity {
                 .setTitle("语言")
                 .setSingleChoiceItems(items, idx, (d, w) -> {
                     String v = w == 0 ? "auto" : (w == 1 ? "zh" : "en");
-                    Settings.putString(this, Settings.KEY_LANGUAGE, v);
+                    // 同步落盘，确保进程退出后下次启动能读到
+                    getSharedPreferences(Settings.PREFS, MODE_PRIVATE)
+                            .edit().putString(Settings.KEY_LANGUAGE, v).commit();
                     d.dismiss();
-                    toast("语言设置将在重启应用后生效");
-                    refreshRows();
+                    // 直接退出应用，重新打开后即应用新语言
+                    restartToApplyLanguage();
                 })
                 .setNegativeButton("取消", null)
                 .show();
+    }
+
+    /** 语言生效需重建整个界面：直接退出应用，用户重新打开后即切换到所选语言。 */
+    private void restartToApplyLanguage() {
+        toast("语言已切换，正在退出应用，请重新打开");
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            finishAffinity();
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(0);
+        }, 300);
     }
 
     private void showPrivacy() {

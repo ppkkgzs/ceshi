@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- APK package details -->
+    <string name="apk_info_title">APK details</string>
+    <string name="apk_info_pick">Choose APK file</string>
+    <string name="apk_info_hint">Tap the button above to choose an APK and parse its detailed info.</string>
+    <string name="apk_info_parsing">Parsing %1$s …</string>
+    <string name="apk_info_empty_list">No APK chosen yet</string>
+
+    <!-- Field labels -->
+    <string name="apk_info_app_name">App name</string>
+    <string name="apk_info_package">Package name</string>
+    <string name="apk_info_version_name">Version name</string>
+    <string name="apk_info_version_code">Version code</string>
+    <string name="apk_info_target_sdk">targetSdk</string>
+    <string name="apk_info_min_sdk">minSdk</string>
+    <string name="apk_info_path">Install path</string>
+    <string name="apk_info_size">APK file size</string>
+    <string name="apk_info_sign_sha1">Signature SHA-1</string>
+    <string name="apk_info_sign_md5">Signature MD5</string>
+    <string name="apk_info_permissions">Permissions</string>
+
+    <string name="apk_info_none">None</string>
+    <string name="apk_info_read_fail">Failed to read APK: %1$s</string>
+</resources>

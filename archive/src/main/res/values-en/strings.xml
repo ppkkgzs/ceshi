@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="archive_compress">Compress files to ZIP</string>
+    <string name="archive_compress_dir">Compress whole folder to ZIP</string>
+    <string name="archive_extract">Extract archive</string>
+    <string name="archive_pick_src">Choose files to compress</string>
+    <string name="archive_pick_zip">Choose archive (zip/7z/tar)</string>
+    <string name="archive_pick_dir">Choose extract destination</string>
+    <string name="archive_working">Working…</string>
+    <string name="archive_empty_src">No valid file selected</string>
+    <string name="archive_done_zip">Created: %1$s</string>
+    <string name="archive_done_extract">Extracted to: %1$s</string>
+    <string name="archive_error">Operation failed: %1$s</string>
+    <string name="archive_output_root">Archive tools</string>
+</resources>

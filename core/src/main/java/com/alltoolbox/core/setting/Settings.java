@@ -9,7 +9,8 @@ import android.content.SharedPreferences;
  */
 public final class Settings {
 
-    private static final String PREFS = "toolbox_settings";
+    /** 全局设置 SharedPreferences 文件名（供语言等模块读取）。 */
+    public static final String PREFS = "toolbox_settings";
 
     // 设置项 key
     /** 启动：默认首页目录（空=默认外部存储根）。 */

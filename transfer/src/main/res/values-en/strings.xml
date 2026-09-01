@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="transfer_title">Transfer and peripherals</string>
+
+    <string name="http_server">HTTP file server</string>
+    <string name="http_server_desc">Share a folder on this device as downloadable links, directly accessible in a browser over LAN</string>
+    <string name="http_start">Start</string>
+    <string name="http_stop">Stop</string>
+    <string name="http_url">Access URL</string>
+    <string name="http_pick_dir">Choose share folder</string>
+    <string name="http_dir">Share folder: </string>
+    <string name="http_log">Log</string>
+    <string name="http_copy">Copy URL</string>
+    <string name="http_empty">Please choose a folder to share first</string>
+    <string name="http_copied">URL copied</string>
+    <string name="http_start_fail">Start failed: %1$s</string>
+
+    <string name="bluetooth_send">Bluetooth send</string>
+    <string name="bluetooth_send_desc">Send files/links to Bluetooth devices via system share</string>
+    <string name="bluetooth_pick">Choose files to send</string>
+
+    <string name="lan_hint">Tip: make sure the phone and the accessing device are on the same LAN (same WiFi).</string>
+</resources>
