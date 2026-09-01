@@ -30,6 +30,10 @@ public final class Settings {
     public static final String KEY_DUAL_PANE = "dual_pane";
     /** 双栏：首次进入引导提示是否已展示过。 */
     public static final String KEY_DUAL_GUIDE_SEEN = "dual_guide_seen";
+    /** 首启：用户协议与隐私政策是否已同意（首次启动强制确认）。 */
+    public static final String KEY_AGREEMENT_ACCEPTED = "agreement_accepted";
+    /** 首启：所需权限引导是否已弹出过。 */
+    public static final String KEY_FIRST_PERMISSION_PROMPTED = "first_permission_prompted";
 
     private Settings() {
     }

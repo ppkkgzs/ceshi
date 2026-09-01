@@ -8,9 +8,14 @@ import android.text.util.Linkify;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,9 +24,14 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.core.app.ActivityCompat;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
 
 import com.alltoolbox.archive.ArchiveActivity;
 import com.alltoolbox.cleanup.CleanupActivity;
+import com.alltoolbox.core.AppContext;
 import com.alltoolbox.core.permission.Permissions;
 import com.alltoolbox.core.permission.ShizukuShell;
 import com.alltoolbox.core.setting.Settings;
@@ -31,6 +41,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 
 import rikka.shizuku.Shizuku;
+
+import java.util.Map;
 
 /**
  * 主界面：侧边栏 + 内容区。
@@ -44,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
 
     /** 启动时申请 Shizuku 权限的请求码。 */
     private static final int REQUEST_CODE_SHIZUKU_STARTUP = 10086;
+
+    /** 存储运行时权限申请 launcher（用户在系统授权页点允许/拒绝）。 */
+    private ActivityResultLauncher<String[]> runtimePermLauncher;
+    /** 「全部文件访问」系统设置页 launcher（返回后继续安全限制引导）。 */
+    private ActivityResultLauncher<Intent> allFilesLauncher;
 
     /** Shizuku 权限申请结果监听。 */
     private final Shizuku.OnRequestPermissionResultListener shizukuResultListener =
@@ -97,12 +114,142 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
 
-        // 启动公告 → 更新公告 → Shizuku 检测（按顺序弹出）
+        // 首启引导链：用户协议 → 所需权限 → 授权页 → 安全限制解除（仅首次）
+        runtimePermLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                this::onRuntimePermissionResult);
+        allFilesLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                r -> maybeGuideRestrictedDirs());
+
         Shizuku.addRequestPermissionResultListener(shizukuResultListener);
-        showAnnouncement();
-        checkUpdateQuietly(() -> checkShizukuOnStartup());
+        runFirstLaunchFlow();
 
         setupBottomBar();
+    }
+
+    /** 首启引导链入口：按状态分步弹出。 */
+    private void runFirstLaunchFlow() {
+        if (!Settings.getBoolean(this, Settings.KEY_AGREEMENT_ACCEPTED, false)) {
+            // 第一步：用户协议与隐私政策（必须同意才能使用）
+            showAgreementDialog();
+            return;
+        }
+        if (!Settings.getBoolean(this, Settings.KEY_FIRST_PERMISSION_PROMPTED, false)) {
+            // 第二步：弹出所需权限说明，用户点允许→跳授权页
+            startPermissionFlow();
+            return;
+        }
+        // 非首次：正常走公告 → 更新 → Shizuku 检测
+        showAnnouncement();
+        checkUpdateQuietly(() -> checkShizukuOnStartup());
+    }
+
+    /** 第一步：用户协议与隐私政策，同意后进入权限引导；不同意则退出。 */
+    private void showAgreementDialog() {
+        String content = getString(R.string.privacy_text);
+        ScrollView scrollView = new ScrollView(this);
+        TextView textView = new TextView(this);
+        int padding = dp(16);
+        textView.setPadding(padding, padding / 2, padding, padding);
+        textView.setText(content);
+        textView.setTextSize(14);
+        textView.setTextIsSelectable(true);
+        scrollView.addView(textView);
+        int maxH = (int) (getResources().getDisplayMetrics().heightPixels * 0.6f);
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, maxH));
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.privacy_title)
+                .setView(scrollView)
+                .setCancelable(false)
+                .setNegativeButton("不同意并退出", (d, w) -> {
+                    finishAffinity();
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                })
+                .setPositiveButton("同意并继续", (d, w) -> {
+                    Settings.putBoolean(this, Settings.KEY_AGREEMENT_ACCEPTED, true);
+                    startPermissionFlow();
+                })
+                .show();
+    }
+
+    /** 第二步：按系统版本弹出所需存储权限说明，点「允许」→ 跳系统授权页。 */
+    private void startPermissionFlow() {
+        String[] perms = requiredStoragePermissions();
+        if (perms.length == 0) {
+            maybeGuideRestrictedDirs();
+            return;
+        }
+        // 已全部授权则直接进入安全限制检查
+        boolean allGranted = true;
+        for (String p : perms) {
+            if (ActivityCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false;
+                break;
+            }
+        }
+        if (allGranted) {
+            maybeGuideRestrictedDirs();
+            return;
+        }
+        Settings.putBoolean(this, Settings.KEY_FIRST_PERMISSION_PROMPTED, true);
+        String reason = Permissions.requiresAllFilesAccess()
+                ? "本软件需要访问存储空间以浏览和管理文件。" +
+                        "\n\n除存储权限外，Android 11 及以上还需开启「所有文件访问」才能读取全部目录。"
+                : "本软件需要读取和写入存储空间，以浏览、管理文件。";
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("需要存储权限")
+                .setMessage(reason)
+                .setCancelable(false)
+                .setNegativeButton("暂不", (d, w) -> maybeGuideRestrictedDirs())
+                .setPositiveButton("允许", (d, w) ->
+                        runtimePermLauncher.launch(perms))
+                .show();
+    }
+
+    /** 系统授权页结果：无论是否授权，继续安全限制检查。 */
+    private void onRuntimePermissionResult(Map<String, Boolean> result) {
+        maybeGuideRestrictedDirs();
+    }
+
+    /** 第三步：安全限制检查——Android 11+ 未开「所有文件访问」则引导去解除。 */
+    private void maybeGuideRestrictedDirs() {
+        if (!Permissions.requiresAllFilesAccess()) {
+            // Android 11 以下无系统级“全部文件访问”安全限制
+            checkShizukuOnStartup();
+            return;
+        }
+        if (Permissions.hasAllFilesAccess(this)) {
+            checkShizukuOnStartup();
+            return;
+        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("存在安全限制")
+                .setMessage("系统当前未开启「所有文件访问」：\n" +
+                        "· 无法读取 Android/data、Android/obb 等受限目录\n" +
+                        "· 部分文件操作可能受限\n\n" +
+                        "是否需要前往系统设置解除该安全限制？")
+                .setCancelable(false)
+                .setNegativeButton("暂不", (d, w) -> checkShizukuOnStartup())
+                .setPositiveButton("去解除", (d, w) ->
+                        Permissions.requestAllFilesAccess(this, allFilesLauncher))
+                .show();
+    }
+
+    /** 依据系统版本计算需要申请的存储运行时权限。 */
+    private String[] requiredStoragePermissions() {
+        if (!AppContext.isAtLeastM()) return new String[0];   // <6.0 无需运行时权限
+        if (!AppContext.isAtLeastQ()) {                       // 6.0 ~ 9.0
+            return new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        }
+        return new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}; // 10+ 仅需读
+    }
+
+    private int dp(float v) {
+        return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
     }
 
     @Override
