@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 
 import com.alltoolbox.core.task.TaskExecutor;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -26,12 +27,20 @@ public final class UpdateChecker {
     public static final String DOWNLOAD_URL =
             "https://github.com/ppkkgzs/ceshi/tree/main/release";
 
+    /** Beta 版本下载页（包含全部测试版 Release）。 */
+    public static final String BETA_DOWNLOAD_URL =
+            "https://github.com/ppkkgzs/ceshi/releases";
+
     /** Release 安装包直链前缀（不带 tag 与文件名，见 {@link #apkDirectUrl}）。 */
     static final String RELEASE_BASE =
             "https://github.com/ppkkgzs/ceshi/releases/download/%s/AllToolbox_%s.apk";
 
     private static final String RELEASES_API =
             "https://api.github.com/repos/ppkkgzs/ceshi/releases/latest";
+
+    /** 拉取最近若干 Release（含预发行），供 Beta 通道选最高 tag。 */
+    private static final String ALL_RELEASES_API =
+            "https://api.github.com/repos/ppkkgzs/ceshi/releases?per_page=50&page=1";
 
     /** 由 tag（如 v1.6.6）构造安装包直接下载链接。 */
     public static String apkDirectUrl(String tag) {
@@ -97,6 +106,60 @@ public final class UpdateChecker {
         String tag = obj.optString("tag_name", "");
         if (tag.isEmpty()) throw new IOException("仓库 Release 为空");
         return tag;
+    }
+
+    /** 异步检查 Beta 测试版更新；异常也走回调（message 携带原因）。 */
+    public static void checkBetaAsync(Context ctx, Result cb) {
+        TaskExecutor.get().io().execute(() -> {
+            String latestBeta = null;
+            try {
+                latestBeta = fetchLatestBetaTag();
+            } catch (Exception e) {
+                if (cb != null) {
+                    cb.onResult(true, null, "无法连接 GitHub：" + e.getMessage());
+                }
+                return;
+            }
+            boolean isLatest = compareVersions(localVersion(ctx), latestBeta);
+            if (cb != null) {
+                cb.onResult(isLatest, latestBeta,
+                        isLatest ? "当前已是最新 Beta 版本" : "发现 Beta 新版本：" + latestBeta);
+            }
+        });
+    }
+
+    /**
+     * 从 Releases 列表里选出最新的预发行（Prerelease）版 tag。
+     * 预发型即测试版（Beta），正式版不带「beta」字样。
+     */
+    private static String fetchLatestBetaTag() throws Exception {
+        HttpURLConnection conn = (HttpURLConnection) new URL(ALL_RELEASES_API).openConnection();
+        conn.setConnectTimeout(8000);
+        conn.setReadTimeout(8000);
+        conn.setRequestProperty("Accept", "application/vnd.github+json");
+        conn.setRequestProperty("User-Agent", "AllToolbox");
+        int code = conn.getResponseCode();
+        if (code != 200) throw new IOException(code);
+        InputStream in = conn.getInputStream();
+        BufferedReader r = new BufferedReader(new InputStreamReader(in));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) sb.append(line);
+        r.close();
+        JSONArray arr = new JSONArray(sb.toString());
+        String best = "";
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject rel = arr.optJSONObject(i);
+            if (rel == null) continue;
+            // 只认预发行（Beta）版本
+            if (!rel.optBoolean("prerelease", false)) continue;
+            if (rel.optBoolean("draft", false)) continue;
+            String tag = rel.optString("tag_name", "");
+            if (tag.isEmpty()) continue;
+            if (compareVersions(tag, best)) best = tag;
+        }
+        if (best.isEmpty()) throw new IOException("仓库暂无 Beta 预发行版本");
+        return best;
     }
 
     private static final class IOException extends java.io.IOException {

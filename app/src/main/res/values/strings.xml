@@ -29,6 +29,8 @@
     <string name="about_desc">本软件为本 UP 制作，请勿盗用他人劳动成果。\n测试版本，后续将会持续优化与更新。\n\n本软件以 GNU GPL v3 协议开源，可自由研究学习与改进，分发时须保留本声明并遵守 GPL v3 条款。开源仓库：github.com/ppkkgzs/ceshi</string>
     <string name="about_download">下载最新版本</string>
     <string name="about_check_update">检查更新</string>
+    <string name="about_check_beta">检查 Beta 测试版更新</string>
+    <string name="about_check_beta_desc">获取最新测试版（Pre-Release）并直接下载</string>
 
     <!-- 设置页 -->
     <string name="settings_title">设置</string>

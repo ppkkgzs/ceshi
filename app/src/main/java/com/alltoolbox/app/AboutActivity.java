@@ -36,6 +36,8 @@ public class AboutActivity extends AppCompatActivity {
 
         findViewById(R.id.btn_check_update).setOnClickListener(v -> checkUpdate(true));
 
+        findViewById(R.id.btn_check_beta).setOnClickListener(v -> checkBetaUpdate());
+
         findViewById(R.id.btn_signing_note).setOnClickListener(v -> showSigningNote());
 
         findViewById(R.id.btn_open_source).setOnClickListener(v ->
@@ -106,6 +108,32 @@ public class AboutActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, "无法打开链接", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void checkBetaUpdate() {
+        android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
+        pd.setTitle("检查 Beta 更新");
+        pd.setMessage("正在检查最新测试版本…");
+        pd.setIndeterminate(true);
+        pd.setCancelable(false);
+        pd.show();
+
+        UpdateChecker.checkBetaAsync(this, (isLatest, tag, message) ->
+                runOnUiThread(() -> {
+                    pd.dismiss();
+                    if (!isLatest && tag != null && !tag.isEmpty()) {
+                        new MaterialAlertDialogBuilder(this)
+                                .setTitle("发现 Beta 新版本")
+                                .setMessage("最新 Beta 版本：" + tag + "\n当前版本：" + UpdateChecker.localVersion(this)
+                                        + "\n\n是否立即下载并安装？")
+                                .setNegativeButton("取消", null)
+                                .setPositiveButton("立即下载", (d, w) ->
+                                        Updater.downloadAndInstall(this, tag))
+                                .show();
+                    } else {
+                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                    }
+                }));
     }
 
     @Override

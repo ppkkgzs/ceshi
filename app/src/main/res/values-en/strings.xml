@@ -29,6 +29,8 @@
     <string name="about_desc">This software is made by the author. Please do not steal others\' hard work.\nTest version, will be continuously optimized and updated.\n\nThis software is open-sourced under the GNU GPL v3 license. You are free to study, improve and modify it, but when redistributing you must keep this notice and comply with the GPL v3 terms. Source repository: github.com/ppkkgzs/ceshi</string>
     <string name="about_download">Download latest version</string>
     <string name="about_check_update">Check update</string>
+    <string name="about_check_beta">Check Beta update</string>
+    <string name="about_check_beta_desc">Get the latest beta version (Pre-Release) and download it directly</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

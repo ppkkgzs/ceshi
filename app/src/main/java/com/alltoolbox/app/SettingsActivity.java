@@ -131,6 +131,44 @@ public class SettingsActivity extends AppCompatActivity {
         addRow("检查最新版本",
                 "当前版本：" + UpdateChecker.localVersion(this) + "｜检测 GitHub 最新版并直接下载安装",
                 v -> checkUpdate());
+        addRow("检查 Beta 测试版更新（直链）",
+                "获取最新测试版 Pre-Release，可直接下载安装",
+                v -> checkBetaUpdate());
+    }
+
+    /** 点击「检查 Beta 测试版更新（直链）」：查找 GitHub 最新 Pre-Release 并直接下载。 */
+    private void checkBetaUpdate() {
+        android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
+        pd.setTitle("检查 Beta 更新");
+        pd.setMessage("正在检查最新测试版本…");
+        pd.setIndeterminate(true);
+        pd.setCancelable(false);
+        pd.show();
+
+        UpdateChecker.checkBetaAsync(this, (isLatest, latestTag, message) -> {
+            runOnUiThread(() -> {
+                pd.dismiss();
+                if (!isLatest && latestTag != null && !latestTag.isEmpty()) {
+                    new MaterialAlertDialogBuilder(this)
+                            .setTitle("发现 Beta 新版本")
+                            .setMessage("检测到最新测试版本 " + latestTag + "\n是否立即下载并安装？")
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("立即下载", (d, w) ->
+                                    Updater.downloadAndInstall(this, latestTag,
+                                            new UpdateDownloadProgress()))
+                            .show();
+                } else {
+                    String tip = (message == null || message.isEmpty())
+                            ? "当前已是最新 Beta 版本"
+                            : ("当前已是最新 Beta 版本；" + message);
+                    new MaterialAlertDialogBuilder(this)
+                            .setTitle("检查 Beta 更新")
+                            .setMessage(tip)
+                            .setPositiveButton("知道了", null)
+                            .show();
+                }
+            });
+        });
     }
 
     private void buildBookmarksBottomBar() {
