@@ -102,6 +102,18 @@ public final class Updater {
         downloadAndInstall(ctx, tag, listener, UpdateChecker.apkDirectUrlBeta(tag));
     }
 
+    /**
+     * 按真实直链下载并安装指定版本（直链来自 Release 资产，避免拼接文件名导致 404）。
+     *
+     * @param tag      版本标签，仅用于本地文件名展示。
+     * @param directUrl 安装包的浏览器直链。
+     * @param listener 可选：下载进度回调，可为 null。
+     */
+    public static void downloadAndInstallUrl(Context ctx, String tag, String directUrl,
+                                             DownloadProgressListener listener) {
+        downloadAndInstall(ctx, tag, listener, directUrl);
+    }
+
     private static void downloadAndInstall(Context ctx, String tag,
                                            DownloadProgressListener listener, String directUrl) {
         // Android 8.0+ 未授权安装未知来源时，先引导用户去系统设置开启

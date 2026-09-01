@@ -1,6 +1,7 @@
 package com.alltoolbox.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -131,45 +132,154 @@ public class SettingsActivity extends AppCompatActivity {
         addSection(getString(R.string.set_section_update));
         addRow(getString(R.string.set_check_latest),
                 getString(R.string.set_check_latest_summary, UpdateChecker.localVersion(this)),
-                v -> checkUpdate());
+                v -> checkUpdate(false));
         addRow(getString(R.string.set_check_beta),
                 getString(R.string.set_check_beta_summary),
-                v -> checkBetaUpdate());
+                v -> checkUpdate(true));
     }
 
-    /** 点击「检查 Beta 测试版更新（直链）」：查找 GitHub 最新 Pre-Release 并直接下载。 */
-    private void checkBetaUpdate() {
+    /**
+     * 统一更新检测（正式版与 Beta 共用同一弹窗）。
+     *
+     * @param forceBeta true 表示强制走 Beta 通道（“检查 Beta”行）；false 时若本地也装了 Beta 版则自动切到 Beta 通道。
+     */
+    private void checkUpdate(boolean forceBeta) {
         android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
-        pd.setTitle(getString(R.string.set_check_beta_title));
-        pd.setMessage(getString(R.string.set_check_beta_msg));
+        pd.setTitle(getString(R.string.set_check_update_title));
+        pd.setMessage(getString(R.string.set_check_update_msg));
         pd.setIndeterminate(true);
         pd.setCancelable(false);
         pd.show();
 
-        UpdateChecker.checkBetaAsync(this, (isLatest, latestTag, message) -> {
-            runOnUiThread(() -> {
-                pd.dismiss();
-                if (!isLatest && latestTag != null && !latestTag.isEmpty()) {
-                    new MaterialAlertDialogBuilder(this)
-                            .setTitle(R.string.set_found_beta_title)
-                            .setMessage(getString(R.string.set_found_beta_msg, latestTag))
-                            .setNegativeButton(R.string.cancel, null)
-                            .setPositiveButton(R.string.download_now, (d, w) ->
-                                    Updater.downloadAndInstallBeta(this, latestTag,
-                                            new UpdateDownloadProgress()))
-                            .show();
-                } else {
-                    String tip = (message == null || message.isEmpty())
-                            ? getString(R.string.set_latest_beta)
-                            : getString(R.string.set_latest_beta_extra, message);
+        UpdateChecker.fetchAllVersionsAsync(this, (stable, beta, error) -> runOnUiThread(() -> {
+            pd.dismiss();
+            if (error != null) {
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.set_check_update_title)
+                        .setMessage(error)
+                        .setPositiveButton(R.string.ok, null)
+                        .show();
+                return;
+            }
+            String local = UpdateChecker.localVersion(this);
+            // 已安装 Beta 版则视为 Beta 通道；「检查 Beta」强制走 Beta 通道
+            final boolean onBeta = forceBeta || UpdateChecker.isBetaName(local);
+            if (onBeta) {
+                UpdateChecker.VersionInfo target = highestAbove(beta, local);
+                if (target == null) {
                     new MaterialAlertDialogBuilder(this)
                             .setTitle(R.string.set_check_beta_title)
-                            .setMessage(tip)
+                            .setMessage(getString(R.string.set_latest_beta))
                             .setPositiveButton(R.string.ok, null)
                             .show();
+                    return;
                 }
-            });
-        });
+                showUnifiedUpdateDialog(true, target.tag);
+            } else {
+                UpdateChecker.VersionInfo target = highestAbove(stable, local);
+                if (target == null) {
+                    new MaterialAlertDialogBuilder(this)
+                            .setTitle(R.string.set_check_update_title)
+                            .setMessage(getString(R.string.update_latest_stable))
+                            .setPositiveButton(R.string.ok, null)
+                            .show();
+                    return;
+                }
+                showUnifiedUpdateDialog(false, target.tag);
+            }
+        }));
+    }
+
+    /** 统一更新弹窗：可「选择版本下载 / 去链接更新 / 取消」。 */
+    private void showUnifiedUpdateDialog(boolean isBeta, String target) {
+        String head = isBeta ? getString(R.string.update_found_beta, target)
+                : getString(R.string.update_found_stable, target);
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.set_found_update_title)
+                .setMessage(head + getString(R.string.update_msg_suffix))
+                .setNegativeButton(R.string.cancel, null)
+                .setNeutralButton(R.string.update_goto_page, (d, w) ->
+                        openBrowser(isBeta ? UpdateChecker.BETA_DOWNLOAD_URL : UpdateChecker.DOWNLOAD_URL))
+                .setPositiveButton(R.string.update_select_download, (d, w) -> showVersionSelectDialog())
+                .show();
+    }
+
+    /** 「选择版本下载」：列出正式版与 Beta 版，用户点选后确认下载。 */
+    private void showVersionSelectDialog() {
+        android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
+        pd.setTitle(getString(R.string.update_select_download));
+        pd.setMessage(getString(R.string.update_select_loading));
+        pd.setIndeterminate(true);
+        pd.setCancelable(false);
+        pd.show();
+
+        UpdateChecker.fetchAllVersionsAsync(this, (stable, beta, error) -> runOnUiThread(() -> {
+            pd.dismiss();
+            if (error != null) {
+                toast(error);
+                return;
+            }
+            java.util.List<UpdateChecker.VersionInfo> all = new java.util.ArrayList<>();
+            for (UpdateChecker.VersionInfo v : stable) {
+                all.add(v);
+            }
+            for (UpdateChecker.VersionInfo v : beta) {
+                all.add(v);
+            }
+            if (all.isEmpty()) {
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.update_select_download)
+                        .setMessage(R.string.update_select_empty)
+                        .setPositiveButton(R.string.ok, null)
+                        .show();
+                return;
+            }
+            String[] items = new String[all.size()];
+            for (int i = 0; i < all.size(); i++) {
+                UpdateChecker.VersionInfo v = all.get(i);
+                int prefix = v.beta ? R.string.set_version_beta_prefix : R.string.set_version_stable_prefix;
+                items[i] = getString(prefix) + " " + v.tag;
+            }
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.update_select_title)
+                    .setItems(items, (d, which) -> confirmDownload(all.get(which)))
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+        }));
+    }
+
+    /** 确认下载指定版本：使用 Release 资产真实直链，避免拼接文件名导致 404/无进度。 */
+    private void confirmDownload(UpdateChecker.VersionInfo v) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.set_found_update_title)
+                .setMessage(getString(R.string.update_confirm_download, v.tag))
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.download_now, (d, w) ->
+                        Updater.downloadAndInstallUrl(this, v.tag, v.downloadUrl, new UpdateDownloadProgress()))
+                .show();
+    }
+
+    /** 在版本列表中找出严格高于 local 的最高版本；没有则返回 null。 */
+    private static UpdateChecker.VersionInfo highestAbove(java.util.List<UpdateChecker.VersionInfo> list, String local) {
+        UpdateChecker.VersionInfo best = null;
+        for (UpdateChecker.VersionInfo v : list) {
+            if (isStrictlyGreater(v.tag, local) && (best == null || isStrictlyGreater(v.tag, best.tag))) {
+                best = v;
+            }
+        }
+        return best;
+    }
+
+    private static boolean isStrictlyGreater(String a, String b) {
+        return UpdateChecker.compareVersions(a, b) && !UpdateChecker.compareVersions(b, a);
+    }
+
+    private void openBrowser(String url) {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        } catch (Exception e) {
+            toast(getString(R.string.open_link_failed));
+        }
     }
 
     private void buildBookmarksBottomBar() {
@@ -350,44 +460,6 @@ public class SettingsActivity extends AppCompatActivity {
                 .setView(scrollView)
                 .setPositiveButton(R.string.set_i_agree, null)
                 .show();
-    }
-
-    /** 点击「检查最新版本」：先显示检查动画，再按结果提示或直接下载。 */
-    private void checkUpdate() {
-        // 检查动画：带旋转进度条的对话框
-        android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
-        pd.setTitle(getString(R.string.set_check_update_title));
-        pd.setMessage(getString(R.string.set_check_update_msg));
-        pd.setIndeterminate(true);
-        pd.setCancelable(false);
-        pd.show();
-
-        UpdateChecker.checkAsync(this, (isLatest, latestTag, message) -> {
-            runOnUiThread(() -> {
-                pd.dismiss();
-                if (!isLatest && latestTag != null && !latestTag.isEmpty()) {
-                    // 有最新版本 -> 弹窗提示，点击后直接下载（直链）
-                    new MaterialAlertDialogBuilder(this)
-                            .setTitle(R.string.set_found_update_title)
-                            .setMessage(getString(R.string.set_found_update_msg, latestTag))
-                            .setNegativeButton(R.string.cancel, null)
-                            .setPositiveButton(R.string.download_now, (d, w) ->
-                                    Updater.downloadAndInstall(this, latestTag,
-                                            new UpdateDownloadProgress()))
-                            .show();
-                } else {
-                    // 已是最新（或网络异常），提示原因
-                    String tip = (message == null || message.isEmpty())
-                            ? getString(R.string.set_latest)
-                            : getString(R.string.set_latest_extra, message);
-                    new MaterialAlertDialogBuilder(this)
-                            .setTitle(R.string.set_check_update_title)
-                            .setMessage(tip)
-                            .setPositiveButton(R.string.ok, null)
-                            .show();
-                }
-            });
-        });
     }
 
     /** 下载进度：以水平进度条对话框展示百分比、速度。回调均在主线程。 */

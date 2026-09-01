@@ -157,6 +157,18 @@
     <string name="set_found_beta_msg">The latest beta version %1$s was detected.\nDownload and install now?</string>
     <string name="set_latest_beta">You are already on the latest Beta version</string>
     <string name="set_latest_beta_extra">You are already on the latest Beta version; %1$s</string>
+    <string name="update_select_download">Select version to download</string>
+    <string name="update_goto_page">Go to link</string>
+    <string name="update_select_title">Select version to download (Stable / Beta)</string>
+    <string name="update_select_loading">Fetching available versions…</string>
+    <string name="update_select_empty">No version available to download</string>
+    <string name="update_found_stable">New stable version found: %1$s</string>
+    <string name="update_found_beta">New Beta version found: %1$s</string>
+    <string name="update_msg_suffix">\n\nYou can select a version to download and install (Stable / Beta both available), or go to the link to get the update. Update now or cancel.</string>
+    <string name="update_confirm_download">Download and install version %1$s?</string>
+    <string name="update_latest_stable">You are already on the latest stable version</string>
+    <string name="set_version_stable_prefix">Stable</string>
+    <string name="set_version_beta_prefix">Beta</string>
     <string name="set_download_title">Downloading update package</string>
     <string name="set_download_unknown">unknown</string>
     <string name="set_download_progress">Downloaded %1$s%2$s\nSpeed: %3$s/s</string>
@@ -250,7 +262,7 @@
     <string name="perm_shizuku_start_msg">Please install and start Shizuku (moe.shizuku.privileged.api) on this device, activate it via adb/wireless debugging or Root, then return to this app to authorize.\n\nTap "Open Shizuku" to set it up.</string>
     <string name="perm_shizuku_open">Open Shizuku</string>
     <string name="main_announcement_title">Announcement</string>
-    <string name="main_announcement_msg">Welcome to PK Manager %1$s!\n\nThis software is made by the author. Please do not steal or redistribute others\' work.\nThis is a test version that will be continuously optimized and updated.\n\nUpdate notes:\n· Added contact email to the user agreement and privacy policy\n· Optimized startup dialog order; auto-detects Shizuku on startup and guides authorization\n· Show the corresponding app icon for app folders\n· Archives can be extracted in-app without jumping to external apps\n· Tap a file to show the open menu, long-press to show the action menu\n\n[Open-Source Notice] This software is open-sourced under the GNU GPL v3 license; you may freely study, modify and redistribute it as long as you comply with the GPL v3 terms.\nSource repository: github.com/ppkkgzs/ceshi\n\nDownload link for the latest version:\n%2$s\n\nContact email: gexinggzs@163.com</string>
+    <string name="main_announcement_msg">Welcome to PK Manager %1$s!\n\nThis software is made by the author. Please do not steal or redistribute others\' work.\nThis is a test version that will be continuously optimized and updated.\n\nUpdate notes:\n· Update dialog upgraded: select a version to download (Stable / Beta)\n· Stable and Beta share the same update dialog, with go-to-link support\n· Added the Beta source repository\n\n[Open-Source Notice] This software is open-sourced under the GNU GPL v3 license; you may freely study, modify and redistribute it as long as you comply with the GPL v3 terms.\nSource repository (Stable): github.com/ppkkgzs/ceshi\nSource repository (Beta): github.com/ppkkgzs/ceshi-beta\n\nDownload link for the latest version:\n%2$s\n\nDownload link for the latest Beta version:\nhttps://github.com/ppkkgzs/ceshi-beta/releases\n\nContact email: gexinggzs@163.com</string>
     <string name="main_found_update_title">New version found %1$s</string>
     <string name="main_found_update_msg">Current version: %1$s\nFor suggestions and bug reports, email: gexinggzs@163.com\n\nTap "Update directly" to download in-app and auto-install.</string>
     <string name="main_btn_prev">◀ Previous</string>

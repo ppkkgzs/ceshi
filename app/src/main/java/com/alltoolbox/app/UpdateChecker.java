@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -42,9 +44,13 @@ public final class UpdateChecker {
     private static final String RELEASES_API =
             "https://api.github.com/repos/ppkkgzs/ceshi/releases/latest";
 
+    /** 正式版本列表（不含预发行/草稿），供「选择版本下载」使用。 */
+    private static final String STABLE_RELEASES_API =
+            "https://api.github.com/repos/ppkkgzs/ceshi/releases?per_page=100&page=1";
+
     /** 拉取最近若干 Release（含预发行），供 Beta 通道选最高 tag。 */
     private static final String ALL_RELEASES_API =
-            "https://api.github.com/repos/ppkkgzs/ceshi-beta/releases?per_page=50&page=1";
+            "https://api.github.com/repos/ppkkgzs/ceshi-beta/releases?per_page=100&page=1";
 
     /** 由 tag（如 v1.6.6）构造正式版安装包直接下载链接。 */
     public static String apkDirectUrl(String tag) {
@@ -68,6 +74,102 @@ public final class UpdateChecker {
 
     public interface Result {
         void onResult(boolean isLatest, String latestTag, String message);
+    }
+
+    /**
+     * 单个可用版本：{@code tag}=Release 标签，{@code downloadUrl}=安装包真实直链，{@code beta}=是否 Beta 通道。
+     * 直链取自 Release 资产（browser_download_url），不再靠字符串拼接猜测，避免下载失败/无进度。
+     */
+    public static final class VersionInfo {
+        public final String tag;
+        public final String downloadUrl;
+        public final boolean beta;
+
+        public VersionInfo(String tag, String downloadUrl, boolean beta) {
+            this.tag = tag;
+            this.downloadUrl = downloadUrl;
+            this.beta = beta;
+        }
+    }
+
+    /** 拉取到的版本列表结果：{@code stable}=正式版，{@code beta}=测试版，{@code error}=失败原因。 */
+    public interface AllVersionsCallback {
+        void onResult(List<VersionInfo> stable, List<VersionInfo> beta, String error);
+    }
+
+    /**
+     * 异步拉取正式版与 Beta 版的全部分支版本列表，供「选择版本下载」使用。
+     * 成功时 {@code error} 为 null；失败时两个列表为空。
+     */
+    public static void fetchAllVersionsAsync(Context ctx, AllVersionsCallback cb) {
+        TaskExecutor.get().io().execute(() -> {
+            try {
+                List<VersionInfo> stable = fetchVersionInfos(STABLE_RELEASES_API, false);
+                List<VersionInfo> beta = fetchVersionInfos(ALL_RELEASES_API, true);
+                if (cb != null) cb.onResult(stable, beta, null);
+            } catch (Exception e) {
+                if (cb != null) {
+                    cb.onResult(java.util.Collections.emptyList(),
+                            java.util.Collections.emptyList(), "无法连接 GitHub：" + e.getMessage());
+                }
+            }
+        });
+    }
+
+    /**
+     * 从 Releases 列表拉取版本信息（标签 + 真实安装包直链）。
+     *
+     * @param prereleaseOnly true 时仅保留预发行（Beta）版；false 时排除预发行（正式版）。
+     */
+    private static List<VersionInfo> fetchVersionInfos(String api, boolean prereleaseOnly) throws Exception {
+        boolean beta = prereleaseOnly;
+        HttpURLConnection conn = (HttpURLConnection) new URL(api).openConnection();
+        conn.setConnectTimeout(8000);
+        conn.setReadTimeout(8000);
+        conn.setRequestProperty("Accept", "application/vnd.github+json");
+        conn.setRequestProperty("User-Agent", "AllToolbox");
+        int code = conn.getResponseCode();
+        if (code != 200) throw new IOException(code);
+        InputStream in = conn.getInputStream();
+        BufferedReader r = new BufferedReader(new InputStreamReader(in));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) sb.append(line);
+        r.close();
+        JSONArray arr = new JSONArray(sb.toString());
+        List<VersionInfo> out = new ArrayList<>();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject rel = arr.optJSONObject(i);
+            if (rel == null) continue;
+            if (rel.optBoolean("draft", false)) continue;
+            if (rel.optBoolean("prerelease", false) != prereleaseOnly) continue;
+            String tag = rel.optString("tag_name", "");
+            if (tag.isEmpty()) continue;
+            // 取第一个 .apk 资产的真实直链；取不到则退化为按 tag 拼接（保持兼容）
+            String url = null;
+            JSONArray assets = rel.optJSONArray("assets");
+            if (assets != null) {
+                for (int j = 0; j < assets.length(); j++) {
+                    JSONObject a = assets.optJSONObject(j);
+                    if (a == null) continue;
+                    String nm = a.optString("name", "");
+                    if (nm.toLowerCase(Locale.ROOT).endsWith(".apk")) {
+                        url = a.optString("browser_download_url", null);
+                        break;
+                    }
+                }
+            }
+            if (url == null) {
+                url = beta ? apkDirectUrlBeta(tag) : apkDirectUrl(tag);
+            }
+            out.add(new VersionInfo(tag, url, beta));
+        }
+        return out;
+    }
+
+    /** 是否为 Beta 版版本名（版本串中带「beta」字样）。 */
+    public static boolean isBetaName(String v) {
+        return v != null && v.toLowerCase(Locale.ROOT).contains("beta");
     }
 
     /** 读取本地版本名。 */

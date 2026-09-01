@@ -1,5 +1,25 @@
 # 更新日志
 
+## PK管理器 [1.8.7] - 2026-09-01（正式版 Stable）
+
+正式版更新，版本号 1.8.7（versionCode 110），正式版签名（alltoolbox.jks），包名 `com.alltoolbox`。
+
+### 新增
+- **设置→更新 统一更新弹窗**：检测到新版本时弹出统一更新弹窗（正式版 / Beta 版共用同一弹窗），支持「取消 / 去链接更新 / 选择版本下载」
+- **选择版本下载**：更新弹窗新增「选择版本下载」，可在正式版与 Beta 版列表中自选任一版本直接下载安装
+- **Beta 通道识别升级**：已安装 Beta 版时自动切换 Beta 通道，通过 GitHub Releases 拉取真实版本列表与直链，查询更高版本并提示直接更新或去链接更新（可更新或取消）
+- **下载修复**：改为直接使用 GitHub Release 资产的真实 `browser_download_url` 直链下载，修复正式版下载 Beta 包时无下载百分比显示及下载失败（404）的问题
+
+### 版本
+- 版本号升至 1.8.7（versionCode 110），使用正式版签名密钥库（alltoolbox.jks）
+- 正式版与测试版（`com.alltoolbox.beta` + `alltoolboxbeta.jks`）签名不同，正式版可覆盖安装旧正式版，无法覆盖安装测试版
+
+### 下载
+- 安装包：`AllToolbox_1.8.7.apk`（约 11MB，含 7-Zip 原生库）
+- 支持 Android 5.0 及以上版本
+
+---
+
 ## PK管理器 [1.8.4] - 2026-09-01（正式版 Stable）
 
 正式版小幅更新，版本号 1.8.4（versionCode 107），正式版签名（alltoolbox.jks）。

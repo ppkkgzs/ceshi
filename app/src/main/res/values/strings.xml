@@ -157,6 +157,18 @@
     <string name="set_found_beta_msg">检测到最新测试版本 %1$s\n是否立即下载并安装？</string>
     <string name="set_latest_beta">当前已是最新 Beta 版本</string>
     <string name="set_latest_beta_extra">当前已是最新 Beta 版本；%1$s</string>
+    <string name="update_select_download">选择版本下载</string>
+    <string name="update_goto_page">去链接更新</string>
+    <string name="update_select_title">选择版本下载（正式版 / Beta 版）</string>
+    <string name="update_select_loading">正在获取可用版本…</string>
+    <string name="update_select_empty">暂无可下载的版本</string>
+    <string name="update_found_stable">检测到正式版新版本：%1$s</string>
+    <string name="update_found_beta">检测到 Beta 新版本：%1$s</string>
+    <string name="update_msg_suffix">\n\n您可选择版本下载安装（正式版 / Beta 版均可下载），或前往网页链接更新；可直接更新，也可取消。</string>
+    <string name="update_confirm_download">是否下载并安装版本 %1$s？</string>
+    <string name="update_latest_stable">当前已是最新正式版本</string>
+    <string name="set_version_stable_prefix">正式版</string>
+    <string name="set_version_beta_prefix">Beta</string>
     <string name="set_download_title">下载更新包</string>
     <string name="set_download_unknown">未知</string>
     <string name="set_download_progress">已下载 %1$s%2$s\n速度：%3$s/s</string>
@@ -250,7 +262,7 @@
     <string name="perm_shizuku_start_msg">请先在本机安装并启动 Shizuku（moe.shizuku.privileged.api），并通过 adb/无线调试 或 Root 激活后，再回到本应用授权。\n\n点击「打开 Shizuku」进行设置。</string>
     <string name="perm_shizuku_open">打开 Shizuku</string>
     <string name="main_announcement_title">公告</string>
-    <string name="main_announcement_msg">欢迎使用 PK管理器 %1$s！\n\n本软件为本UP制作，请勿盗用或二次分发他人劳动成果，\n本软件为测试版本，后续将持续优化与更新。\n\n本次更新公告：\n· 用户协议与隐私政策补充联系邮箱\n· 启动弹窗顺序优化，启动自动检测 Shizuku 并引导授权\n· 应用文件夹显示对应应用图标\n· 压缩包支持在软件内直接解压，不跳转外部应用\n· 点击文件弹打开方式，长按文件弹操作菜单\n\n【开源声明】本软件以 GNU GPL v3 协议开源，可自由研究、修改与分发，分发时须遵守 GPL v3 条款。\n开源仓库：github.com/ppkkgzs/ceshi\n\n下载最新版本链接：\n%2$s\n\n联系邮箱：gexinggzs@163.com</string>
+    <string name="main_announcement_msg">欢迎使用 PK管理器 %1$s！\n\n本软件为本UP制作，请勿盗用或二次分发他人劳动成果，\n本软件为测试版本，后续将持续优化与更新。\n\n本次更新公告：\n· 更新检测弹窗升级：可选择版本下载（正式版 / Beta 版）\n· 正式版与 Beta 版共用同一更新弹窗，支持去链接更新\n· 开源仓库新增 Beta 版仓库\n\n【开源声明】本软件以 GNU GPL v3 协议开源，可自由研究、修改与分发，分发时须遵守 GPL v3 条款。\n开源仓库（正式版）：github.com/ppkkgzs/ceshi\n开源仓库（Beta 版）：github.com/ppkkgzs/ceshi-beta\n\n下载最新版本链接：\n%2$s\n\n下载最新 Beta 版本链接：\nhttps://github.com/ppkkgzs/ceshi-beta/releases\n\n联系邮箱：gexinggzs@163.com</string>
     <string name="main_found_update_title">发现新版本 %1$s</string>
     <string name="main_found_update_msg">当前版本：%1$s\n优化建议、Bug 反馈请发邮件：gexinggzs@163.com\n\n点击「直接更新」将在应用内下载并自动进入安装。</string>
     <string name="main_btn_prev">◀ 上一页</string>
