@@ -10,8 +10,8 @@ ext {
     targetSdkVersion = 34
     compileSdkVersion = 34
 
-    versionName = "1.6.8"
-    versionCode = 14
+    versionName = "1.7.9-beta"
+    versionCode = 17
 
     // release 签名：仅当本地存在 keystore.properties 时启用，避免克隆仓库缺密钥导致构建失败
     hasReleaseSigning = false

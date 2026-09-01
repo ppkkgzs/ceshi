@@ -13,6 +13,9 @@
             android:name=".DualPaneActivity"
             android:exported="false" />
         <activity
+            android:name=".ZipBrowserActivity"
+            android:exported="false" />
+        <activity
             android:name=".ftp.FtpActivity"
             android:exported="false" />
     </application>

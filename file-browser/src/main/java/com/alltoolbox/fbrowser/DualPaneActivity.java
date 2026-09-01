@@ -66,7 +66,7 @@ public class DualPaneActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dual_pane);
-        setTitle(getString(R.string.title_dual_pane));
+        setTitle(getString(R.string.title_dual_pane) + "（测试版）");
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -540,6 +540,9 @@ public class DualPaneActivity extends AppCompatActivity {
             this.side = side;
             this.lm = new LinearLayoutManager(DualPaneActivity.this);
             this.list.setLayoutManager(lm);
+            // 列表滚动流畅度优化：固定尺寸 + 放大缓存，减少滑动时重复绑定
+            this.list.setHasFixedSize(true);
+            this.list.setItemViewCacheSize(24);
             this.adapter = new ListItemAdapter(false, new ListItemAdapter.Listener() {
                 @Override public void onOpen(FileInfo fi) { Pane.this.onOpen(fi); }
 
@@ -548,16 +551,31 @@ public class DualPaneActivity extends AppCompatActivity {
                 }
             });
             this.list.setAdapter(adapter);
-            this.list.setOnScrollListener(null);
             this.currentPath = root.getAbsolutePath();
-            this.list.setOnClickListener(null);
 
-            // 滑动该栏任意位置即可切换选中该栏（横向滑动）
+            // 横向滑动该栏即立刻切换为选中该栏；纵向滚动不拦截（保持丝滑）。
             final GestureDetector gd = new GestureDetector(DualPaneActivity.this,
                     new GestureDetector.SimpleOnGestureListener() {
+                        @Override public boolean onScroll(MotionEvent e1, MotionEvent e2,
+                                                          float distanceX, float distanceY) {
+                            if (e1 != null && e2 != null) {
+                                float dx = e2.getX() - e1.getX();
+                                float dy = e2.getY() - e1.getY();
+                                if (Math.abs(dx) > 14 && Math.abs(dx) > Math.abs(dy)) {
+                                    setActiveSide(side);
+                                }
+                            }
+                            return false; // 不消费，让列表正常纵向滚动
+                        }
+
                         @Override public boolean onFling(MotionEvent e1, MotionEvent e2,
                                                          float vx, float vy) {
-                            if (Math.abs(vx) > Math.abs(vy)) setActiveSide(side);
+                            if (e1 != null && e2 != null
+                                    && Math.abs(e2.getX() - e1.getX())
+                                       > Math.abs(e2.getY() - e1.getY())
+                                    && Math.abs(e2.getX() - e1.getX()) > 50) {
+                                setActiveSide(side);
+                            }
                             return true;
                         }
                     });
@@ -600,8 +618,8 @@ public class DualPaneActivity extends AppCompatActivity {
             currentPath = dir.getAbsolutePath();
             pathView.setText(currentPath);
             TaskExecutor.get().io().execute(() -> {
-                File[] children = dir.listFiles();
                 final List<FileInfo> out = new ArrayList<>();
+                File[] children = dir.listFiles();
                 if (children != null) {
                     for (File c : children) {
                         if (!showHidden && (c.isHidden() || c.getName().startsWith("."))) continue;
@@ -678,6 +696,12 @@ public class DualPaneActivity extends AppCompatActivity {
 
     private void onOpenFile(File f) {
         String name = f.getName();
+        // 压缩包（含“包中包”）：进入压缩包浏览器逐层浏览
+        if (com.alltoolbox.archive.ArchiveManager.isBrowseableArchive(name)) {
+            startActivity(new Intent(this, ZipBrowserActivity.class)
+                    .putExtra(ZipBrowserActivity.EXTRA_ZIP, f.getAbsolutePath()));
+            return;
+        }
         String ext = com.alltoolbox.core.file.FileUtil.getExtension(name);
         switch (ext) {
             case "txt": case "log": case "md": case "xml": case "json":

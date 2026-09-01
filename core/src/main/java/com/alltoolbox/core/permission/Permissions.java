@@ -115,4 +115,19 @@ public final class Permissions {
     public static boolean isRooted() {
         return Root.isRooted();
     }
+
+    /**
+     * 是否受 Scoped Storage 保护的目标目录（{@code Android/data}、{@code Android/obb}
+     * 及其子目录）。这类目录在 Android 10+ 上普通 File API 无法枚举/读取，需借助
+     * SAF 授权。
+     */
+    public static boolean isRestrictedAndroidDir(File dir) {
+        if (dir == null || !AppContext.isAtLeastQ()) return false;
+        String path = dir.getAbsolutePath();
+        File ext = Environment.getExternalStorageDirectory();
+        String data = new File(ext, "Android/data").getAbsolutePath();
+        String obb = new File(ext, "Android/obb").getAbsolutePath();
+        return path.equals(data) || path.equals(obb)
+                || path.startsWith(data + "/") || path.startsWith(obb + "/");
+    }
 }

@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Shizuku 库要求 minSdk 24，工程最低为 21；override 使其可合并（Shizuku 仅在 API 23+ 可用，代码已防护） -->
+    <uses-sdk tools:overrideLibrary="rikka.shizuku.provider,rikka.shizuku.api,rikka.shizuku.aidl,rikka.shizuku.shared" />
+
     <!-- 存储权限：<6.0 清单声明即授予；6.0+ 运行时申请 -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -13,6 +16,10 @@
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+    <!-- Shizuku：以 adb/shell 权限访问 Android/data、Android/obb 等受限目录（无需 Root） -->
+    <uses-permission
+        android:name="moe.shizuku.manager.permission.API_V23"
+        tools:ignore="ProtectedPermissions" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -76,5 +83,16 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Shizuku：连接管理器服务器的桥梁，接收 Binder，授权后以 shell 权限执行命令
+             注意：ShizukuProvider 必须 exported=true（官方要求），由
+             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" 保护安全 -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
 </manifest>

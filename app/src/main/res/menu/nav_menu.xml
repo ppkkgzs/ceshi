@@ -32,6 +32,11 @@
         android:title="@string/nav_extract_apk" />
 
     <item
+        android:id="@+id/nav_internal_storage"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="@string/nav_internal_storage" />
+
+    <item
         android:id="@+id/nav_archive"
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="@string/nav_archive" />

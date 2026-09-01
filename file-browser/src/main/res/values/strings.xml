@@ -43,4 +43,16 @@
     <string name="selected_count">已选 %1$d 项</string>
     <string name="tab_left">左栏</string>
     <string name="tab_right">右栏</string>
+
+    <!-- 压缩包内部浏览（包中包） -->
+    <string name="title_zip_browser">压缩包浏览器</string>
+    <string name="zip_action_extract">解压当前层</string>
+    <string name="zip_action_refresh">刷新</string>
+    <string name="zip_extract_dialog">解压当前层内容到指定目录</string>
+    <string name="zip_extract_done">已解压到：%1$s</string>
+    <string name="zip_extract_failed">解压失败：%1$s</string>
+    <string name="zip_entry_dir">文件夹</string>
+    <string name="zip_action_choose">选择操作</string>
+    <string name="zip_extract_entry">解压本文件</string>
+    <string name="zip_extract_entry_dialog">当前文件将解压到指定目录</string>
 </resources>

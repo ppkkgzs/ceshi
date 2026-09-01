@@ -184,6 +184,10 @@ public class FileBrowserFragment extends Fragment {
 
         layoutManager = new GridLayoutManager(getContext(), 1);
         recycler.setLayoutManager(layoutManager);
+        // 列表滚动流畅度优化：固定尺寸 + 放大缓存，减少滑动动画时重新绑定
+        recycler.setHasFixedSize(true);
+        recycler.setItemViewCacheSize(24);
+        recycler.setItemAnimator(new androidx.recyclerview.widget.DefaultItemAnimator());
         adapter = new FileAdapter(new ArrayList<>(), gridMode, callbacks());
         recycler.setAdapter(adapter);
 
@@ -586,17 +590,100 @@ public class FileBrowserFragment extends Fragment {
                     String dirName = et.getText().toString().trim();
                     if (dirName.isEmpty()) dirName = defDir;
                     final File dest = new File(cur, dirName);
-                    toast("正在解压…");
-                    com.alltoolbox.archive.ArchiveManager.get().decompressAsync(
-                            arc, dest, null,
-                            () -> getActivity().runOnUiThread(() -> {
-                                toast("解压完成，见 " + dest.getName());
-                                exitSelection();
-                                reload();
-                            }),
-                            e -> getActivity().runOnUiThread(
-                                    () -> toast("解压失败: " + e.getMessage())));
+                    precheckAndExtract(arc, dest);
                 }).show();
+    }
+
+    /**
+     * 解压前前置检测（完整性 / 磁盘空间 / 是否加密 / 同名冲突）。
+     * 全部通过后再进解压流程，减少底层 JNI 无差别 0x1 报错。
+     */
+    private void precheckAndExtract(final File arc, final File dest) {
+        final android.app.Activity activity = getActivity();
+        com.alltoolbox.core.task.TaskExecutor.get().io().execute(() -> {
+            // 1. 压缩包完整性简单校验（存在且大小 > 0）
+            try {
+                com.alltoolbox.archive.SevenZipEngine.checkIntegrity(arc);
+            } catch (Exception e) {
+                postToast(activity, e.getMessage());
+                return;
+            }
+            // 2. 磁盘可用空间预检测
+            long need = com.alltoolbox.archive.SevenZipEngine.estimateUncompressedSize(arc);
+            if (!com.alltoolbox.archive.SevenZipEngine.diskSpaceOk(dest, need)) {
+                postToast(activity, com.alltoolbox.archive.SevenZipEngine.MSG_SPACE);
+                return;
+            }
+            // 3. 探测是否加密 + 统计同名冲突（回 UI 线程让用户决定）
+            boolean needPw = com.alltoolbox.archive.SevenZipEngine.requiresPassword(arc);
+            int conflicts = com.alltoolbox.archive.SevenZipEngine.countConflicts(arc, "", dest);
+            final boolean pw = needPw;
+            final int cf = conflicts;
+            postToUi(activity, () -> afterPrecheck(arc, dest, pw, cf));
+        });
+    }
+
+    private void afterPrecheck(final File arc, final File dest, boolean needPw, int conflicts) {
+        if (needPw) {
+            // 密码输入框：先去除首尾空格，再传给解压接口
+            final EditText pw = new EditText(requireContext());
+            pw.setHint("压缩包密码");
+            pw.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                    | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("压缩包已加密")
+                    .setMessage(com.alltoolbox.archive.SevenZipEngine.MSG_PASSWORD)
+                    .setView(pw)
+                    .setNegativeButton("取消", null)
+                    .setPositiveButton("解压", (d, w) ->
+                            afterPassword(arc, dest, pw.getText().toString().trim(), conflicts))
+                    .show();
+        } else {
+            afterPassword(arc, dest, null, conflicts);
+        }
+    }
+
+    private void afterPassword(final File arc, final File dest, String password, int conflicts) {
+        if (conflicts > 0) {
+            // 同名文件冲突：覆盖 / 跳过全部 / 取消
+            new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("发现 " + conflicts + " 个同名文件")
+                    .setMessage("目标目录已存在同名文件，请选择处理方式")
+                    .setNegativeButton("取消", null)
+                    .setNeutralButton("跳过全部", (d, w) ->
+                            startExtract(arc, dest, password, false))
+                    .setPositiveButton("覆盖", (d, w) ->
+                            startExtract(arc, dest, password, true))
+                    .show();
+        } else {
+            startExtract(arc, dest, password, true);
+        }
+    }
+
+    private void startExtract(final File arc, final File dest, String password, boolean overwrite) {
+        toast("正在解压…");
+        final android.app.Activity activity = getActivity();
+        com.alltoolbox.archive.ArchiveManager.get().decompressAsync(
+                arc, dest, password, overwrite, null,
+                () -> {
+                    if (activity != null) activity.runOnUiThread(() -> {
+                        toast("解压完成，见 " + dest.getName());
+                        exitSelection();
+                        reload();
+                    });
+                },
+                e -> {
+                    if (activity != null) activity.runOnUiThread(
+                            () -> toast("解压失败: " + e.getMessage()));
+                });
+    }
+
+    private void postToast(final android.app.Activity activity, String msg) {
+        if (activity != null) activity.runOnUiThread(() -> toast(msg));
+    }
+
+    private void postToUi(final android.app.Activity activity, Runnable r) {
+        if (activity != null) activity.runOnUiThread(r);
     }
 
     /** 对选中的单个文件提供 APK 逆向/编辑等高级工具。 */
@@ -772,6 +859,13 @@ public class FileBrowserFragment extends Fragment {
     private void onOpenFile(FileInfo file) {
         File f = file.getFile();
         String name = f.getName();
+        // 压缩包（含“包中包”）：进入压缩包浏览器逐层浏览
+        if (com.alltoolbox.archive.ArchiveManager.isBrowseableArchive(name)) {
+            Intent zi = new Intent(requireContext(), ZipBrowserActivity.class);
+            zi.putExtra(ZipBrowserActivity.EXTRA_ZIP, f.getAbsolutePath());
+            startActivity(zi);
+            return;
+        }
         String ext = com.alltoolbox.core.file.FileUtil.getExtension(name);
         // 文本/代码/XML/配置 → 内置编辑器
         switch (ext) {

@@ -1,6 +1,7 @@
 package com.alltoolbox.fops;
 
 import com.alltoolbox.core.file.FileUtil;
+import com.alltoolbox.core.permission.ShizukuShell;
 import com.alltoolbox.core.task.TaskExecutor;
 
 import java.io.File;
@@ -61,7 +62,10 @@ public final class FileOpsController {
 
     public File createFolder(File parent, String name) {
         File f = new File(parent, name);
-        return f.mkdirs() || f.isDirectory() ? f : null;
+        if (f.mkdirs() || f.isDirectory()) return f;
+        // 受限目录：普通 API 失败时走 Shizuku shell
+        if (ShizukuShell.isReady() && ShizukuShell.mkdir(f.getAbsolutePath())) return f;
+        return null;
     }
 
     public File createFile(File parent, String name) {
@@ -72,6 +76,8 @@ public final class FileOpsController {
         } catch (IOException e) {
             // 忽略
         }
+        // 受限目录：普通 API 失败时走 Shizuku shell
+        if (ShizukuShell.isReady() && ShizukuShell.createFile(f.getAbsolutePath())) return f;
         return null;
     }
 
@@ -80,6 +86,11 @@ public final class FileOpsController {
     public boolean rename(File src, String newName) {
         if (newName == null || newName.trim().isEmpty()) return false;
         File dst = new File(src.getParentFile(), newName);
+        if (!src.canRead()) {
+            // 受限目录：普通 API 无法读取，走 Shizuku shell 移动
+            return ShizukuShell.isReady()
+                    && ShizukuShell.move(src.getAbsolutePath(), dst.getAbsolutePath());
+        }
         return !dst.exists() && src.renameTo(dst);
     }
 
@@ -88,9 +99,17 @@ public final class FileOpsController {
     public boolean delete(List<File> files) {
         boolean ok = true;
         for (File f : files) {
-            ok &= FileUtil.deleteRecursively(f);
+            ok &= deleteOne(f);
         }
         return ok;
+    }
+
+    private boolean deleteOne(File f) {
+        // 受限目录（普通 API 无法读取/删除会误报成功）时优先走 Shizuku shell
+        if (!f.canRead() && ShizukuShell.isReady()) {
+            return ShizukuShell.delete(f.getAbsolutePath());
+        }
+        return FileUtil.deleteRecursively(f);
     }
 
     // ---------- 复制 / 移动 ----------
@@ -102,6 +121,14 @@ public final class FileOpsController {
     /** 深度复制。 */
     public void copy(File src, File dstDir, ProgressListener listener) throws IOException {
         File target = new File(dstDir, src.getName());
+        // 受限目录源：普通 API 无法读取，走 Shizuku shell 复制
+        if (!src.canRead() && ShizukuShell.isReady()) {
+            if (!ShizukuShell.copy(src.getAbsolutePath(), target.getAbsolutePath())) {
+                throw new IOException("复制失败（Shizuku）: " + src);
+            }
+            if (listener != null) listener.onProgress(1, 1, src);
+            return;
+        }
         copyRecursively(src, target, listener);
     }
 
@@ -135,6 +162,15 @@ public final class FileOpsController {
 
     /** 移动 = 复制 + 删除源。 */
     public void move(File src, File dstDir, ProgressListener listener) throws IOException {
+        File target = new File(dstDir, src.getName());
+        // 受限目录：普通 API 无法读取源，直接走 Shizuku shell 移动
+        if (!src.canRead() && ShizukuShell.isReady()) {
+            if (!ShizukuShell.move(src.getAbsolutePath(), target.getAbsolutePath())) {
+                throw new IOException("移动失败（Shizuku）: " + src);
+            }
+            if (listener != null) listener.onProgress(1, 1, src);
+            return;
+        }
         copy(src, dstDir, listener);
         FileUtil.deleteRecursively(src);
     }

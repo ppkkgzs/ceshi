@@ -13,16 +13,40 @@
         app:titleTextColor="@android:color/white"
         app:navigationIcon="@android:drawable/ic_menu_revert" />
 
-    <TextView
+    <EditText
+        android:id="@+id/search_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:text="下方应用可提取其安装包（APK）到「下载」目录。\nAndroid 11+ 需要授予「所有文件访问」权限。"
-        android:textSize="13sp"
-        android:textColor="@android:color/tertiary_text_dark" />
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:hint="搜索应用名或包名"
+        android:inputType="text"
+        android:maxLines="1"
+        android:imeOptions="actionSearch"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:background="@android:color/transparent" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbox_primary"
+        app:tabIndicatorColor="@android:color/white"
+        app:tabSelectedTextColor="@android:color/white"
+        app:tabTextColor="#B3FFFFFF">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="用户应用" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="系统应用" />
+    </com.google.android.material.tabs.TabLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

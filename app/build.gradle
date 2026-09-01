@@ -64,4 +64,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel:${rootProject.ext.lifecycleVersion}"
     implementation "androidx.lifecycle:lifecycle-livedata:${rootProject.ext.lifecycleVersion}"
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+
+    // ShizukuProvider：接收 Shizuku 管理器下发的 Binder（应用进程内，无自定义 Service）
+    implementation "dev.rikka.shizuku:provider:${rootProject.ext.shizukuVersion}"
 }

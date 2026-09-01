@@ -10,6 +10,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // 7-Zip-JBinding-4Android（LGPL-2.1）经 JitPack 分发
+        maven { url 'https://jitpack.io' }
     }
 }
 

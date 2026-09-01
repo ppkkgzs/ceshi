@@ -21,6 +21,12 @@ dependencies {
     implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
     implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
 
+    // Shizuku：shell 命令方式访问受限目录（Android/data、Android/obb 等）
+    // api：透传给消费模块（file-browser 等）直接使用 rikka.shizuku.Shizuku。
+    // aidl：提供 IShizukuService 的 newProcess()，以 adb/shell 权限运行命令。
+    api "dev.rikka.shizuku:api:${rootProject.ext.shizukuVersion}"
+    api "dev.rikka.shizuku:aidl:${rootProject.ext.shizukuVersion}"
+
     // Room 数据库（配置/书签/签名/回收站）
     implementation "androidx.room:room-runtime:${rootProject.ext.roomVersion}"
     annotationProcessor "androidx.room:room-compiler:${rootProject.ext.roomVersion}"

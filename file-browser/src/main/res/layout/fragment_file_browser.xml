@@ -80,6 +80,43 @@
             android:text="@string/empty_folder"
             android:textColor="?android:attr/textColorSecondary"
             android:visibility="gone" />
+
+        <!-- 受限目录（Android/data、Android/obb）：SAF 授权入口 -->
+        <LinearLayout
+            android:id="@+id/restricted_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/restricted_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/restricted_dir_hint"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btn_saf_authorize"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/restricted_saf_btn" />
+
+            <Button
+                android:id="@+id/btn_shizuku_authorize"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/restricted_shizuku_btn" />
+        </LinearLayout>
     </FrameLayout>
 
     <!-- 多选操作栏 -->

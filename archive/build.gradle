@@ -30,4 +30,8 @@ dependencies {
     implementation "org.tukaani:xz:1.10"
     // Okio 高性能 IO
     implementation "com.squareup.okio:okio:${rootProject.ext.okioVersion}"
+
+    // 7-Zip-JBinding-4Android（LGPL-2.1）：原生 7-Zip 引擎，用于解压 zip/7z/rar/tar 等
+    // 本应用以「库」形式使用并随 APK 分发，已在应用内加入开源声明与许可证文本。
+    implementation "com.github.omicronapps:7-Zip-JBinding-4Android:Release-16.02-2.03"
 }

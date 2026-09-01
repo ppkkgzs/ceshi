@@ -6,14 +6,8 @@ import androidx.documentfile.provider.DocumentFile;
 
 import com.alltoolbox.core.task.TaskExecutor;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
-import org.apache.commons.compress.archivers.sevenz.SevenZFile;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 import java.io.BufferedInputStream;
@@ -31,8 +25,9 @@ import java.util.zip.Deflater;
 
 /**
  * 压缩解压核心。
- *  - ZIP 压缩/解压
- *  - 7Z / RAR(4) / TAR 解压（基于 commons-compress，纯 Java）
+ *  - ZIP 压缩（commons-compress）
+ *  - 解压统一基于原生 7-Zip 引擎（7-Zip-JBinding），可稳定处理
+ *    Data Descriptor / Zip64 特征的 ZIP 及 7z / rar / tar 等多种格式
  *  - ZIP 包内直接增删、重命名条目（无需完整解压）
  */
 public class ArchiveManager {
@@ -174,19 +169,52 @@ public class ArchiveManager {
     // ---------------- 解压 ----------------
 
     public void decompress(File archive, File destDir, Progress progress) throws IOException {
+        decompress(archive, destDir, null, true, progress);
+    }
+
+    /**
+     * 解压（可指定密码与同名文件覆盖策略）。
+     *
+     * @param password          压缩包密码；无密码传 null。
+     * @param overwriteExisting true=覆盖同名文件；false=跳过已存在的文件。
+     */
+    public void decompress(File archive, File destDir, String password,
+                           boolean overwriteExisting, Progress progress) throws IOException {
         String name = archive.getName().toLowerCase(Locale.ROOT);
-        if (name.endsWith(".zip")) decompressZip(archive, destDir, progress);
-        else if (name.endsWith(".7z")) decompress7z(archive, destDir, progress);
-        else if (name.endsWith(".tar")) decompressTar(archive, destDir, progress);
-        else throw new IOException("不支持的解压格式: " + name);
+        if (!isSupportedArchive(name)) {
+            throw new IOException("不支持的解压格式: " + name);
+        }
+        // 核心解压交由原生 7-Zip 引擎（7-Zip-JBinding），可稳定处理
+        // Data Descriptor / Zip64 ZIP 及 7z、rar、tar 等格式。
+        // 密码错误 / 空间不足 / 权限 / 文件损坏等已由引擎翻译为可读中文异常。
+        SevenZipEngine.extract(archive, destDir, password, overwriteExisting, progress);
+    }
+
+    private static boolean isSupportedArchive(String name) {
+        return name.endsWith(".zip") || name.endsWith(".apk") || name.endsWith(".jar")
+                || name.endsWith(".7z") || name.endsWith(".rar") || name.endsWith(".tar")
+                || name.endsWith(".gz") || name.endsWith(".gzip") || name.endsWith(".tar.gz")
+                || name.endsWith(".bz2") || name.endsWith(".bzip2") || name.endsWith(".tbz2")
+                || name.endsWith(".xz") || name.endsWith(".lzma") || name.endsWith(".zst")
+                || name.endsWith(".iso") || name.endsWith(".lzh") || name.endsWith(".cab")
+                || name.endsWith(".wim") || name.endsWith(".udf") || name.endsWith(".deb")
+                || name.endsWith(".rpm") || name.endsWith(".cpio") || name.endsWith(".arj")
+                || name.endsWith(".z");
     }
 
     /** 基于 File 的异步解压（供文件浏览器「软件内解压」使用）。 */
     public void decompressAsync(File archive, File destDir, Progress progress,
                                 Runnable onDone, java.util.function.Consumer<Exception> onError) {
+        decompressAsync(archive, destDir, null, true, progress, onDone, onError);
+    }
+
+    /** 基于 File 的异步解压（可指定密码与同名覆盖策略）。 */
+    public void decompressAsync(File archive, File destDir, String password,
+                                boolean overwriteExisting, Progress progress,
+                                Runnable onDone, java.util.function.Consumer<Exception> onError) {
         TaskExecutor.get().archive().execute(() -> {
             try {
-                decompress(archive, destDir, progress);
+                decompress(archive, destDir, password, overwriteExisting, progress);
                 if (onDone != null) onDone.run();
             } catch (Exception e) {
                 if (onError != null) onError.accept(e);
@@ -198,19 +226,30 @@ public class ArchiveManager {
 
     /**
      * 将 SAF 压缩包解压到指定 SAF 目录。
-     * 支持 ZIP / TAR（流式）；7Z 通过缓存文件读取后逐条写入目标树。
+     * 统一交由原生 7-Zip 引擎处理（自动识别 zip/7z/rar/tar 等格式）：
+     * 先缓存为临时文件 → 解到临时目录 → 再写入 SAF 目标树。
      */
     public void decompress(ContentResolver cr, DocumentFile archive, DocumentFile destDir,
                            Progress progress) throws IOException {
         String name = archive.getName() == null ? "" : archive.getName().toLowerCase(Locale.ROOT);
-        if (name.endsWith(".zip")) {
-            decompressZipToDoc(cr, archive, destDir, progress);
-        } else if (name.endsWith(".tar")) {
-            decompressTarToDoc(cr, archive, destDir, progress);
-        } else if (name.endsWith(".7z")) {
-            decompress7zToDoc(cr, archive, destDir, progress);
-        } else {
+        if (!isSupportedArchive(name)) {
             throw new IOException("不支持的解压格式: " + name);
+        }
+        File cache = File.createTempFile("arch_", ".bin");
+        File tmpDir = new File(cache.getParentFile(), "arch_tmp_" + System.nanoTime());
+        if (!tmpDir.mkdirs()) throw new IOException("无法创建临时目录");
+        try {
+            try (InputStream in = new BufferedInputStream(cr.openInputStream(archive.getUri()));
+                 OutputStream fout = new BufferedOutputStream(new FileOutputStream(cache))) {
+                byte[] buf = new byte[64 * 1024];
+                int n;
+                while ((n = in.read(buf)) != -1) fout.write(buf, 0, n);
+            }
+            SevenZipEngine.extract(cache, tmpDir, progress);
+            copyDirToDoc(cr, tmpDir, destDir);
+        } finally {
+            deleteRecursively(tmpDir);
+            cache.delete();
         }
     }
 
@@ -227,179 +266,39 @@ public class ArchiveManager {
         });
     }
 
-    private void decompressZipToDoc(ContentResolver cr, DocumentFile archive, DocumentFile destDir,
-                                    Progress progress) throws IOException {
-        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(
-                new BufferedInputStream(cr.openInputStream(archive.getUri())))) {
-            ZipArchiveEntry e;
-            while ((e = zis.getNextZipEntry()) != null) {
-                extractToDoc(cr, destDir, zis, e.getName(), progress, e.getSize());
-            }
-        }
-    }
-
-    private void decompressTarToDoc(ContentResolver cr, DocumentFile archive, DocumentFile destDir,
-                                    Progress progress) throws IOException {
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(
-                new BufferedInputStream(cr.openInputStream(archive.getUri())))) {
-            ArchiveEntry e;
-            while ((e = tis.getNextEntry()) != null) {
-                extractToDoc(cr, destDir, tis, e.getName(), progress, e.getSize());
-            }
-        }
-    }
-
-    private void decompress7zToDoc(ContentResolver cr, DocumentFile archive, DocumentFile destDir,
-                                   Progress progress) throws IOException {
-        File cache = File.createTempFile("arch7z_", ".7z");
-        try (InputStream in = cr.openInputStream(archive.getUri());
-             java.io.FileOutputStream fout = new java.io.FileOutputStream(cache)) {
-            byte[] buf = new byte[64 * 1024];
-            int n;
-            while ((n = in.read(buf)) != -1) fout.write(buf, 0, n);
-        }
-        try (SevenZFile szf = new SevenZFile(cache)) {
-            SevenZArchiveEntry e;
-            while ((e = szf.getNextEntry()) != null) {
-                if (e.isDirectory()) continue;
-                extract7zToDoc(cr, destDir, szf, e.getName(), progress, e.getSize());
-            }
-        } finally {
-            cache.delete();
-        }
-    }
-
-    private void extract7zToDoc(ContentResolver cr, DocumentFile destDir, SevenZFile szf,
-                                String entryName, Progress progress, long size) throws IOException {
-        DocumentFile out = findOrCreateDoc(destDir, entryName);
-        long remain = size;
-        long done = 0;
-        try (java.io.OutputStream os = new BufferedOutputStream(cr.openOutputStream(out.getUri()))) {
-            byte[] buf = new byte[64 * 1024];
-            while (remain > 0) {
-                int n = szf.read(buf, 0, (int) Math.min(buf.length, remain));
-                if (n <= 0) break;
-                os.write(buf, 0, n);
-                done += n;
-                remain -= n;
-                if (progress != null) progress.onProgress(done, size, entryName);
-            }
-        }
-    }
-
-    private void extractToDoc(ContentResolver cr, DocumentFile destDir, InputStream in,
-                              String entryName, Progress progress, long size) throws IOException {
-        if (entryName.endsWith("/")) return; // 目录条目
-        DocumentFile out = findOrCreateDoc(destDir, entryName);
-        long done = 0;
-        try (java.io.OutputStream os = new BufferedOutputStream(cr.openOutputStream(out.getUri()))) {
-            byte[] buf = new byte[64 * 1024];
-            int n;
-            while ((n = in.read(buf)) != -1) {
-                os.write(buf, 0, n);
-                done += n;
-                if (progress != null) progress.onProgress(done, size, entryName);
-            }
-        }
-    }
-
-    /** 按 entry 路径在 DocumentFile 目录树中逐级创建并返回目标文件。 */
-    private DocumentFile findOrCreateDoc(DocumentFile destDir, String entryName) throws IOException {
-        String[] segs = entryName.split("/");
-        DocumentFile cur = destDir;
-        for (int i = 0; i < segs.length; i++) {
-            String seg = segs[i];
-            if (seg.isEmpty() || seg.equals(".")) continue;
-            if (i == segs.length - 1) {
-                DocumentFile f = cur.findFile(seg);
-                if (f == null) {
-                    String mime = "application/octet-stream";
-                    f = cur.createFile(mime, seg);
-                }
-                if (f == null) throw new IOException("无法创建文件: " + entryName);
-                return f;
+    private void copyDirToDoc(ContentResolver cr, File dir, DocumentFile destDir)
+            throws IOException {
+        File[] children = dir.listFiles();
+        if (children == null) return;
+        for (File child : children) {
+            if (child.isDirectory()) {
+                DocumentFile d = destDir.findFile(child.getName());
+                if (d == null) d = destDir.createDirectory(child.getName());
+                if (d != null) copyDirToDoc(cr, child, d);
             } else {
-                DocumentFile d = cur.findFile(seg);
-                if (d == null) d = cur.createDirectory(seg);
-                if (d == null) throw new IOException("无法创建目录: " + entryName);
-                cur = d;
-            }
-        }
-        throw new IOException("非法路径: " + entryName);
-    }
-
-    private void decompressZip(File archive, File destDir, Progress progress) throws IOException {
-        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(
-                new BufferedInputStream(new FileInputStream(archive)))) {
-            ZipArchiveEntry e;
-            while ((e = zis.getNextZipEntry()) != null) {
-                extractEntry(zis, destDir, e.getName(), progress, e.getSize());
-            }
-        }
-    }
-
-    private void decompress7z(File archive, File destDir, Progress progress) throws IOException {
-        try (SevenZFile szf = new SevenZFile(archive)) {
-            SevenZArchiveEntry e;
-            while ((e = szf.getNextEntry()) != null) {
-                if (e.isDirectory()) continue;
-                long size = e.getSize();
-                File out = safeJoin(destDir, e.getName());
-                File parent = out.getParentFile();
-                if (parent != null && !parent.exists()) parent.mkdirs();
-                try (OutputStream os = new BufferedOutputStream(new FileOutputStream(out))) {
+                DocumentFile f = destDir.findFile(child.getName());
+                if (f == null) {
+                    f = destDir.createFile("application/octet-stream", child.getName());
+                }
+                if (f == null) throw new IOException("无法创建文件: " + child.getName());
+                try (InputStream in = new BufferedInputStream(new FileInputStream(child));
+                     OutputStream os = new BufferedOutputStream(cr.openOutputStream(f.getUri()))) {
                     byte[] buf = new byte[64 * 1024];
-                    long remain = size;
-                    long done = 0;
-                    while (remain > 0) {
-                        int n = szf.read(buf, 0, (int) Math.min(buf.length, remain));
-                        if (n <= 0) break;
-                        os.write(buf, 0, n);
-                        done += n;
-                        remain -= n;
-                        if (progress != null) progress.onProgress(done, size, e.getName());
-                    }
+                    int n;
+                    while ((n = in.read(buf)) != -1) os.write(buf, 0, n);
                 }
             }
         }
     }
 
-    private void decompressTar(File archive, File destDir, Progress progress) throws IOException {
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(
-                new BufferedInputStream(new FileInputStream(archive)))) {
-            ArchiveEntry e;
-            while ((e = tis.getNextEntry()) != null) {
-                extractEntry(tis, destDir, e.getName(), progress, e.getSize());
+    private void deleteRecursively(File f) {
+        if (f.isDirectory()) {
+            File[] ch = f.listFiles();
+            if (ch != null) {
+                for (File c : ch) deleteRecursively(c);
             }
         }
-    }
-
-    private void extractEntry(InputStream in, File destDir, String name,
-                              Progress progress, long size) throws IOException {
-        File out = safeJoin(destDir, name);
-        File parent = out.getParentFile();
-        if (parent != null && !parent.exists()) parent.mkdirs();
-        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(out))) {
-            byte[] buf = new byte[64 * 1024];
-            long done = 0;
-            int n;
-            while ((n = in.read(buf)) != -1) {
-                os.write(buf, 0, n);
-                done += n;
-                if (progress != null) progress.onProgress(done, size, name);
-            }
-        }
-    }
-
-    /** 防路径穿越：确保解压路径不逃逸目标目录。 */
-    private File safeJoin(File base, String entryName) throws IOException {
-        File out = new File(base, entryName);
-        String canonical = out.getCanonicalPath();
-        String baseCanonical = base.getCanonicalPath();
-        if (!canonical.equals(baseCanonical) && !canonical.startsWith(baseCanonical + File.separator)) {
-            throw new IOException("非法路径: " + entryName);
-        }
-        return out;
+        f.delete();
     }
 
     // ---------------- ZIP 包内编辑 ----------------
@@ -415,6 +314,85 @@ public class ArchiveManager {
             }
         }
         return list;
+    }
+
+    /**
+     * 返回 zip 内某个“虚拟目录层”的直接子项（文件夹 + 文件）。
+     *
+     * @param prefix 相对 zip 根的目录前缀；顶层传 ""（空串）或 null。
+     * 返回的子项不带前缀（即只含当前层内的名称），并区分目录/文件、给出大小。
+     */
+    public List<ZipEntryInfo> listZipAt(File zip, String prefix) throws IOException {
+        String p = (prefix == null) ? "" : prefix;
+        if (!p.isEmpty() && !p.endsWith("/")) p = p + "/";
+        List<ZipEntryInfo> level = new ArrayList<>();
+        java.util.Map<String, ZipEntryInfo> seen = new java.util.LinkedHashMap<>();
+        try (java.util.zip.ZipFile zf = new java.util.zip.ZipFile(zip)) {
+            var entries = zf.entries();
+            while (entries.hasMoreElements()) {
+                var e = entries.nextElement();
+                String name = e.getName();
+                if (!name.startsWith(p)) continue;
+                // 找到以 p 开头且只多出一段的子项
+                String rest = name.substring(p.length());
+                if (rest.isEmpty()) continue;
+                int slash = rest.indexOf('/');
+                if (slash >= 0) {
+                    String dirName = rest.substring(0, slash);
+                    if (!seen.containsKey(dirName)) {
+                        seen.put(dirName, new ZipEntryInfo(dirName, true, 0));
+                    }
+                } else {
+                    if (!seen.containsKey(rest)) {
+                        long size = e.isDirectory() ? 0 : e.getSize();
+                        seen.put(rest, new ZipEntryInfo(rest, false, size));
+                    }
+                }
+            }
+        }
+        level.addAll(seen.values());
+        level.sort((a, b) -> {
+            if (a.directory != b.directory) return a.directory ? -1 : 1;
+            return a.name.compareToIgnoreCase(b.name);
+        });
+        return level;
+    }
+
+    /**
+     * 把 zip 内某个虚拟目录（含其下所有子目录与文件）解压到目标目录。
+     * prefix 为相对 zip 根的前缀；顶层传 ""，表示解压整个 zip。
+     * 目标目录中会重建该前缀下的相对路径。
+     */
+    public void extractZipPrefix(File zip, String prefix, File destDir, Progress progress)
+            throws IOException {
+        // 交由原生 7-Zip 引擎处理，避免 java.util.zip 无法处理带 Zip64/Data Descriptor 的包
+        SevenZipEngine.extractPrefix(zip, prefix, destDir, progress);
+    }
+
+    public void extractZipPrefixAsync(File zip, String prefix, File destDir, Progress progress,
+                                      Runnable onDone,
+                                      java.util.function.Consumer<Exception> onError) {
+        TaskExecutor.get().archive().execute(() -> {
+            try {
+                extractZipPrefix(zip, prefix, destDir, progress);
+                if (onDone != null) onDone.run();
+            } catch (Exception e) {
+                if (onError != null) onError.accept(e);
+            }
+        });
+    }
+
+    /** 把 zip 内某个条目原样导出到指定文件（用于打开“包中包”前先解到临时文件）。 */
+    public void extractZipEntryToFile(File zip, String name, File outFile) throws IOException {
+        // 交由原生 7-Zip 引擎处理，避免 java.util.zip 无法读取带 Zip64/Data Descriptor 的条目
+        SevenZipEngine.extractEntry(zip, name, outFile);
+    }
+
+    /** 是否支持“包中包”浏览的扩展名（ZIP 系）。 */
+    public static boolean isBrowseableArchive(String fileName) {
+        if (fileName == null) return false;
+        String n = fileName.toLowerCase(Locale.ROOT);
+        return n.endsWith(".zip") || n.endsWith(".apk") || n.endsWith(".jar");
     }
 
     /**

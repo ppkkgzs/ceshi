@@ -6,7 +6,7 @@
 
 | 应用 | 最新版本 | 安装包 | 更新日志 |
 |---|---|---|---|
-| PK管理器（AllToolbox） | v1.6.8 | [下载 AllToolbox_1.6.8.apk](./release/AllToolbox_1.6.8.apk)（约 6.5MB） | [CHANGELOG.md](./CHANGELOG.md) |
+| PK管理器（AllToolbox） | v1.7.9-beta | [下载 AllToolbox_1.7.9-beta.apk](./release/AllToolbox_1.7.9-beta.apk)（约 6.5MB） | [CHANGELOG.md](./CHANGELOG.md) |
 | 易析 | v1.2.7 | [下载 易析_1.2.7.apk](./release/易析_1.2.7.apk)（约 18MB） | [CHANGELOG.md](./CHANGELOG.md) |
 
 ## PK管理器 是什么
@@ -29,7 +29,7 @@ PK管理器 是一款集 **文件管理、压缩解压、APK 处理、系统清�
 
 方式二：通过 GitHub Releases 页面获取（推荐，链接更稳定）：
 
-- [PK管理器 v1.6.8 Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.6.8)
+- [PK管理器 v1.7.9-beta Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.7.9-beta)
 - [易析 v1.2.7 Release](https://github.com/ppkkgzs/ceshi/releases/tag/v1.2.7)
 
 ## 安装说明
@@ -50,8 +50,6 @@ PK管理器 是一款集 **文件管理、压缩解压、APK 处理、系统清�
 - 任何修改版或衍生作品再分发时，须以相同协议（GPL v3）开源，并保留原作者署名
 - 本软件按「原样」提供，作者不承担任何明示或暗示的担保
 - 完整协议文本见 [LICENSE](./LICENSE)
-
-
 
 - 本软件为本 UP 制作，请勿盗用或二次分发他人劳动成果
 - 若在使用中遇到问题或有建议，欢迎在本仓库的 Issues 中反馈

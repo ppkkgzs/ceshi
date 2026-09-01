@@ -70,6 +70,13 @@
                 android:text="开源声明"
                 android:layout_marginTop="8dp" />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_signing_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="签名变更说明"
+                android:layout_marginTop="8dp" />
+
             <TextView
                 android:id="@+id/update_result"
                 android:layout_width="match_parent"

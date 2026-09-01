@@ -7,6 +7,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.alltoolbox.core.permission.Permissions;
+import com.alltoolbox.core.permission.ShizukuShell;
 import com.alltoolbox.core.task.TaskExecutor;
 import com.alltoolbox.fbrowser.model.FileInfo;
 
@@ -24,6 +26,8 @@ public class FileBrowserViewModel extends AndroidViewModel {
     private final MutableLiveData<List<FileInfo>> files = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
     private final MutableLiveData<String> currentPath = new MutableLiveData<>();
+    /** 当前目录是否为受限目录且无法读取（需 SAF 授权）。 */
+    private final MutableLiveData<Boolean> restricted = new MutableLiveData<>(false);
 
     private File root;
     private boolean showHidden = false;
@@ -51,6 +55,10 @@ public class FileBrowserViewModel extends AndroidViewModel {
 
     public LiveData<String> getCurrentPath() {
         return currentPath;
+    }
+
+    public LiveData<Boolean> getRestricted() {
+        return restricted;
     }
 
     public void setRoot(File root) {
@@ -108,12 +116,25 @@ public class FileBrowserViewModel extends AndroidViewModel {
     public void loadDirectory(File dir) {
         loading.setValue(true);
         TaskExecutor.get().io().execute(() -> {
-            File[] children = dir.listFiles();
+            boolean restrictedDir = Permissions.isRestrictedAndroidDir(dir);
             List<FileInfo> list = new ArrayList<>();
+            boolean readOk = false;
+            File[] children = dir.listFiles();
             if (children != null) {
+                readOk = true;
                 for (File f : children) {
                     if (!showHidden && (f.isHidden() || f.getName().startsWith("."))) continue;
                     list.add(new FileInfo(f));
+                }
+            } else if (ShizukuShell.isReady()) {
+                // 普通 File API 读取失败（受限目录），Shizuku 就绪时改用 shell 权限列出
+                List<ShizukuShell.Entry> entries = ShizukuShell.listDir(dir.getAbsolutePath());
+                if (entries != null) {
+                    readOk = true;
+                    for (ShizukuShell.Entry e : entries) {
+                        if (!showHidden && (e.name.startsWith("."))) continue;
+                        list.add(FileInfo.fromShizukuEntry(e));
+                    }
                 }
             }
             // 文件夹优先，再按排序方式（默认名称）
@@ -133,6 +154,8 @@ public class FileBrowserViewModel extends AndroidViewModel {
             List<FileInfo> finalList = applyFilter(list);
             List<FileInfo> ui = Collections.unmodifiableList(finalList);
             files.postValue(ui);
+            // 受限目录且未能读到任何条目时，标记为受限，供 UI 显示授权入口。
+            restricted.postValue(restrictedDir && !readOk);
             loading.postValue(false);
         });
     }

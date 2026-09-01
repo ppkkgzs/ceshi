@@ -1,12 +1,14 @@
 package com.alltoolbox.app;
 
 import android.content.Intent;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -260,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                                     + "\n优化建议、Bug 反馈请发邮件：gexinggzs@163.com\n\n"
                                     + "点击「直接更新」将在应用内下载并自动进入安装。")
                             .setPositiveButton("直接更新", (d, w) ->
-                                    Updater.downloadAndInstall(this, tag))
+                                    startUpdateDownload(tag))
                             .setNeutralButton("去下载", (d, w) ->
                                     openBrowser(UpdateChecker.DOWNLOAD_URL))
                             .setNegativeButton("以后再说", null)
@@ -273,6 +275,86 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         });
+    }
+
+    /** 弹出带进度的更新下载对话框，实时显示百分比、下载速度与预计剩余时长。 */
+    private void startUpdateDownload(String tag) {
+        Dialog dlg = new Dialog(this);
+        dlg.setContentView(R.layout.dialog_update_progress);
+        dlg.setCanceledOnTouchOutside(false);
+        dlg.setCancelable(false);
+        ProgressBar bar = dlg.findViewById(R.id.progress_bar);
+        TextView percent = dlg.findViewById(R.id.progress_percent);
+        TextView status = dlg.findViewById(R.id.progress_status);
+        TextView eta = dlg.findViewById(R.id.progress_eta);
+        dlg.show();
+
+        Updater.downloadAndInstall(this, tag, new Updater.DownloadProgressListener() {
+            @Override
+            public void onStarted(long totalBytes) {
+                status.setText("连接成功，开始下载…");
+            }
+
+            @Override
+            public void onProgress(long downloaded, long total,
+                                   long speedBps, long remainingSeconds) {
+                if (total > 0) {
+                    int p = (int) (downloaded * 100 / total);
+                    bar.setProgress(p);
+                    percent.setText(p + "%");
+                    status.setText("已下载 " + fmtSize(downloaded) + " / "
+                            + fmtSize(total) + "  ·  速度 " + fmtSpeed(speedBps));
+                    eta.setText("预计剩余 " + fmtEta(remainingSeconds));
+                } else {
+                    bar.setIndeterminate(true);
+                    percent.setText(fmtSize(downloaded));
+                    status.setText("速度 " + fmtSpeed(speedBps));
+                    eta.setText("预计剩余 计算中…");
+                }
+            }
+
+            @Override
+            public void onFinish(boolean success, String message) {
+                if (dlg.isShowing()) dlg.dismiss();
+            }
+        });
+    }
+
+    /** 字节数 → 人类可读大小，如 12.3 MB。 */
+    private static String fmtSize(long bytes) {
+        if (bytes >= 1024L * 1024 * 1024) {
+            return String.format(java.util.Locale.ROOT, "%.2f GB", bytes / (1024.0 * 1024 * 1024));
+        }
+        if (bytes >= 1024 * 1024) {
+            return String.format(java.util.Locale.ROOT, "%.1f MB", bytes / (1024.0 * 1024));
+        }
+        if (bytes >= 1024) {
+            return String.format(java.util.Locale.ROOT, "%.0f KB", bytes / 1024.0);
+        }
+        return bytes + " B";
+    }
+
+    /** 速度（字节/秒）→ 人类可读，如 1.2 MB/s。 */
+    private static String fmtSpeed(long bps) {
+        if (bps >= 1024L * 1024) {
+            return String.format(java.util.Locale.ROOT, "%.1f MB/s", bps / (1024.0 * 1024));
+        }
+        if (bps >= 1024) {
+            return String.format(java.util.Locale.ROOT, "%.0f KB/s", bps / 1024.0);
+        }
+        return bps + " B/s";
+    }
+
+    /** 剩余秒数 → mm:ss 或 hh:mm:ss。 */
+    private static String fmtEta(long sec) {
+        if (sec < 0) return "--:--";
+        long s = sec % 60;
+        long m = (sec / 60) % 60;
+        long h = sec / 3600;
+        if (h > 0) {
+            return String.format(java.util.Locale.ROOT, "%d:%02d:%02d", h, m, s);
+        }
+        return String.format(java.util.Locale.ROOT, "%02d:%02d", m, s);
     }
 
     private void openBrowser(String url) {
