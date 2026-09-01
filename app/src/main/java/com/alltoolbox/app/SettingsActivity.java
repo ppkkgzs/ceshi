@@ -47,6 +47,7 @@ public class SettingsActivity extends AppCompatActivity {
         buildAppearance();
         buildGeneral();
         buildInstall();
+        buildUpdate();
         buildBookmarksBottomBar();
         buildOthers();
     }
@@ -122,6 +123,13 @@ public class SettingsActivity extends AppCompatActivity {
         addRow("提取安装包",
                 "提取已安装应用的 APK 到「下载」目录（需存储权限）",
                 v -> startActivity(new android.content.Intent(this, ExtractApkActivity.class)));
+    }
+
+    private void buildUpdate() {
+        addSection("更新");
+        addRow("检查最新版本",
+                "当前版本：" + UpdateChecker.localVersion(this) + "｜检测 GitHub 最新版并直接下载安装",
+                v -> checkUpdate());
     }
 
     private void buildBookmarksBottomBar() {
@@ -279,6 +287,91 @@ public class SettingsActivity extends AppCompatActivity {
                 .show();
     }
 
+    /** 点击「检查最新版本」：先显示检查动画，再按结果提示或直接下载。 */
+    private void checkUpdate() {
+        // 检查动画：带旋转进度条的对话框
+        android.app.ProgressDialog pd = new android.app.ProgressDialog(this);
+        pd.setTitle("检查更新");
+        pd.setMessage("正在检查最新版本…");
+        pd.setIndeterminate(true);
+        pd.setCancelable(false);
+        pd.show();
+
+        UpdateChecker.checkAsync(this, (isLatest, latestTag, message) -> {
+            runOnUiThread(() -> {
+                pd.dismiss();
+                if (!isLatest && latestTag != null && !latestTag.isEmpty()) {
+                    // 有最新版本 -> 弹窗提示，点击后直接下载（直链）
+                    new MaterialAlertDialogBuilder(this)
+                            .setTitle("发现新版本")
+                            .setMessage("检测到最新版本 " + latestTag + "\n是否立即下载并安装？")
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("立即下载", (d, w) ->
+                                    Updater.downloadAndInstall(this, latestTag,
+                                            new UpdateDownloadProgress()))
+                            .show();
+                } else {
+                    // 已是最新（或网络异常），提示原因
+                    String tip = (message == null || message.isEmpty())
+                            ? "你已经是最新版本"
+                            : ("你已经是最新版本；" + message);
+                    new MaterialAlertDialogBuilder(this)
+                            .setTitle("检查更新")
+                            .setMessage(tip)
+                            .setPositiveButton("知道了", null)
+                            .show();
+                }
+            });
+        });
+    }
+
+    /** 下载进度：以水平进度条对话框展示百分比、速度。回调均在主线程。 */
+    private final class UpdateDownloadProgress implements Updater.DownloadProgressListener {
+        private android.app.ProgressDialog pd;
+
+        @Override
+        public void onStarted(long totalBytes) {
+            pd = new android.app.ProgressDialog(SettingsActivity.this);
+            pd.setTitle("下载更新包");
+            pd.setProgressStyle(android.app.ProgressDialog.STYLE_HORIZONTAL);
+            pd.setIndeterminate(false);
+            pd.setCancelable(false);
+            if (totalBytes > 0) {
+                pd.setMax((int) Math.min(Integer.MAX_VALUE, totalBytes));
+            }
+            pd.setMessage("0 B / " + (totalBytes > 0 ? fmtSize(totalBytes) : "未知"));
+            pd.show();
+        }
+
+        @Override
+        public void onProgress(long downloadedBytes, long totalBytes,
+                               long speedBps, long remainingSeconds) {
+            if (pd == null) return;
+            if (totalBytes > 0 && pd.getMax() > 0) {
+                pd.setProgress((int) Math.min(pd.getMax(), downloadedBytes));
+            }
+            pd.setMessage("已下载 " + fmtSize(downloadedBytes)
+                    + (totalBytes > 0 ? " / " + fmtSize(totalBytes) : "")
+                    + "\n速度：" + fmtSize(speedBps) + "/s");
+        }
+
+        @Override
+        public void onFinish(boolean success, String message) {
+            if (pd != null) {
+                pd.dismiss();
+                pd = null;
+            }
+        }
+    }
+
+    /** 字节数格式化：B / KB / MB / GB。 */
+    private static String fmtSize(long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return String.format(java.util.Locale.ROOT, "%.1f KB", bytes / 1024.0);
+        if (bytes < 1024L * 1024 * 1024) return String.format(java.util.Locale.ROOT, "%.1f MB", bytes / (1024.0 * 1024));
+        return String.format(java.util.Locale.ROOT, "%.2f GB", bytes / (1024.0 * 1024 * 1024));
+    }
+
     // ------------------------------------------------------------------
     // 描述文案
     // ------------------------------------------------------------------
@@ -310,6 +403,7 @@ public class SettingsActivity extends AppCompatActivity {
         buildAppearance();
         buildGeneral();
         buildInstall();
+        buildUpdate();
         buildBookmarksBottomBar();
         buildOthers();
     }

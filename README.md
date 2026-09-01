@@ -6,6 +6,7 @@
 
 | 应用 | 版本 | 类型 | 安装包 | 更新日志 |
 |---|---|---|---|---|
+| PK管理器（AllToolbox） | v1.8.2 | 正式版 | [下载 AllToolbox_1.8.2.apk](./release/AllToolbox_1.8.2.apk)（约 10MB，含 7-Zip 原生库） | [CHANGELOG.md](./CHANGELOG.md) |
 | PK管理器（AllToolbox） | v1.8.1 | 正式版 | [下载 AllToolbox_1.8.1.apk](./release/AllToolbox_1.8.1.apk)（约 10MB，含 7-Zip 原生库） | [CHANGELOG.md](./CHANGELOG.md) |
 | PK管理器（AllToolbox） | v1.8.0 | 正式版 | [下载 AllToolbox_1.8.0.apk](./release/AllToolbox_1.8.0.apk)（约 10MB，含 7-Zip 原生库） | [CHANGELOG.md](./CHANGELOG.md) |
 | PK管理器（AllToolbox） | v1.8.0.2-beta | 测试版（Beta） | [下载 AllToolbox_1.8.0.2-beta.apk](./release/AllToolbox_1.8.0.2-beta.apk)（约 10MB，含 7-Zip 原生库） | [CHANGELOG.md](./CHANGELOG.md) |
@@ -38,6 +39,7 @@ PK管理器 是一款集 **文件管理、压缩解压、APK 处理、系统清�
 
 方式二：通过 GitHub Releases 页面获取（推荐，链接更稳定）：
 
+- [PK管理器 v1.8.2 Release（正式版）](https://github.com/ppkkgzs/ceshi/releases/tag/v1.8.2)
 - [PK管理器 v1.8.1 Release（正式版）](https://github.com/ppkkgzs/ceshi/releases/tag/v1.8.1)
 - [PK管理器 v1.8.0 Release（正式版）](https://github.com/ppkkgzs/ceshi/releases/tag/v1.8.0)
 - [PK管理器 v1.8.0.2-beta Release（测试版）](https://github.com/ppkkgzs/ceshi/releases/tag/v1.8.0.2-beta)

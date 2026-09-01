@@ -144,7 +144,7 @@ public final class Updater {
         long segStartTime = System.currentTimeMillis();
         try (InputStream in = conn.getInputStream();
              OutputStream out = new java.io.FileOutputStream(tmp)) {
-            byte[] buf = new byte[8192];
+            byte[] buf = new byte[32768];
             int n;
             while ((n = in.read(buf)) != -1) {
                 out.write(buf, 0, n);
