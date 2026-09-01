@@ -26,7 +26,7 @@
 
     <!-- 关于页 -->
     <string name="about_title">关于</string>
-    <string name="about_desc">本软件为本 UP 制作，请勿盗用他人劳动成果。\n测试版本，后续将会持续优化与更新。\n\n本软件以 GNU GPL v3 协议开源，可自由研究学习与改进，分发时须保留本声明并遵守 GPL v3 条款。开源仓库：github.com/ppkkgzs/ceshi</string>
+    <string name="about_desc">本软件为本 UP 制作，请勿盗用他人劳动成果。\n测试版本，后续将会持续优化与更新。\n\n本软件以 GNU GPL v3 协议开源，可自由研究学习与改进，分发时须保留本声明并遵守 GPL v3 条款。开源仓库：https://github.com/ppkkgzs/ceshi</string>
     <string name="about_download">下载最新版本</string>
     <string name="about_dl_stable">下载正式版（直链）</string>
     <string name="about_dl_beta">下载 Beta 测试版（直链）</string>
@@ -201,7 +201,7 @@
 
     <!-- 关于页补充 -->
     <string name="about_checking_update">正在检查更新…</string>
-    <string name="about_open_source_msg">本软件以 GNU 通用公共许可证第 3 版（GPL v3）开源。\n\n· 您有权免费获取、研究、修改与再分发本软件源代码\n· 任何修改版或衍生作品再分发时，须以相同协议（GPL v3）开源并保留署名\n· 本软件按「原样」提供，作者不承担担保\n\n第三方组件：\n· 7-Zip-JBinding-4Android（原生 7-Zip 解压引擎）——由 omicronapps 维护，以其 LGPL-2.1 许可一并分发。\n  编码与底层 7-Zip 由 Igor Pavlov 编写 © 1999-2016。\n  本项目以「库」形式链接使用并随 APK 分发该动态库，按 LGPL-2.1 允许通过动态链接引用；您可替换/升级该库，也可以通过修改该库后重新链接（反汇编解码参考 LGPL-2.1 第 6 节）。\n\n开源仓库：github.com/ppkkgzs/ceshi</string>
+    <string name="about_open_source_msg">本软件以 GNU 通用公共许可证第 3 版（GPL v3）开源。\n\n· 您有权免费获取、研究、修改与再分发本软件源代码\n· 任何修改版或衍生作品再分发时，须以相同协议（GPL v3）开源并保留署名\n· 本软件按「原样」提供，作者不承担担保\n\n第三方组件：\n· 7-Zip-JBinding-4Android（原生 7-Zip 解压引擎）——由 omicronapps 维护，以其 LGPL-2.1 许可一并分发。\n  编码与底层 7-Zip 由 Igor Pavlov 编写 © 1999-2016。\n  本项目以「库」形式链接使用并随 APK 分发该动态库，按 LGPL-2.1 允许通过动态链接引用；您可替换/升级该库，也可以通过修改该库后重新链接（反汇编解码参考 LGPL-2.1 第 6 节）。\n\n开源仓库：https://github.com/ppkkgzs/ceshi</string>
     <string name="about_signing_note_msg">自 v1.7.0 起，安装包签名密钥已更换。\n\n【旧版本 v1.6.x 及更早】\n使用旧密钥，签名证书主题：\nCN=PK Manager, OU=PKTools, O=PKTools, L=Shenzhen, ST=Guangdong, C=CN\n\n【新版本 v1.7.0 及后续】\n使用新密钥 alltoolbox.jks，签名证书主题：\nCN=AllToolbox, OU=AllToolbox, O=AllToolbox, L=X, ST=X, C=CN\n\n【影响与升级说明】\nAndroid 不允许用不同签名覆盖安装已存在的应用。如果你手机上安装的是旧签名版本（v1.6.x 及更早），直接覆盖安装新版本会提示「签名异常 / 应用未安装 / INSTALL_FAILED_UPDATE_INCOMPATIBLE」。\n解决办法：先卸载旧版，再安装新版（v1.7.0+）。\n（卸载会清除本应用本地的设置、书签、保险箱等数据）\n\n【之后】从 v1.7.0 起所有版本均使用同一把 AllToolbox 密钥签名，后续兄弟版本间可直接覆盖升级，不会再出现签名异常。</string>
     <string name="about_found_update_msg">最新版本：%1$s\n当前版本：%2$s\n\n点击「去下载」前往 GitHub 获取最新版本安装包。</string>
     <string name="about_found_beta_msg">最新 Beta 版本：%1$s\n当前版本：%2$s\n\n是否立即下载并安装？</string>
