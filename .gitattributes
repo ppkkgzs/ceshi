@@ -1,12 +1,12 @@
-# 强制 GitHub linguist 将仓库主语言判定为 Java
-# 防止 .github/workflows/*.yml 等其它扩展名影响语言统计，
-# 使仓库语言标签稳定显示为「Java」（本应用为 Android/Java 原生开发）。
-* linguist-language=Java
-*.md linguist-language=Markdown
-*.yml linguist-language=Markdown
-*.yaml linguist-language=Markdown
-*.xml linguist-language=Markdown
-*.gradle linguist-language=Markdown
-*.properties linguist-language=Markdown
-*.zip linguist-language=Java
-.gitattributes linguist-vendored
+# 语言检测规则（GitHub linguist）：
+# 默认让 linguist 如实统计项目实际使用的语言 ——
+#   .java → Java（主语言）
+#   .xml  → XML（Android 布局 / 资源 / Manifest）
+#   .gradle → Gradle（Groovy 构建脚本）
+#   .md   → Markdown（README / CHANGELOG）
+#   .yml / .yaml → YAML（GitHub Actions 工作流，scala.yml 实为 YAML 而非 Scala）
+# 仅排除二进制安装包与压缩包，避免干扰语言统计。
+*.apk linguist-vendored
+*.zip linguist-vendored
+_image/* linguist-vendored
+_assets/* linguist-vendored
