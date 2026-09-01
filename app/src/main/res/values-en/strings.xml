@@ -247,14 +247,16 @@
     <string name="perm_shizuku_granted">Shizuku authorized</string>
     <string name="perm_disagree_exit">Disagree and exit</string>
     <string name="perm_agree_continue">Agree and continue</string>
-    <string name="perm_reason_allfiles">This app needs access to storage to browse and manage files.\n\nBesides storage permission, Android 11 and above also require "All files access" to read all directories.</string>
-    <string name="perm_reason_storage">This app needs to read and write storage to browse and manage files.</string>
+    <string name="perm_reason_allfiles">This app needs the following permissions to work fully:\n· Read the installed apps list (extract APK, etc.)\n· Read videos, images, music and audio\n\nBesides the above, Android 11+ also requires "All files access" to read all directories.</string>
+    <string name="perm_reason_storage">This app needs the following permissions to work fully:\n· Read the installed apps list (extract APK, etc.)\n· Read videos, images, music and audio</string>
     <string name="perm_storage_title">Storage permission needed</string>
     <string name="perm_later">Not now</string>
     <string name="perm_allow">Allow</string>
     <string name="perm_restricted_title">Security restriction detected</string>
     <string name="perm_restricted_msg">The system currently has "All files access" turned off:\n· Cannot read restricted directories such as Android/data and Android/obb\n· Some file operations may be limited\n\nWould you like to go to system settings to lift this restriction?</string>
     <string name="perm_resolve">Lift restriction</string>
+    <string name="perm_install_source_title">Install permission required</string>
+    <string name="perm_install_source_msg">This app supports in-app updates and needs the system to allow installing apps from unknown sources:\n· Download and install new versions directly in-app\n\nGo to system settings now?</string>
     <string name="perm_shizuku_not_running_title">Shizuku is not enabled</string>
     <string name="perm_shizuku_not_running_msg">Some functions (e.g. accessing restricted directories like Android/data, extracting files in restricted directories) require Shizuku permission.\n\nGo to authorize Shizuku now?</string>
     <string name="perm_shizuku_authorize">Authorize</string>
@@ -262,7 +264,7 @@
     <string name="perm_shizuku_start_msg">Please install and start Shizuku (moe.shizuku.privileged.api) on this device, activate it via adb/wireless debugging or Root, then return to this app to authorize.\n\nTap "Open Shizuku" to set it up.</string>
     <string name="perm_shizuku_open">Open Shizuku</string>
     <string name="main_announcement_title">Announcement</string>
-    <string name="main_announcement_msg">Welcome to PK Manager %1$s!\n\nThis software is made by the author. Please do not steal or redistribute others\' work.\nThis is a test version that will be continuously optimized and updated.\n\nUpdate notes:\n· Update dialog upgraded: select a version to download (Stable / Beta)\n· Stable and Beta share the same update dialog, with go-to-link support\n· Added the Beta source repository\n\n[Open-Source Notice] This software is open-sourced under the GNU GPL v3 license; you may freely study, modify and redistribute it as long as you comply with the GPL v3 terms.\nSource repository (Stable): github.com/ppkkgzs/ceshi\nSource repository (Beta): github.com/ppkkgzs/ceshi-beta\n\nDownload link for the latest version:\n%2$s\n\nDownload link for the latest Beta version:\nhttps://github.com/ppkkgzs/ceshi-beta/releases\n\nContact email: gexinggzs@163.com</string>
+    <string name="main_announcement_msg">Welcome to PK Manager %1$s!\n\nThis software is made by the author. Please do not steal or redistribute others\' work.\nThis is a test version that will be continuously optimized and updated.\n\nUpdate notes (v1.9.0):\n· Added "install from unknown sources" permission request on first launch for smoother in-app updates\n· Update check upgraded: Direct / CDN / Mirror three channels detect and download separately for better network stability\n\n[Open-Source Notice] This software is open-sourced under the GNU GPL v3 license; you may freely study, modify and redistribute it as long as you comply with the GPL v3 terms.\nSource repository (Stable): github.com/ppkkgzs/ceshi\nSource repository (Beta): github.com/ppkkgzs/ceshi-beta\n\nDownload link for the latest version:\n%2$s\n\nDownload link for the latest Beta version:\nhttps://github.com/ppkkgzs/ceshi-beta/releases\n\nContact email: gexinggzs@163.com</string>
     <string name="main_found_update_title">New version found %1$s</string>
     <string name="main_found_update_msg">Current version: %1$s\nFor suggestions and bug reports, email: gexinggzs@163.com\n\nTap "Update directly" to download in-app and auto-install.</string>
     <string name="main_btn_prev">◀ Previous</string>

@@ -247,14 +247,16 @@
     <string name="perm_shizuku_granted">Shizuku 已授权</string>
     <string name="perm_disagree_exit">不同意并退出</string>
     <string name="perm_agree_continue">同意并继续</string>
-    <string name="perm_reason_allfiles">本软件需要访问存储空间以浏览和管理文件。\n\n除存储权限外，Android 11 及以上还需开启「所有文件访问」才能读取全部目录。</string>
-    <string name="perm_reason_storage">本软件需要读取和写入存储空间，以浏览、管理文件。</string>
+    <string name="perm_reason_allfiles">本软件需要以下权限以提供完整功能：\n· 读取已安装应用列表（提取安装包等）\n· 读取视频、图片、音乐与音频列表\n\n除上述权限外，Android 11 及以上还需开启「所有文件访问」才能读取全部目录。</string>
+    <string name="perm_reason_storage">本软件需要以下权限以提供完整功能：\n· 读取已安装应用列表（提取安装包等）\n· 读取视频、图片、音乐与音频列表</string>
     <string name="perm_storage_title">需要存储权限</string>
     <string name="perm_later">暂不</string>
     <string name="perm_allow">允许</string>
     <string name="perm_restricted_title">存在安全限制</string>
     <string name="perm_restricted_msg">系统当前未开启「所有文件访问」：\n· 无法读取 Android/data、Android/obb 等受限目录\n· 部分文件操作可能受限\n\n是否需要前往系统设置解除该安全限制？</string>
     <string name="perm_resolve">去解除</string>
+    <string name="perm_install_source_title">需要安装权限</string>
+    <string name="perm_install_source_msg">本软件支持应用内在线更新，需要系统开启「允许安装未知来源应用」：\n· 应用内直接下载并安装新版本\n\n是否需要前往系统设置开启？</string>
     <string name="perm_shizuku_not_running_title">检测到未开启 Shizuku</string>
     <string name="perm_shizuku_not_running_msg">部分功能（如访问 Android/data 等受限目录、解压受限目录内文件）需要 Shizuku 权限。\n\n是否前往授权 Shizuku？</string>
     <string name="perm_shizuku_authorize">去授权</string>
@@ -262,7 +264,7 @@
     <string name="perm_shizuku_start_msg">请先在本机安装并启动 Shizuku（moe.shizuku.privileged.api），并通过 adb/无线调试 或 Root 激活后，再回到本应用授权。\n\n点击「打开 Shizuku」进行设置。</string>
     <string name="perm_shizuku_open">打开 Shizuku</string>
     <string name="main_announcement_title">公告</string>
-    <string name="main_announcement_msg">欢迎使用 PK管理器 %1$s！\n\n本软件为本UP制作，请勿盗用或二次分发他人劳动成果，\n本软件为测试版本，后续将持续优化与更新。\n\n本次更新公告：\n· 更新检测弹窗升级：可选择版本下载（正式版 / Beta 版）\n· 正式版与 Beta 版共用同一更新弹窗，支持去链接更新\n· 开源仓库新增 Beta 版仓库\n\n【开源声明】本软件以 GNU GPL v3 协议开源，可自由研究、修改与分发，分发时须遵守 GPL v3 条款。\n开源仓库（正式版）：github.com/ppkkgzs/ceshi\n开源仓库（Beta 版）：github.com/ppkkgzs/ceshi-beta\n\n下载最新版本链接：\n%2$s\n\n下载最新 Beta 版本链接：\nhttps://github.com/ppkkgzs/ceshi-beta/releases\n\n联系邮箱：gexinggzs@163.com</string>
+    <string name="main_announcement_msg">欢迎使用 PK管理器 %1$s！\n\n本软件为本UP制作，请勿盗用或二次分发他人劳动成果，\n本软件为测试版本，后续将持续优化与更新。\n\n本次更新公告（v1.9.0）：\n· 首次启动新增申请「安装未知来源应用」权限，应用内更新更顺畅\n· 更新检测升级：直连 / CDN / 镜像 三通道分开检测与下载，网络更稳\n\n【开源声明】本软件以 GNU GPL v3 协议开源，可自由研究、修改与分发，分发时须遵守 GPL v3 条款。\n开源仓库（正式版）：https://github.com/ppkkgzs/ceshi\n开源仓库（Beta 版）：https://github.com/ppkkgzs/ceshi-beat\n\n下载最新版本链接：\n%2$s\n\n下载最新 Beta 版本链接：\nhttps://github.com/ppkkgzs/ceshi-beta/releases\n\n联系邮箱：gexinggzs@163.com</string>
     <string name="main_found_update_title">发现新版本 %1$s</string>
     <string name="main_found_update_msg">当前版本：%1$s\n优化建议、Bug 反馈请发邮件：gexinggzs@163.com\n\n点击「直接更新」将在应用内下载并自动进入安装。</string>
     <string name="main_btn_prev">◀ 上一页</string>

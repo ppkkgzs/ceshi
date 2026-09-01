@@ -27,7 +27,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.net.Uri;
 import android.content.pm.PackageManager;
+import android.os.Build;
 
 import com.alltoolbox.archive.ArchiveActivity;
 import com.alltoolbox.cleanup.CleanupActivity;
@@ -61,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<String[]> runtimePermLauncher;
     /** 「全部文件访问」系统设置页 launcher（返回后继续安全限制引导）。 */
     private ActivityResultLauncher<Intent> allFilesLauncher;
+    /** 「安装未知来源应用」系统设置页 launcher（Android 8.0+ 应用更新需要）。 */
+    private ActivityResultLauncher<Intent> installSourceLauncher;
 
     /** Shizuku 权限申请结果监听。 */
     private final Shizuku.OnRequestPermissionResultListener shizukuResultListener =
@@ -120,7 +124,10 @@ public class MainActivity extends AppCompatActivity {
                 this::onRuntimePermissionResult);
         allFilesLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                r -> maybeGuideRestrictedDirs());
+                r -> maybeGuideInstallSource());
+        installSourceLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                r -> checkShizukuOnStartup());
 
         Shizuku.addRequestPermissionResultListener(shizukuResultListener);
         runFirstLaunchFlow();
@@ -216,27 +223,55 @@ public class MainActivity extends AppCompatActivity {
     private void maybeGuideRestrictedDirs() {
         if (!Permissions.requiresAllFilesAccess()) {
             // Android 11 以下无系统级“全部文件访问”安全限制
-            checkShizukuOnStartup();
+            maybeGuideInstallSource();
             return;
         }
         if (Permissions.hasAllFilesAccess(this)) {
-            checkShizukuOnStartup();
+            maybeGuideInstallSource();
             return;
         }
         new MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.perm_restricted_title))
                 .setMessage(getString(R.string.perm_restricted_msg))
                 .setCancelable(false)
-                .setNegativeButton(getString(R.string.perm_later), (d, w) -> checkShizukuOnStartup())
+                .setNegativeButton(getString(R.string.perm_later), (d, w) -> maybeGuideInstallSource())
                 .setPositiveButton(getString(R.string.perm_resolve), (d, w) ->
                         Permissions.requestAllFilesAccess(this, allFilesLauncher))
                 .show();
     }
 
-    /** 依据系统版本计算需要申请的存储运行时权限。 */
+    /** 第四步：Android 8.0+ 未授权「安装未知来源应用」则引导去系统设置开启（应用内更新需要）。 */
+    private void maybeGuideInstallSource() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Updater.canInstallApps(this)) {
+            checkShizukuOnStartup();
+            return;
+        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.perm_install_source_title))
+                .setMessage(getString(R.string.perm_install_source_msg))
+                .setCancelable(false)
+                .setNegativeButton(getString(R.string.perm_later), (d, w) -> checkShizukuOnStartup())
+                .setPositiveButton(getString(R.string.perm_resolve), (d, w) -> {
+                    try {
+                        installSourceLauncher.launch(new Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                                Uri.parse("package:" + getPackageName())));
+                    } catch (Exception e) {
+                        checkShizukuOnStartup();
+                    }
+                })
+                .show();
+    }
+
+    /** 依据系统版本计算需要申请的存储/媒体运行时权限。 */
     private String[] requiredStoragePermissions() {
-        if (!AppContext.isAtLeastM()) return new String[0];   // <6.0 无需运行时权限
-        if (!AppContext.isAtLeastQ()) {                       // 6.0 ~ 9.0
+        if (!AppContext.isAtLeastM()) return new String[0];          // <6.0 无需运行时权限
+        if (AppContext.isAtLeastT()) {                               // 13+ 媒体细分权限
+            return new String[]{
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.READ_MEDIA_AUDIO};
+        }
+        if (!AppContext.isAtLeastQ()) {                              // 6.0 ~ 9.0
             return new String[]{
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE};

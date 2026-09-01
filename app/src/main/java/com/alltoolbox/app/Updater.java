@@ -178,14 +178,18 @@ public final class Updater {
         throw new java.io.IOException(ctx.getString(R.string.update_download_failed, "无法连接下载源"));
     }
 
-    /** 构造下载候选链接：原始直链优先，失败后再试镜像。 */
+    /** 构造下载候选链接：GitHub 原始直链优先，失败后按序依次尝试各镜像。 */
     private static String[] downloadCandidates(String url) {
         if (url == null) return new String[0];
-        String mirror = UpdateChecker.mirrorUrl(url);
-        if (mirror != null && !mirror.equals(url)) {
-            return new String[]{url, mirror};
+        java.util.ArrayList<String> candidates = new java.util.ArrayList<>();
+        candidates.add(url);                                  // ① 原站 github.com
+        for (String prefix : UpdateChecker.mirrorPrefixes()) { // ②~N 各镜像逐个回退
+            String mirror = UpdateChecker.mirrorUrl(url, prefix);
+            if (mirror != null && !candidates.contains(mirror)) {
+                candidates.add(mirror);
+            }
         }
-        return new String[]{url};
+        return candidates.toArray(new String[0]);
     }
 
     private static void downloadOnce(String url, File target, String selfVersion,

@@ -226,7 +226,14 @@ public class SettingsActivity extends AppCompatActivity {
             for (UpdateChecker.VersionInfo v : beta) {
                 all.add(v);
             }
-            if (all.isEmpty()) {
+            // 仅保留严格高于当前安装版本的选项，避免降到 / 重下相同或更低版本
+            String local = UpdateChecker.localVersion(this);
+            final java.util.List<UpdateChecker.VersionInfo> higher =
+                    new java.util.ArrayList<>();
+            for (UpdateChecker.VersionInfo v : all) {
+                if (isStrictlyGreater(v.tag, local)) higher.add(v);
+            }
+            if (higher.isEmpty()) {
                 new MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.update_select_download)
                         .setMessage(R.string.update_select_empty)
@@ -234,15 +241,15 @@ public class SettingsActivity extends AppCompatActivity {
                         .show();
                 return;
             }
-            String[] items = new String[all.size()];
-            for (int i = 0; i < all.size(); i++) {
-                UpdateChecker.VersionInfo v = all.get(i);
+            String[] items = new String[higher.size()];
+            for (int i = 0; i < higher.size(); i++) {
+                UpdateChecker.VersionInfo v = higher.get(i);
                 int prefix = v.beta ? R.string.set_version_beta_prefix : R.string.set_version_stable_prefix;
                 items[i] = getString(prefix) + " " + v.tag;
             }
             new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.update_select_title)
-                    .setItems(items, (d, which) -> confirmDownload(all.get(which)))
+                    .setItems(items, (d, which) -> confirmDownload(higher.get(which)))
                     .setNegativeButton(R.string.cancel, null)
                     .show();
         }));

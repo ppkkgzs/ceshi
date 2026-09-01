@@ -43,4 +43,9 @@ public final class AppContext {
     public static boolean isAtLeastR() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
     }
+
+    /** Android 13（API 33）及以上：媒体权限细分为 图片/视频/音频。 */
+    public static boolean isAtLeastT() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
+    }
 }
