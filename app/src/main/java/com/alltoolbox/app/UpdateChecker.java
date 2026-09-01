@@ -23,11 +23,11 @@ import java.util.Locale;
  */
 public final class UpdateChecker {
 
-    /** 最新版本下载页。 */
+    /** 所有版本下载页（正式版 + Beta 版都在此列出）。 */
     public static final String DOWNLOAD_URL =
-            "https://github.com/ppkkgzs/ceshi/tree/main/release";
+            "https://github.com/ppkkgzs/ceshi/releases";
 
-    /** Beta 版本下载页（包含全部测试版 Release）。 */
+    /** Beta 版本下载页（仅显示全部 Beta 测试版预发行版本）。 */
     public static final String BETA_DOWNLOAD_URL =
             "https://github.com/ppkkgzs/ceshi/releases";
 
