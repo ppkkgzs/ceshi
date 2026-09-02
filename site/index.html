@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PK管理器 - 一款齐全的安卓工具箱</title>
+<meta name="description" content="PK管理器，一站式安卓工具：文件管理、扫描清理、安装包提取、压缩解压、Shell 脚本、Shizuku 免 Root 等。">
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --primary-soft: #eff6ff;
+    --text: #1f2937;
+    --text-muted: #6b7280;
+    --bg: #ffffff;
+    --bg-soft: #f8fafc;
+    --border: #e5e7eb;
+    --radius: 14px;
+    --shadow: 0 4px 20px rgba(0,0,0,.06);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--text); background:var(--bg); line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  a { color:var(--primary); text-decoration:none; }
+  .container { max-width:1080px; margin:0 auto; padding:0 20px; }
+
+  /* 顶部导航 */
+  header {
+    position:sticky; top:0; z-index:50; background:rgba(255,255,255,.9);
+    backdrop-filter:saturate(180%) blur(12px); border-bottom:1px solid var(--border);
+  }
+  .nav { display:flex; align-items:center; justify-content:space-between; height:60px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; color:var(--text); }
+  .brand .logo {
+    width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,#3b82f6,#2563eb);
+    display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:15px; font-weight:800;
+  }
+  nav a { color:var(--text); font-size:14px; margin-left:22px; transition:color .2s; }
+  nav a:hover { color:var(--primary); }
+  .nav-cta { background:var(--primary); color:#fff !important; padding:8px 16px; border-radius:999px; font-size:14px; }
+  .nav-cta:hover { background:var(--primary-dark); }
+  .menu-toggle { display:none; background:none; border:none; font-size:24px; cursor:pointer; color:var(--text); }
+
+  /* 首屏 */
+  .hero { padding:84px 0 64px; text-align:center; background:linear-gradient(180deg,#eff6ff 0%,#ffffff 100%); }
+  .hero .badge { display:inline-block; background:var(--primary-soft); color:var(--primary); font-size:13px; padding:5px 12px; border-radius:999px; margin-bottom:20px; }
+  .hero h1 { font-size:42px; font-weight:800; letter-spacing:-.5px; }
+  .hero .sub { color:var(--text-muted); font-size:18px; max-width:640px; margin:18px auto 0; }
+  .hero .btns { margin-top:34px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .btn {
+    display:inline-flex; align-items:center; gap:8px; padding:13px 26px; border-radius:999px;
+    font-size:15px; font-weight:600; transition:transform .15s, box-shadow .2s; cursor:pointer;
+  }
+  .btn-primary { background:var(--primary); color:#fff; box-shadow:0 6px 20px rgba(37,99,235,.3); }
+  .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); }
+  .btn-outline { border:1px solid var(--border); color:var(--text); background:#fff; }
+  .btn-outline:hover { border-color:var(--primary); color:var(--primary); transform:translateY(-1px); }
+  .hero .meta { margin-top:26px; color:var(--text-muted); font-size:13px; }
+
+  /* 板块 */
+  section { padding:64px 0; }
+  section:nth-child(odd).alt { background:var(--bg-soft); }
+  .sec-title { text-align:center; font-size:30px; font-weight:800; margin-bottom:8px; }
+  .sec-sub { text-align:center; color:var(--text-muted); margin-bottom:40px; }
+
+  /* 功能 */
+  .features { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; }
+  .feature {
+    background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:22px 22px 20px;
+    box-shadow:var(--shadow); transition:transform .2s, box-shadow .2s;
+  }
+  .feature:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.1); }
+  .feature .icon {
+    width:46px; height:46px; border-radius:12px; background:var(--primary-soft); color:var(--primary);
+    display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:14px;
+  }
+  .feature h3 { font-size:17px; margin-bottom:6px; }
+  .feature p { color:var(--text-muted); font-size:14px; }
+
+  /* 下载 */
+  .download-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; }
+  .dl-card {
+    background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:26px;
+    box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:flex-start;
+  }
+  .dl-card .tag { font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px; margin-bottom:14px; }
+  .tag-stable { background:#dcfce7; color:#16a34a; }
+  .tag-beta { background:#fef3c7; color:#d97706; }
+  .dl-card h3 { font-size:20px; }
+  .dl-card .ver { color:var(--text-muted); font-size:14px; margin:6px 0 16px; }
+  .dl-card .btn { width:100%; justify-content:center; }
+  .dl-card .hint { font-size:12px; color:var(--text-muted); margin-top:12px; }
+  .dl-card .mirrors { margin-top:8px; font-size:12px; color:var(--text-muted); }
+  .dl-card .mirrors a { margin-right:8px; }
+
+  /* 更新日志 */
+  .log { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:22px 24px; margin-bottom:16px; box-shadow:var(--shadow); }
+  .log .head { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .log .ver { font-size:18px; font-weight:700; }
+  .log .ver small { font-weight:400; color:var(--text-muted); font-size:13px; margin-left:8px; }
+  .log .stage { font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; }
+  .log ul { margin-top:10px; padding-left:20px; color:var(--text); font-size:14px; }
+  .log li { margin-bottom:4px; }
+  .log .more { text-align:right; margin:4px 0 0; }
+
+  /* 关于 / 开源 */
+  .about-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; }
+  .about-card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); }
+  .about-card h3 { font-size:17px; margin-bottom:10px; }
+  .about-card p, .about-card li { color:var(--text-muted); font-size:14px; }
+  .about-card ul { padding-left:18px; }
+  .about-card li { margin-bottom:6px; }
+
+  footer { border-top:1px solid var(--border); padding:30px 0; text-align:center; color:var(--text-muted); font-size:13px; background:var(--bg-soft); }
+  footer a { color:var(--text-muted); margin:0 10px; }
+  footer a:hover { color:var(--primary); }
+
+  @media (max-width:720px) {
+    .hero h1 { font-size:30px; }
+    .hero { padding:60px 0 44px; }
+    nav a { display:none; }
+    nav a.nav-cta { display:inline-flex; margin-left:10px; }
+    .menu-toggle { display:block; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a class="brand" href="#top"><span class="logo">PK</span>PK管理器</a>
+    <nav>
+      <a href="#features">功能</a>
+      <a href="#download">下载</a>
+      <a href="#changelog">更新日志</a>
+      <a href="#about">开源与关于</a>
+      <a class="nav-cta" href="#download">立即下载</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- 首屏 -->
+  <section class="hero">
+    <div class="container">
+      <span class="badge">最新正式版 v1.9.0</span>
+      <h1>一款齐全的安卓工具箱</h1>
+      <p class="sub">文件管理 · 扫描清理 · 安装包提取 · 压缩解压 · Shell 脚本，一站式搞定日常操作。支持 Android 5.0 及以上。</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/ppkkgzs/ceshi/releases/download/v1.9.0/AllToolbox_1.9.0.apk">⬇ 下载正式版 v1.9.0</a>
+        <a class="btn btn-outline" href="https://github.com/ppkkgzs/ceshi/releases">查看全部版本</a>
+      </div>
+      <p class="meta">GNU GPL v3 开源 · 更新支持直连 / CDN / 镜像多通道回退</p>
+    </div>
+  </section>
+
+  <!-- 功能 -->
+  <section id="features">
+    <div class="container">
+      <h2 class="sec-title">核心功能</h2>
+      <p class="sec-sub">把常用工具聚合在一个应用里</p>
+      <div class="features">
+        <div class="feature">
+          <div class="icon">📁</div>
+          <h3>文件管理</h3>
+          <p>单栏 / 双栏（类 MT）文件浏览，跨栏复制移动、排序、重命名、多选批量操作，识别常见与无后缀文件。</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🧹</div>
+          <h3>扫描清理</h3>
+          <p>存储容量一目了然，缓存垃圾一键清理，检测安装包与超过 7 天未用的应用并支持一键卸载。</p>
+        </div>
+        <div class="feature">
+          <div class="icon">📦</div>
+          <h3>安装包提取</h3>
+          <p>提取已安装应用（用户/系统）的 APK，查看包名、版本、签名、加固、数据路径等详情。</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🗜️</div>
+          <h3>压缩解压</h3>
+          <p>软件内压缩 / 解压 ZIP、7Z、TAR，支持加密压缩包密码解压、包内浏览与单文件解压。</p>
+        </div>
+        <div class="feature">
+          <div class="icon">💻</div>
+          <h3>Shell 脚本</h3>
+          <p>支持 Root / Shizuku / 普通环境运行 .sh 脚本，实时控制台输出、停止、超时控制，轻松执行复杂操作。</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🔓</div>
+          <h3>Shizuku 免 Root</h3>
+          <p>无需 Root，经 Shizuku 直接访问 Android/data、Android/obb 等受限目录，进行增删改移。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 下载 -->
+  <section id="download" class="alt">
+    <div class="container">
+      <h2 class="sec-title">下载</h2>
+      <p class="sec-sub">正式版适合日常使用，测试版抢先体验新功能（建议备用机安装）</p>
+      <div class="download-cards">
+        <div class="dl-card">
+          <span class="tag tag-stable">正式版 Stable</span>
+          <h3>PK管理器 v1.9.0</h3>
+          <p class="ver">性能更稳 · 更新检测多通道回退 · 安装未知来源引导</p>
+          <a class="btn btn-primary" href="https://github.com/ppkkgzs/ceshi/releases/download/v1.9.0/AllToolbox_1.9.0.apk">⬇ 下载 v1.9.0</a>
+          <p class="hint">约 11MB · 支持 Android 5.0+ · 包名 com.alltoolbox</p>
+          <p class="mirrors">镜像：<a href="https://ghfast.top/https://github.com/ppkkgzs/ceshi/releases/download/v1.9.0/AllToolbox_1.9.0.apk">ghfast</a><a href="https://ghproxy.net/https://github.com/ppkkgzs/ceshi/releases/download/v1.9.0/AllToolbox_1.9.0.apk">ghproxy</a><a href="https://gh-proxy.com/https://github.com/ppkkgzs/ceshi/releases/download/v1.9.0/AllToolbox_1.9.0.apk">gh-proxy</a></p>
+        </div>
+        <div class="dl-card">
+          <span class="tag tag-beta">测试版 Beta</span>
+          <h3>PK管理器 v1.8.8.9-beta</h3>
+          <p class="ver">抢先体验最新功能 · 与正式版签名区分</p>
+          <a class="btn btn-outline" href="https://github.com/ppkkgzs/ceshi-beta/releases/download/v1.8.8.9-beta/AllToolbox_1.8.8.9-beta.apk">⬇ 下载 Beta 版</a>
+          <p class="hint">约 11MB · 支持 Android 5.0+ · 包名 com.alltoolbox.beta</p>
+          <p class="mirrors">镜像：<a href="https://ghfast.top/https://github.com/ppkkgzs/ceshi-beta/releases/download/v1.8.8.9-beta/AllToolbox_1.8.8.9-beta.apk">ghfast</a><a href="https://ghproxy.net/https://github.com/ppkkgzs/ceshi-beta/releases/download/v1.8.8.9-beta/AllToolbox_1.8.8.9-beta.apk">ghproxy</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 更新日志 -->
+  <section id="changelog">
+    <div class="container">
+      <h2 class="sec-title">更新日志</h2>
+      <p class="sec-sub">近期主要版本更新内容</p>
+
+      <div class="log">
+        <div class="head">
+          <span class="ver">v1.9.0 <small>2026-09-01</small></span>
+          <span class="stage tag-stable">正式版</span>
+        </div>
+        <ul>
+          <li>首次启动新增「安装未知来源应用」权限引导，应用内在线更新更省心</li>
+          <li>更新检测升级为「直连 → CDN（方案）→ 镜像」多通道分开检测，下载失败自动回退镜像</li>
+          <li>版本升至 1.9.0（versionCode 120），正式版签名与包名</li>
+        </ul>
+      </div>
+
+      <div class="log">
+        <div class="head">
+          <span class="ver">v1.8.8.1 <small>2026-09-01</small></span>
+          <span class="stage tag-stable">正式版</span>
+        </div>
+        <ul>
+          <li>修复公告与关于页中开源仓库链接补全为完整网址</li>
+        </ul>
+      </div>
+
+      <div class="log">
+        <div class="head">
+          <span class="ver">v1.8.8 <small>2026-09-01</small></span>
+          <span class="stage tag-stable">正式版</span>
+        </div>
+        <ul>
+          <li>版本检测无法连接 GitHub 时自动回退 jsDelivr CDN（version.json），稳定检测最新版</li>
+          <li>安装包下载直连失败自动改用镜像（ghfast.top 等）代理下载</li>
+          <li>选择版本下载仅列出严格高于当前安装版本，避免旧版/同版本</li>
+        </ul>
+      </div>
+
+      <div class="log">
+        <div class="head">
+          <span class="ver">v1.8.7 <small>2026-09-01</small></span>
+          <span class="stage tag-stable">正式版</span>
+        </div>
+        <ul>
+          <li>设置→更新 统一更新弹窗（正式版/Beta 共用），支持取消 / 去链接更新 / 选择版本下载</li>
+          <li>已装 Beta 版时自动切换 Beta 通道，拉取真实版本列表与直链</li>
+          <li>下载改用 Release 资产真实 browser_download_url，修复无百分比与下载失败</li>
+        </ul>
+      </div>
+
+      <div class="log">
+        <div class="head">
+          <span class="ver">v1.8.x <small>2026-09-01</small></span>
+          <span class="stage tag-stable">正式版</span>
+        </div>
+        <ul>
+          <li>1.8.4 UI 统一优化 + 动画；1.8.3 语言切换（中/英）；1.8.2 设置内更新；1.8.1 首次启动引导链</li>
+          <li>1.8.0 正式版发布：Shell 脚本、7-Zip 增强、双栏修补核心能力并入正式版</li>
+        </ul>
+      </div>
+
+      <p class="log more" style="text-align:center; box-shadow:none; border:none; background:none;"><a href="https://github.com/ppkkgzs/ceshi/blob/master/CHANGELOG.md">查看完整更新日志 →</a></p>
+    </div>
+  </section>
+
+  <!-- 开源 / 关于 -->
+  <section id="about" class="alt">
+    <div class="container">
+      <h2 class="sec-title">开源与关于</h2>
+      <p class="sec-sub">透明开源，欢迎交流建议</p>
+      <div class="about-cards">
+        <div class="about-card">
+          <h3>开源声明</h3>
+          <p>本软件以 <strong>GNU GPL v3</strong> 协议开源，可自由研究、修改与分发（分发须遵守 GPL v3 条款）。</p>
+          <ul>
+            <li>正式版仓库：<a href="https://github.com/ppkkgzs/ceshi">github.com/ppkkgzs/ceshi</a></li>
+            <li>测试版仓库：<a href="https://github.com/ppkkgzs/ceshi-beta">github.com/ppkkgzs/ceshi-beta</a></li>
+            <li>许可证：<a href="https://github.com/ppkkgzs/ceshi/blob/master/LICENSE">LICENSE（GPL-3.0）</a></li>
+          </ul>
+        </div>
+        <div class="about-card">
+          <h3>支持范围</h3>
+          <ul>
+            <li>支持 Android 5.0 及以上</li>
+            <li>中文 / 英文语言切换</li>
+            <li>正式版与测试版签名区分</li>
+            <li>第三方依赖许可详见 THIRD_PARTY_NOTICES.md</li>
+          </ul>
+        </div>
+        <div class="about-card">
+          <h3>反馈与联系</h3>
+          <p>发现 Bug 或有改进建议，欢迎通过邮箱反馈：</p>
+          <ul>
+            <li>反馈邮箱：<a href="mailto:gexinggzs@163.com">gexinggzs@163.com</a></li>
+            <li>也可在 GitHub 仓库提交 Issue</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>© 2026 PK管理器 · GNU GPL v3</p>
+    <p>
+      <a href="https://github.com/ppkkgzs/ceshi">GitHub 正式版</a>
+      <a href="https://github.com/ppkkgzs/ceshi-beta">GitHub 测试版</a>
+      <a href="mailto:gexinggzs@163.com">联系反馈</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
