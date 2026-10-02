@@ -91,6 +91,12 @@
     <string name="tool_desc_root">Freeze, uninstall, system file access</string>
     <string name="tool_title_transfer">Transfer &amp; Peripherals</string>
     <string name="tool_desc_transfer">HTTP file server, Bluetooth send</string>
+    <string name="tool_title_todo">To-do List</string>
+    <string name="tool_desc_todo">Create and manage daily to-dos</string>
+    <string name="tool_title_storage">Storage Analysis</string>
+    <string name="tool_desc_storage">Dir usage, large &amp; duplicate file scan</string>
+    <string name="tool_title_hide">Hide / Disguise</string>
+    <string name="tool_desc_hide">Hide files, disguise as image, restore</string>
     <string name="tool_read_fail">Failed to read the selected file: %1$s</string>
 
     <!-- Settings sections -->

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="storage_title">存储空间分析</string>
+    <string name="storage_scanning">正在扫描…</string>
+    <string name="storage_start">开始扫描</string>
+    <string name="storage_rescan">重新扫描</string>
+    <string name="storage_large_files">占用最大的文件</string>
+    <string name="storage_dir_usage">各目录占用</string>
+    <string name="storage_duplicate">重复文件</string>
+    <string name="storage_no_dup">扫描完成，未发现重复文件</string>
+    <string name="storage_permission_hint">扫描前需授予存储/媒体权限</string>
+    <string name="storage_done">扫描完成</string>
+    <string name="storage_bytes">%1$s</string>
+</resources>

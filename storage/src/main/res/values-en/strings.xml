@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="storage_title">Storage Analysis</string>
+    <string name="storage_scanning">Scanning…</string>
+    <string name="storage_start">Start Scanning</string>
+    <string name="storage_rescan">Rescan</string>
+    <string name="storage_large_files">Largest files</string>
+    <string name="storage_dir_usage">Directory usage</string>
+    <string name="storage_duplicate">Duplicate files</string>
+    <string name="storage_no_dup">No duplicates found</string>
+    <string name="storage_permission_hint">Storage permission is required to scan</string>
+    <string name="storage_done">Scan complete</string>
+    <string name="storage_bytes">%1$s</string>
+</resources>

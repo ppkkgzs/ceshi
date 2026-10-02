@@ -1,10 +1,10 @@
-// transfer 模块 —— 传输与外设（HTTP 文件服务器、蓝牙发送、局域网共享）
+// hide 模块 —— 文件隐身/伪装（隐藏文件、伪装为其它类型）
 plugins {
     id 'com.android.library'
 }
 
 android {
-    namespace 'com.alltoolbox.transfer'
+    namespace 'com.alltoolbox.hide'
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -19,11 +19,8 @@ android {
 
 dependencies {
     implementation project(':core')
-    implementation project(':file-ops')
 
     implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
     implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
-    implementation "androidx.documentfile:documentfile:1.0.1"
-    // ZXing 二维码生成（用于局域网共享扫码下载）
-    implementation "com.google.zxing:core:3.5.2"
+    implementation "androidx.recyclerview:recyclerview:${rootProject.ext.recyclerviewVersion}"
 }

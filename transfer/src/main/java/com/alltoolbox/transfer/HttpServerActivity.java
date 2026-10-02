@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +39,8 @@ public class HttpServerActivity extends AppCompatActivity {
     private Button btnStartStop;
     private Button btnCopy;
     private TextView tvLogTitle;
+    private ImageView ivQr;
+    private TextView tvQrHint;
     private boolean running;
 
     @Override
@@ -59,6 +63,8 @@ public class HttpServerActivity extends AppCompatActivity {
         tvLogTitle = findViewById(R.id.tvLogTitle);
         btnStartStop = findViewById(R.id.btnStartStop);
         btnCopy = findViewById(R.id.btnCopy);
+        ivQr = findViewById(R.id.ivQr);
+        tvQrHint = findViewById(R.id.tvQrHint);
 
         findViewById(R.id.btnPickDir).setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -133,11 +139,12 @@ public class HttpServerActivity extends AppCompatActivity {
                 String url = "http://" + HttpServer.getLocalAddress().getHostAddress()
                         + ":" + PORT + "/";
                 runOnUiThread(() -> {
-                    tvUrl.setVisibility(android.view.View.VISIBLE);
+                    tvUrl.setVisibility(View.VISIBLE);
                     tvUrl.setText(getString(R.string.http_url) + "\n" + url);
-                    btnCopy.setVisibility(android.view.View.VISIBLE);
+                    btnCopy.setVisibility(View.VISIBLE);
                     btnStartStop.setText(R.string.http_stop);
                     btnStartStop.setEnabled(true);
+                    showQr(url);
                 });
             } catch (IOException e) {
                 running = false;
@@ -153,9 +160,36 @@ public class HttpServerActivity extends AppCompatActivity {
     private void stopServer() {
         if (server != null) server.stop();
         running = false;
-        tvUrl.setVisibility(android.view.View.GONE);
-        btnCopy.setVisibility(android.view.View.GONE);
+        tvUrl.setVisibility(View.GONE);
+        btnCopy.setVisibility(View.GONE);
+        ivQr.setVisibility(View.GONE);
+        tvQrHint.setVisibility(View.GONE);
         btnStartStop.setText(R.string.http_start);
+    }
+
+    /** 用 ZXing 生成 URL 二维码并显示，供同局域网设备扫码。 */
+    private void showQr(String url) {
+        try {
+            int size = 512;
+            com.google.zxing.BarcodeFormat fmt = com.google.zxing.BarcodeFormat.QR_CODE;
+            java.util.Map<com.google.zxing.EncodeHintType, Object> hints = new java.util.HashMap<>();
+            hints.put(com.google.zxing.EncodeHintType.CHARACTER_SET, "UTF-8");
+            hints.put(com.google.zxing.EncodeHintType.MARGIN, 1);
+            com.google.zxing.qrcode.QRCodeWriter writer = new com.google.zxing.qrcode.QRCodeWriter();
+            com.google.zxing.common.BitMatrix matrix = writer.encode(url, fmt, size, size, hints);
+            android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(size, size,
+                    android.graphics.Bitmap.Config.RGB_565);
+            for (int x = 0; x < size; x++) {
+                for (int y = 0; y < size; y++) {
+                    bmp.setPixel(x, y, matrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF);
+                }
+            }
+            ivQr.setImageBitmap(bmp);
+            ivQr.setVisibility(View.VISIBLE);
+            tvQrHint.setVisibility(View.VISIBLE);
+        } catch (Exception e) {
+            ivQr.setVisibility(View.GONE);
+        }
     }
 
     private void appendLog(String line) {

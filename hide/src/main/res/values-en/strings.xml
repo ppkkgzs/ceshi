@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hide_title">Hide / Disguise</string>
+    <string name="hide_pick_file">Choose file</string>
+    <string name="hide_pick_saved">Pick a file to hide or disguise</string>
+    <string name="hide_actions">Action</string>
+    <string name="hide_act_hide">Hide file</string>
+    <string name="hide_act_disguise">Disguise as image</string>
+    <string name="hide_act_restore">Restore file</string>
+    <string name="hide_hint_hide">Move the file to app-private dir with .nomedia so it is invisible to gallery</string>
+    <string name="hide_hint_disguise">Append an image header to disguise it as an image, keeping the original name</string>
+    <string name="hide_hint_restore">Pick a disguised file and strip the image header to restore it</string>
+    <string name="hide_done">Done</string>
+    <string name="hide_fail">Failed: %1$s</string>
+    <string name="hide_ok">Success</string>
+    <string name="hide_choose_target">Choose target</string>
+    <string name="hide_hidden_here">File hidden in app dir. View it in file manager.</string>
+</resources>

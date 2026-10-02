@@ -13,6 +13,8 @@
     <string name="http_copy">Copy URL</string>
     <string name="http_empty">Please choose a folder to share first</string>
     <string name="http_copied">URL copied</string>
+    <string name="http_qr">QR code</string>
+    <string name="http_qr_hint">On the same LAN, scan the QR code with another device to access and download</string>
     <string name="http_start_fail">Start failed: %1$s</string>
 
     <string name="bluetooth_send">Bluetooth send</string>

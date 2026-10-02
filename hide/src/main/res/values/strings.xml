@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hide_title">文件隐身/伪装</string>
+    <string name="hide_pick_file">选择文件</string>
+    <string name="hide_pick_saved">选择一个要隐藏/伪装的文件</string>
+    <string name="hide_actions">操作类型</string>
+    <string name="hide_act_hide">隐藏文件</string>
+    <string name="hide_act_disguise">伪装为图片</string>
+    <string name="hide_act_restore">还原文件</string>
+    <string name="hide_hint_hide">把文件放到应用私有目录并加 .nomedia，使其在相册/图库不可见</string>
+    <string name="hide_hint_disguise">在文件末尾追加图片头伪装为图片，保留原名</string>
+    <string name="hide_hint_restore">选择被伪装的文件，移除图片头还原原文件</string>
+    <string name="hide_done">完成</string>
+    <string name="hide_fail">操作失败: %1$s</string>
+    <string name="hide_ok">成功</string>
+    <string name="hide_choose_target">选择目标文件</string>
+    <string name="hide_hidden_here">已在应用目录隐藏文件，可在文件管理器中查看</string>
+</resources>

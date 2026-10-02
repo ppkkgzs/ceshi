@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tv_note"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hide_pick_saved"
+            android:textColor="#5f6368"
+            android:textSize="14sp"
+            android:paddingBottom="16dp" />
+
+        <Button
+            android:id="@+id/btn_pick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hide_pick_file" />
+
+        <TextView
+            android:id="@+id/tv_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="@string/hide_actions"
+            android:textColor="#202124"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_hide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            style="?attr/buttonBarButtonStyle"
+            android:text="@string/hide_act_hide" />
+
+        <TextView
+            android:id="@+id/hint_hide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/hide_hint_hide"
+            android:textColor="#80868b"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_disguise"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            style="?attr/buttonBarButtonStyle"
+            android:text="@string/hide_act_disguise" />
+
+        <TextView
+            android:id="@+id/hint_disguise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/hide_hint_disguise"
+            android:textColor="#80868b"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_restore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="@string/hide_act_restore" />
+
+        <TextView
+            android:id="@+id/hint_restore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/hide_hint_restore"
+            android:textColor="#80868b"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</ScrollView>

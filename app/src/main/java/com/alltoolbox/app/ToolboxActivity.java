@@ -88,9 +88,16 @@ public class ToolboxActivity extends AppCompatActivity {
         }
         // 传输与外设
         entries.add(new ToolEntry(R.string.tool_title_transfer, R.string.tool_desc_transfer, TransferActivity.class, PICK_NONE));
+        // 任务清单
+        entries.add(new ToolEntry(R.string.tool_title_todo, R.string.tool_desc_todo, com.alltoolbox.todo.TodoActivity.class, PICK_NONE));
+        // 存储分析
+        entries.add(new ToolEntry(R.string.tool_title_storage, R.string.tool_desc_storage, com.alltoolbox.storage.StorageActivity.class, PICK_NONE));
+        // 文件隐身
+        entries.add(new ToolEntry(R.string.tool_title_hide, R.string.tool_desc_hide, com.alltoolbox.hide.HideActivity.class, PICK_NONE));
 
         RecyclerView list = findViewById(R.id.tool_list);
-        list.setLayoutManager(new LinearLayoutManager(this));
+        int cols = getResources().getConfiguration().screenWidthDp >= 600 ? 3 : 2;
+        list.setLayoutManager(new androidx.recyclerview.widget.GridLayoutManager(this, cols));
         list.setAdapter(new ToolAdapter(entries));
     }
 
@@ -178,12 +185,16 @@ public class ToolboxActivity extends AppCompatActivity {
             ToolEntry e = data.get(position);
             h.title.setText(e.titleRes);
             h.desc.setText(e.descRes);
+            // 图标：取工具名的第一个字符作为圆形图标文字
+            CharSequence titleText = h.title.getText();
+            h.icon.setText(titleText != null && titleText.length() > 0
+                    ? titleText.subSequence(0, 1).toString() : "工");
             // 列表项进入动画：淡入 + 上移，营造顺滑的顺次浮现效果
             h.itemView.setAlpha(0f);
             h.itemView.setTranslationY(h.itemView.getResources()
                     .getDisplayMetrics().density * 24f);
             h.itemView.animate().alpha(1f).translationY(0f)
-                    .setDuration(260).setStartDelay(position * 40L)
+                    .setDuration(260).setStartDelay(position % 4 * 40L)
                     .setInterpolator(new android.view.animation.DecelerateInterpolator())
                     .start();
             h.itemView.setOnClickListener(v -> {
@@ -201,12 +212,13 @@ public class ToolboxActivity extends AppCompatActivity {
         }
 
         final class VH extends RecyclerView.ViewHolder {
-            final TextView title, desc;
+            final TextView title, desc, icon;
 
             VH(View v) {
                 super(v);
                 title = v.findViewById(R.id.tool_title);
                 desc = v.findViewById(R.id.tool_desc);
+                icon = v.findViewById(R.id.tool_icon);
             }
         }
     }

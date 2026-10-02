@@ -54,6 +54,9 @@ dependencies {
     implementation project(':security')
     implementation project(':root')
     implementation project(':transfer')
+    implementation project(':todo')
+    implementation project(':storage')
+    implementation project(':hide')
 
     implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
     implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"

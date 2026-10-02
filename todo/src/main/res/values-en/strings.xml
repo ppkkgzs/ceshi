@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="todo_title">Todo List</string>
+    <string name="todo_empty">No tasks yet. Tap the button below to add one.</string>
+    <string name="todo_add">Add task</string>
+    <string name="todo_new_title">New Task</string>
+    <string name="todo_edit_title">Edit Task</string>
+    <string name="todo_hint_title">Title</string>
+    <string name="todo_hint_note">Note (optional)</string>
+    <string name="todo_priority">Priority</string>
+    <string name="todo_priority_low">Low</string>
+    <string name="todo_priority_normal">Normal</string>
+    <string name="todo_priority_high">High</string>
+    <string name="todo_cancel">Cancel</string>
+    <string name="todo_save">Save</string>
+    <string name="todo_delete">Delete</string>
+    <string name="todo_required">Title is required</string>
+</resources>

@@ -1,10 +1,10 @@
-// transfer 模块 —— 传输与外设（HTTP 文件服务器、蓝牙发送、局域网共享）
+// todo 模块 —— 任务清单（新建、编辑、完成、排序、本地持久化）
 plugins {
     id 'com.android.library'
 }
 
 android {
-    namespace 'com.alltoolbox.transfer'
+    namespace 'com.alltoolbox.todo'
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -18,12 +18,7 @@ android {
 }
 
 dependencies {
-    implementation project(':core')
-    implementation project(':file-ops')
-
     implementation "androidx.appcompat:appcompat:${rootProject.ext.appcompatVersion}"
     implementation "com.google.android.material:material:${rootProject.ext.materialVersion}"
-    implementation "androidx.documentfile:documentfile:1.0.1"
-    // ZXing 二维码生成（用于局域网共享扫码下载）
-    implementation "com.google.zxing:core:3.5.2"
+    implementation "androidx.recyclerview:recyclerview:${rootProject.ext.recyclerviewVersion}"
 }

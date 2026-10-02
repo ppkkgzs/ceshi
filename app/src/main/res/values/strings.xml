@@ -91,6 +91,12 @@
     <string name="tool_desc_root">冻结/解冻、卸载、系统文件访问</string>
     <string name="tool_title_transfer">传输与外设</string>
     <string name="tool_desc_transfer">HTTP 文件服务器、蓝牙发送</string>
+    <string name="tool_title_todo">任务清单</string>
+    <string name="tool_desc_todo">新建、管理日常生活与工作待办</string>
+    <string name="tool_title_storage">存储空间分析</string>
+    <string name="tool_desc_storage">各目录占用、大文件与重复文件扫描</string>
+    <string name="tool_title_hide">文件隐身/伪装</string>
+    <string name="tool_desc_hide">隐藏文件、伪装为图片、还原</string>
     <string name="tool_read_fail">读取所选文件失败: %1$s</string>
 
     <!-- 设置页分组 -->

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="todo_title">任务清单</string>
+    <string name="todo_empty">暂无任务，点击右下角按钮新建</string>
+    <string name="todo_add">新建任务</string>
+    <string name="todo_new_title">新建任务</string>
+    <string name="todo_edit_title">编辑任务</string>
+    <string name="todo_hint_title">标题</string>
+    <string name="todo_hint_note">备注（可选）</string>
+    <string name="todo_priority">优先级</string>
+    <string name="todo_priority_low">低</string>
+    <string name="todo_priority_normal">普通</string>
+    <string name="todo_priority_high">高</string>
+    <string name="todo_cancel">取消</string>
+    <string name="todo_save">保存</string>
+    <string name="todo_delete">删除</string>
+    <string name="todo_required">标题不能为空</string>
+</resources>

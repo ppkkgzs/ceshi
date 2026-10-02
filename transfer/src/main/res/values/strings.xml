@@ -13,6 +13,8 @@
     <string name="http_copy">复制地址</string>
     <string name="http_empty">请先选择要分享的目录</string>
     <string name="http_copied">地址已复制</string>
+    <string name="http_qr">二维码</string>
+    <string name="http_qr_hint">同一局域网内，用另一台设备扫码即可访问下载</string>
     <string name="http_start_fail">启动失败：%1$s</string>
 
     <string name="bluetooth_send">蓝牙发送</string>
